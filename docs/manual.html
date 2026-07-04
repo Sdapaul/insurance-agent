@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>보험 상담 AI 어시스턴트 — 사용 설명서</title>
+<style>
+  :root {
+    --blue:    #2563eb;
+    --blue-d:  #1d4ed8;
+    --blue-l:  #eff6ff;
+    --green:   #16a34a;
+    --green-l: #dcfce7;
+    --red:     #dc2626;
+    --red-l:   #fee2e2;
+    --yellow:  #d97706;
+    --yellow-l:#fef3c7;
+    --gray:    #64748b;
+    --gray-l:  #f8fafc;
+    --border:  #e2e8f0;
+    --text:    #1e293b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Malgun Gothic', 'Segoe UI', sans-serif;
+    background: #f0f4f8;
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  /* ── 상단 헤더 ── */
+  .hero {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #3b82f6 100%);
+    color: white;
+    padding: 56px 40px 48px;
+    text-align: center;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+  }
+  .hero h1 { font-size: 34px; font-weight: 800; margin-bottom: 10px; }
+  .hero p  { font-size: 16px; opacity: 0.88; max-width: 560px; margin: 0 auto 28px; }
+  .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .hero-tag {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 14px;
+    padding: 4px 12px;
+    font-size: 12px;
+  }
+
+  /* ── 목차 ── */
+  .toc-wrap {
+    max-width: 880px; margin: 32px auto 0; padding: 0 24px;
+  }
+  .toc {
+    background: white; border-radius: 14px;
+    padding: 24px 28px; box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+  }
+  .toc h2 { font-size: 14px; color: var(--gray); margin-bottom: 12px; letter-spacing: 0.5px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin: 5px 0; }
+  .toc a  { color: var(--blue); text-decoration: none; font-size: 14px; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* ── 메인 레이아웃 ── */
+  .main { max-width: 880px; margin: 0 auto; padding: 24px; }
+
+  /* ── 섹션 ── */
+  .section {
+    background: white; border-radius: 14px;
+    padding: 32px 36px; margin-bottom: 24px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+  }
+  .section-header {
+    display: flex; align-items: center; gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--blue-l);
+    margin-bottom: 24px;
+  }
+  .section-icon { font-size: 28px; }
+  .section-title { font-size: 20px; font-weight: 800; color: var(--blue-d); }
+  .section-desc  { font-size: 13px; color: var(--gray); margin-top: 2px; }
+
+  h3 { font-size: 15px; font-weight: 700; color: var(--text); margin: 22px 0 10px; }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: 13.5px; font-weight: 700; color: var(--blue-d); margin: 14px 0 6px; }
+  p  { font-size: 14px; color: #374151; margin-bottom: 10px; }
+  ul, ol { padding-left: 20px; margin-bottom: 10px; }
+  li { font-size: 14px; margin: 5px 0; }
+
+  /* ── 스텝 박스 ── */
+  .steps { counter-reset: step; }
+  .step  {
+    display: flex; gap: 16px; align-items: flex-start;
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    counter-increment: step;
+    flex-shrink: 0;
+    width: 32px; height: 32px;
+    background: var(--blue); color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+  }
+  .step-num::before { content: counter(step); }
+  .step-body { flex: 1; }
+  .step-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .step-detail { font-size: 13px; color: var(--gray); }
+
+  /* ── 코드 블록 ── */
+  .code-block {
+    background: #0f172a; color: #e2e8f0;
+    border-radius: 10px; padding: 16px 20px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13px; line-height: 1.6;
+    overflow-x: auto; margin: 10px 0;
+  }
+  .code-block .comment { color: #64748b; }
+  .code-block .cmd { color: #86efac; }
+  .code-inline {
+    background: #f1f5f9; color: #e11d48;
+    padding: 2px 6px; border-radius: 4px;
+    font-family: 'Consolas', monospace;
+    font-size: 12.5px;
+  }
+
+  /* ── 장단점 카드 ── */
+  .pro-con-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    margin-top: 16px;
+  }
+  .pro-card, .con-card {
+    border-radius: 12px; padding: 20px;
+  }
+  .pro-card { background: var(--green-l); border: 1px solid #bbf7d0; }
+  .con-card { background: var(--red-l);   border: 1px solid #fecaca; }
+  .pro-card h4 { color: var(--green); font-size: 14px; margin: 0 0 10px; }
+  .con-card h4 { color: var(--red);   font-size: 14px; margin: 0 0 10px; }
+  .pro-card li::marker { color: var(--green); }
+  .con-card li::marker { color: var(--red); }
+
+  /* ── 팁 카드 ── */
+  .tip-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    margin-top: 14px;
+  }
+  .tip-card {
+    background: var(--gray-l); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 20px;
+    border-left: 4px solid var(--blue);
+  }
+  .tip-card .tip-label {
+    font-size: 11px; font-weight: 700; color: var(--blue);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
+  }
+  .tip-card .tip-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .tip-card .tip-body  { font-size: 13px; color: #475569; }
+  .tip-example {
+    background: white; border: 1px dashed var(--blue);
+    border-radius: 8px; padding: 10px 14px;
+    font-size: 13px; color: var(--blue-d); margin-top: 8px;
+    font-style: italic;
+  }
+
+  /* ── 예시 질문 ── */
+  .q-grid {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;
+  }
+  .q-chip {
+    background: var(--blue-l); color: var(--blue-d);
+    border: 1px solid #bfdbfe;
+    border-radius: 20px; padding: 5px 14px;
+    font-size: 13px; cursor: default;
+  }
+
+  /* ── 테이블 ── */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13.5px; }
+  th { background: var(--gray-l); padding: 9px 12px; border: 1px solid var(--border); font-weight: 700; text-align: left; }
+  td { padding: 9px 12px; border: 1px solid var(--border); }
+  tr:hover td { background: var(--blue-l); }
+
+  /* ── 알림 박스 ── */
+  .alert {
+    border-radius: 10px; padding: 14px 18px; margin: 12px 0;
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 13.5px;
+  }
+  .alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .alert.info    { background: var(--blue-l);   border-left: 4px solid var(--blue); }
+  .alert.warning { background: var(--yellow-l); border-left: 4px solid var(--yellow); }
+  .alert.success { background: var(--green-l);  border-left: 4px solid var(--green); }
+  .alert.danger  { background: var(--red-l);    border-left: 4px solid var(--red); }
+
+  /* ── 신용점수 등급표 ── */
+  .score-table td:nth-child(3) { font-weight: 700; }
+  .tier1 { color: #16a34a; }
+  .tier2 { color: #2563eb; }
+  .tier3 { color: #d97706; }
+  .tier4 { color: #dc2626; }
+  .tier5 { color: #64748b; }
+
+  /* ── FAQ ── */
+  .faq-item {
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+  }
+  .faq-item:last-child { border-bottom: none; }
+  .faq-q { font-size: 14px; font-weight: 700; color: var(--blue-d); margin-bottom: 6px; }
+  .faq-q::before { content: "Q. "; }
+  .faq-a { font-size: 13.5px; color: #374151; }
+  .faq-a::before { content: "A. "; font-weight: 700; color: var(--green); }
+
+  /* ── 푸터 ── */
+  footer {
+    text-align: center; padding: 32px;
+    color: var(--gray); font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+
+  @media (max-width: 640px) {
+    .hero { padding: 36px 20px; }
+    .hero h1 { font-size: 24px; }
+    .section { padding: 22px 18px; }
+    .pro-con-grid, .tip-grid { grid-template-columns: 1fr; }
+    .toc-wrap, .main { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ HERO ══════════════════════════════════════════════════════ -->
+<div class="hero">
+  <div class="hero-badge">🛡️ AI 보험 상담 어시스턴트 v2.0</div>
+  <h1>보험 상담 AI 사용 설명서</h1>
+  <p>GPT-4o + 보험다모아 공시 데이터 + 실시간 웹 검색 + 신용점수를 결합한<br>
+     개인 맞춤형 보험 포트폴리오 추천 시스템</p>
+  <div class="hero-tags">
+    <span class="hero-tag">종신보험</span>
+    <span class="hero-tag">실손의료보험</span>
+    <span class="hero-tag">암보험</span>
+    <span class="hero-tag">치아보험</span>
+    <span class="hero-tag">간병·치매보험</span>
+    <span class="hero-tag">연금보험</span>
+    <span class="hero-tag">신용점수 포트폴리오</span>
+  </div>
+</div>
+
+<!-- ══ 목차 ══════════════════════════════════════════════════════ -->
+<div class="toc-wrap">
+  <div class="toc">
+    <h2>📋 목차</h2>
+    <ol>
+      <li><a href="#s1">시작하기 — 설치 및 실행</a></li>
+      <li><a href="#s2">화면 구성 — 탭별 기능</a></li>
+      <li><a href="#s3">보험 상담 탭 사용법</a></li>
+      <li><a href="#s4">신용점수 포트폴리오 탭 사용법</a></li>
+      <li><a href="#s5">장점 vs 단점</a></li>
+      <li><a href="#s6">구체적인 보험 상담 팁 15선</a></li>
+      <li><a href="#s7">데이터 출처 및 신뢰도</a></li>
+      <li><a href="#s8">자주 묻는 질문 (FAQ)</a></li>
+      <li><a href="#s9">문제 해결</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ══ S1: 시작하기 ══════════════════════════════════════════════ -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-icon">🚀</div>
+    <div>
+      <div class="section-title">1. 시작하기 — 설치 및 실행</div>
+      <div class="section-desc">처음 실행 전 필수 설정 단계</div>
+    </div>
+  </div>
+
+  <h3>필수 준비물</h3>
+  <table>
+    <tr><th>항목</th><th>내용</th><th>비고</th></tr>
+    <tr><td>Python 3.10+</td><td>python.org에서 설치</td><td>필수</td></tr>
+    <tr><td>OpenAI API 키</td><td>platform.openai.com/api-keys</td><td>필수 (Live 모드)</td></tr>
+    <tr><td>FSS API 키</td><td>finlife.fss.or.kr → 마이페이지</td><td>선택 (연금보험)</td></tr>
+    <tr><td>Google Chrome</td><td>신용점수·보험다모아 실시간 수집 시</td><td>선택</td></tr>
+  </table>
+
+  <h3>설치</h3>
+  <div class="code-block">
+<span class="comment"># 패키지 설치</span>
+<span class="cmd">pip install -r requirements.txt</span>
+
+<span class="comment"># ChromaDB RAG (선택 — 없으면 키워드 검색으로 대체)</span>
+<span class="cmd">pip install chromadb sentence-transformers</span>
+<span class="cmd">pip install torch --index-url https://download.pytorch.org/whl/cpu</span>
+
+<span class="comment"># 웹 검색 (필수)</span>
+<span class="cmd">pip install ddgs</span></div>
+
+  <h3>환경 변수 설정</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num"></div>
+      <div class="step-body">
+        <div class="step-title">.env.example → .env 복사</div>
+        <div class="step-detail">프로젝트 루트의 .env.example 파일을 .env로 복사합니다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num"></div>
+      <div class="step-body">
+        <div class="step-title">OPENAI_API_KEY 입력</div>
+        <div class="step-detail"><span class="code-inline">OPENAI_API_KEY=sk-proj-...</span> 형식으로 입력. GPT-4o 사용료는 입력 토큰당 $0.0025, 출력 $0.01 (2026년 기준).</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num"></div>
+      <div class="step-body">
+        <div class="step-title">run.bat 더블클릭 또는 터미널에서 실행</div>
+        <div class="step-detail"><span class="code-inline">python web_app.py</span> → 브라우저에서 http://localhost:5000 접속</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert info">
+    <div class="alert-icon">💡</div>
+    <div><strong>Mock 모드</strong>: OpenAI API 키 없이도 실행 가능. 로컬 정적 데이터로 샘플 응답을 생성합니다. 오른쪽 상단 배지에 <strong>🔧 Mock Mode</strong>로 표시됩니다.</div>
+  </div>
+</div>
+
+<!-- ══ S2: 화면 구성 ═════════════════════════════════════════════ -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-icon">🖥️</div>
+    <div>
+      <div class="section-title">2. 화면 구성 — 탭별 기능</div>
+      <div class="section-desc">두 개의 탭으로 구성된 UI 개요</div>
+    </div>
+  </div>
+
+  <table>
+    <tr>
+      <th>탭</th><th>주요 기능</th><th>사용 목적</th>
+    </tr>
+    <tr>
+      <td><strong>💬 보험 상담</strong></td>
+      <td>GPT-4o 스트리밍 채팅</td>
+      <td>자유 질문, 상품 비교, 보험료 조회</td>
+    </tr>
+    <tr>
+      <td><strong>💳 신용점수 포트폴리오</strong></td>
+      <td>신용점수 기반 맞춤 포트폴리오</td>
+      <td>나이+예산+신용점수 → 1회 생성</td>
+    </tr>
+  </table>
+
+  <h3>상단 모드 선택기</h3>
+  <table>
+    <tr><th>모드</th><th>설명</th><th>적합한 상황</th></tr>
+    <tr><td>🔄 Auto</td><td>API 키 유효 시 Live, 아니면 Mock 자동 전환</td><td>일반적 사용 (기본값)</td></tr>
+    <tr><td>🟢 Live</td><td>GPT-4o 실제 응답 (실시간 스트리밍)</td><td>정확한 상담이 필요할 때</td></tr>
+    <tr><td>🔧 Mock</td><td>로컬 정적 데이터로 즉시 응답</td><td>API 비용 절감, 빠른 테스트</td></tr>
+  </table>
+</div>
+
+<!-- ══ S3: 보험 상담 탭 ══════════════════════════════════════════ -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-icon">💬</div>
+    <div>
+      <div class="section-title">3. 보험 상담 탭 사용법</div>
+      <div class="section-desc">GPT-4o + 다중 데이터 소스 통합 채팅</div>
+    </div>
+  </div>
+
+  <h3>빠른 버튼 활용</h3>
+  <div class="q-grid">
+    <span class="q-chip">암보험 추천</span>
+    <span class="q-chip">치아보험</span>
+    <span class="q-chip">실손보험 비교</span>
+    <span class="q-chip">간병·치매보험</span>
+    <span class="q-chip">포트폴리오 추천</span>
+    <span class="q-chip">4세대 vs 5세대</span>
+  </div>
+
+  <h3>답변 처리 흐름</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num"></div>
+      <div class="step-body">
+        <div class="step-title">🔍 보험다모아 엑셀 검색 (1순위)</div>
+        <div class="step-detail">보험다모아 공시 XLS 파일에서 연령·성별 맞춤 상품과 실제 보험료를 조회합니다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num"></div>
+      <div class="step-body">
+        <div class="step-title">🌐 실시간 웹 검색 (2순위)</div>
+        <div class="step-detail">DuckDuckGo로 최신 뉴스·보험료 비교 정보를 검색합니다. 2026년 기사를 우선 선별.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num"></div>
+      <div class="step-body">
+        <div class="step-title">🤖 GPT-4o 종합 분석</div>
+        <div class="step-detail">수집된 데이터를 종합하여 맞춤형 답변을 생성합니다. 토큰 단위로 실시간 스트리밍 출력.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num"></div>
+      <div class="step-body">
+        <div class="step-title">📰 최신 뉴스 자동 첨부</div>
+        <div class="step-detail">답변 완료 후 관련 뉴스 2~3개를 자동으로 검색해 첨부합니다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num"></div>
+      <div class="step-body">
+        <div class="step-title">📋 답변 근거 표 생성</div>
+        <div class="step-detail">사용된 데이터 출처와 신뢰도를 표로 정리하여 첨부합니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>효과적인 질문 예시</h3>
+  <table>
+    <tr><th>카테고리</th><th>예시 질문</th></tr>
+    <tr><td>상품 추천</td><td>"45세 남성, 월 5만원 예산으로 암보험 추천해줘"</td></tr>
+    <tr><td>보험사 비교</td><td>"실손보험 삼성생명 vs 현대해상 비교해줘"</td></tr>
+    <tr><td>보험료 조회</td><td>"50세 여성 간병보험 월 보험료 얼마야?"</td></tr>
+    <tr><td>제도 설명</td><td>"5세대 실손보험이 4세대랑 다른 점 설명해줘"</td></tr>
+    <tr><td>포트폴리오</td><td>"35세 기혼 남성, 가족 보험 어떻게 구성하면 좋을까?"</td></tr>
+    <tr><td>특정 보험</td><td>"간병보험 갱신형과 비갱신형 차이 알려줘"</td></tr>
+  </table>
+</div>
+
+<!-- ══ S4: 신용점수 포트폴리오 탭 ═══════════════════════════════ -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-icon">💳</div>
+    <div>
+      <div class="section-title">4. 신용점수 포트폴리오 탭 사용법</div>
+      <div class="section-desc">신용점수를 반영한 개인 맞춤 보험 포트폴리오 1회 생성</div>
+    </div>
+  </div>
+
+  <h3>Step 1 — 신용점수 무료 확인</h3>
+  <table>
+    <tr><th>앱·사이트</th><th>제공 점수</th><th>확인 방법</th><th>특징</th></tr>
+    <tr><td>💚 <strong>토스</strong></td><td>KCB</td><td>앱 → 신용점수 탭</td><td>가장 간편, 월 1회 무료</td></tr>
+    <tr><td>💛 <strong>카카오페이</strong></td><td>NICE</td><td>앱 → 금융 → 신용점수 조회</td><td>카카오 계정 연동</td></tr>
+    <tr><td>🏛️ <strong>NICE 지키미</strong></td><td>NICE</td><td>credit.co.kr → 로그인 → 신용점수</td><td>공식 NICE 조회</td></tr>
+    <tr><td>📋 <strong>올크레딧(KCB)</strong></td><td>KCB</td><td>allcredit.co.kr → 신용점수 조회</td><td>공식 KCB 조회</td></tr>
+  </table>
+
+  <div class="alert info">
+    <div class="alert-icon">💡</div>
+    <div>NICE와 KCB 점수 모두 입력하면 <strong>평균값</strong>으로 포트폴리오를 구성합니다. 하나만 있어도 괜찮습니다.</div>
+  </div>
+
+  <h3>Step 2 — 정보 입력</h3>
+  <ul>
+    <li><strong>나이</strong>: 만 나이 입력 (20~70세)</li>
+    <li><strong>성별</strong>: 남성 / 여성 선택</li>
+    <li><strong>월 보험료 예산</strong>: 만원 단위 (예: 15 → 15만원)</li>
+    <li><strong>NICE / KCB 신용점수</strong>: 300~1000점 (하나만 입력해도 됨)</li>
+    <li><strong>현재 가입 보험</strong>: 실손 가입 여부 등 (선택)</li>
+    <li><strong>건강 특이사항</strong>: 고혈압·당뇨 등 (선택)</li>
+  </ul>
+
+  <h3>신용등급별 추천 방향</h3>
+  <table class="score-table">
+    <tr><th>등급</th><th>점수 범위</th><th>특성</th><th>보험 추천 방향</th></tr>
+    <tr><td class="tier1"><strong>최우량</strong></td><td>900~1000</td><td>금융 우량 고객</td><td>프리미엄 종신·변액보험, 저축보험 강화</td></tr>
+    <tr><td class="tier2"><strong>우량</strong></td><td>750~899</td><td>일반 직장인</td><td>모든 보험 표준 추천, 실손+암+종신 기본 구성</td></tr>
+    <tr><td class="tier3"><strong>보통</strong></td><td>600~749</td><td>부채 있는 중간층</td><td>보장성 보험 집중, 저축 비중 최소화</td></tr>
+    <tr><td class="tier4"><strong>주의</strong></td><td>450~599</td><td>연체 경험</td><td>무심사·간편심사형 상품 우선 추천</td></tr>
+    <tr><td class="tier5"><strong>불량</strong></td><td>300~449</td><td>신용 위험</td><td>무심사 상품만 + 신용 관리 병행 권고</td></tr>
+  </table>
+</div>
+
+<!-- ══ S5: 장단점 ════════════════════════════════════════════════ -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-icon">⚖️</div>
+    <div>
+      <div class="section-title">5. 장점 vs 단점</div>
+      <div class="section-desc">AI 보험 상담 어시스턴트의 솔직한 평가</div>
+    </div>
+  </div>
+
+  <div class="pro-con-grid">
+    <div class="pro-card">
+      <h4>✅ 장점</h4>
+      <ul>
+        <li><strong>공식 공시 데이터 기반</strong>: 보험다모아(보험협회 공식 운영) 엑셀 공시 데이터를 직접 파싱하여 실제 보험료 제공</li>
+        <li><strong>실시간 최신 정보</strong>: DuckDuckGo 웹 검색으로 최신 뉴스·제도 변경 반영</li>
+        <li><strong>다양한 보험 종류 통합</strong>: 종신·실손·암·치아·간병·연금보험을 한 화면에서 비교</li>
+        <li><strong>신용점수 맞춤 추천</strong>: NICE/KCB 점수를 반영한 5등급별 차별화 포트폴리오</li>
+        <li><strong>무료 운영 가능</strong>: 웹 검색(DuckDuckGo)은 API 키 불필요, Mock 모드로 API 없이도 사용 가능</li>
+        <li><strong>투명한 근거 제시</strong>: 모든 답변에 데이터 출처·신뢰도 표 자동 첨부</li>
+        <li><strong>연령별 맞춤 포트폴리오</strong>: 30/40/50/60대별 특화 보험 구성 가이드 내장</li>
+        <li><strong>실시간 스트리밍</strong>: 긴 답변도 즉시 출력 시작, 기다림 없음</li>
+      </ul>
+    </div>
+    <div class="con-card">
+      <h4>⚠️ 단점 및 한계</h4>
+      <ul>
+        <li><strong>보험료는 참고값</strong>: 표준 가입 조건 기준. 실제 건강상태·직업·특약에 따라 크게 달라질 수 있음</li>
+        <li><strong>GPT-4o 비용</strong>: Live 모드는 OpenAI API 과금 발생 (긴 포트폴리오 질문은 $0.05~$0.15 예상)</li>
+        <li><strong>보험다모아 봇 차단</strong>: 자동 스크래핑 시 mbuster 시스템에 의해 IP 차단 가능 (CDP 모드로 우회 필요)</li>
+        <li><strong>엑셀 데이터 주기적 갱신 필요</strong>: 보험다모아 공시 파일은 수동으로 다운로드하여 교체해야 함</li>
+        <li><strong>실제 계약 불가</strong>: 상담·비교만 가능. 실제 가입은 보험사 다이렉트 또는 설계사 통해야 함</li>
+        <li><strong>비공시 특약 미반영</strong>: 보험사별 특판·특약은 보험다모아에 미표시될 수 있음</li>
+        <li><strong>FSS API 연금보험 한계</strong>: 연금저축보험만 지원. 변액연금 등 상세 데이터 없음</li>
+        <li><strong>신용점수 CDP 조회 조건</strong>: Chrome 원격 디버깅 모드 + 해당 사이트 로그인 상태 필요</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="alert warning" style="margin-top:16px">
+    <div class="alert-icon">⚠️</div>
+    <div><strong>중요 면책 고지</strong>: 이 프로그램의 보험 추천은 <strong>참고용 정보 제공</strong>을 목적으로 합니다. 실제 보험 가입 결정은 반드시 해당 보험사 약관 확인 및 전문 설계사 상담을 통해 진행하시기 바랍니다.</div>
+  </div>
+</div>
+
+<!-- ══ S6: 보험 상담 팁 ══════════════════════════════════════════ -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-icon">💡</div>
+    <div>
+      <div class="section-title">6. 구체적인 보험 상담 팁 15선</div>
+      <div class="section-desc">AI 어시스턴트를 200% 활용하는 질문 전략</div>
+    </div>
+  </div>
+
+  <h3>🔹 기본 정보 제공 팁</h3>
+  <div class="tip-grid">
+    <div class="tip-card">
+      <div class="tip-label">Tip 01</div>
+      <div class="tip-title">나이·성별·예산을 함께 명시하세요</div>
+      <div class="tip-body">보험료는 나이·성별에 따라 2~5배 차이가 납니다. 나이와 성별을 입력하면 실제 공시 보험료 데이터를 조회합니다.</div>
+      <div class="tip-example">"40세 여성, 월 10만원 예산으로 암보험 추천해줘"</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-label">Tip 02</div>
+      <div class="tip-title">현재 가입 보험을 알려주면 중복 방지</div>
+      <div class="tip-body">이미 실손보험이 있다면 실손보험 재추천을 건너뜁니다. 불필요한 중복 가입을 방지할 수 있습니다.</div>
+      <div class="tip-example">"실손보험은 이미 있고, 암보험이랑 치아보험 추가로 뭐가 좋아?"</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-label">Tip 03</div>
+      <div class="tip-title">가족 상황을 포함하면 더 정확한 포트폴리오</div>
+      <div class="tip-body">기혼·자녀 유무에 따라 종신보험 비중과 교육비 준비 전략이 달라집니다.</div>
+      <div class="tip-example">"38세 기혼 남성, 자녀 2명, 월 20만원 보험 포트폴리오 짜줘"</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-label">Tip 04</div>
+      <div class="tip-title">건강 상태를 언급하면 맞춤 추천</div>
+      <div class="tip-body">고혈압·당뇨 등 기저질환이 있으면 일반심사 상품 대신 무심사·간편심사 상품을 우선 추천합니다.</div>
+      <div class="tip-example">"고혈압 약 먹고 있는데 가입 가능한 암보험 있어?"</div>
+    </div>
+  </div>
+
+  <h3>🔹 상품 비교 팁</h3>
+  <div class="tip-grid">
+    <div class="tip-card">
+      <div class="tip-label">Tip 05</div>
+      <div class="tip-title">갱신형 vs 비갱신형을 명확히 물어보세요</div>
+      <div class="tip-body">갱신형은 초기 보험료가 낮지만 5년·10년마다 인상됩니다. 비갱신형은 높지만 고정. 보험 유형별로 어느 쪽이 유리한지 물어보세요.</div>
+      <div class="tip-example">"50세 남성 실손보험, 갱신형이랑 비갱신형 중 뭐가 유리해?"</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-label">Tip 06</div>
+      <div class="tip-title">보험사 3~5개를 직접 지정해서 비교</div>
+      <div class="tip-body">전체 시장 조회보다 관심 있는 보험사를 지정하면 더 정확한 비교가 가능합니다.</div>
+      <div class="tip-example">"삼성화재, 현대해상, DB손해보험 치아보험 비교해줘"</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-label">Tip 07</div>
+      <div class="tip-title">특정 보장 항목을 요구하세요</div>
+      <div class="tip-body">뇌혈관·심장 담보, 간병인 일당, 임플란트 보장 등 필요한 항목을 명시하면 해당 보장이 포함된 상품을 우선 추천합니다.</div>
+      <div class="tip-example">"치아보험에서 임플란트 보장 되는 상품만 알려줘"</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-label">Tip 08</div>
+      <div class="tip-title">5세대 실손 전환 전 반드시 확인</div>
+      <div class="tip-body">기존 1~4세대 실손 보유자는 5세대로 전환 시 보장 범위가 달라집니다. 현재 가입된 세대를 알려주고 전환 득실을 물어보세요.</div>
+      <div class="tip-example">"3세대 실손 있는데 5세대로 바꾸는 게 이득이야?"</div>
+    </div>
+  </div>
+
+  <h3>🔹 포트폴리오 구성 팁</h3>
+  <div class="tip-grid">
+    <div class="tip-card">
+      <div class="tip-label">Tip 09</div>
+      <div class="tip-title">연령대별 우선순위를 물어보세요</div>
+      <div class="tip-body">30대: 종신+실손 기본 / 40대: 암·간병 추가 / 50대: 간병보험 비중 강화 / 60대: 치매보험 + 연금</div>
+      <div class="tip-example">"50대 진입 전 꼭 가입해야 할 보험이 뭐야?"</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-label">Tip 10</div>
+      <div class="tip-title">신용점수 포트폴리오 탭을 활용하세요</div>
+      <div class="tip-body">채팅 대신 신용점수 포트폴리오 탭에서 한 번에 개인화 포트폴리오를 생성하면 더 체계적인 결과를 얻을 수 있습니다.</div>
+      <div class="tip-example">탭 클릭 → 나이·예산·점수 입력 → 버튼 클릭</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-label">Tip 11</div>
+      <div class="tip-title">예산 초과 시 우선순위를 물어보세요</div>
+      <div class="tip-body">원하는 보험이 예산을 초과하면 "예산 내에서 우선순위를 정해줘"라고 추가 질문하세요.</div>
+      <div class="tip-example">"예산이 15만원인데 지금 추천 중에서 우선순위 3개만 뽑아줘"</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-label">Tip 12</div>
+      <div class="tip-title">직업을 알려주면 산업재해 대비 특약 추천</div>
+      <div class="tip-body">현장직·운전직 등은 재해사망·후유장해 특약이 중요합니다. 직업을 언급하면 직업 위험 등급에 맞는 상품을 추천합니다.</div>
+      <div class="tip-example">"건설업 종사자인데 산재 외에 개인 보험으로 뭐가 좋아?"</div>
+    </div>
+  </div>
+
+  <h3>🔹 고급 활용 팁</h3>
+  <div class="tip-grid">
+    <div class="tip-card">
+      <div class="tip-label">Tip 13</div>
+      <div class="tip-title">뉴스 기반 최신 이슈를 물어보세요</div>
+      <div class="tip-body">답변 끝에 자동으로 최신 뉴스가 첨부됩니다. 보험료 인상 예고, 제도 변경 등을 직접 물어볼 수도 있습니다.</div>
+      <div class="tip-example">"2026년 실손보험 보험료 인상 소식 있어?"</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-label">Tip 14</div>
+      <div class="tip-title">보험료 근거 데이터 출처를 확인하세요</div>
+      <div class="tip-body">모든 답변 끝의 <strong>📋 이 답변의 근거</strong> 표에서 보험료가 엑셀 공시 데이터 기반인지, AI 추정인지 확인하세요. ★★★★★가 가장 신뢰도 높음.</div>
+      <div class="tip-example">근거 표의 신뢰도 ★★★★★ = 보험다모아 공시 데이터</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-label">Tip 15</div>
+      <div class="tip-title">대화 맥락을 이어 질문하세요</div>
+      <div class="tip-body">이전 답변의 특정 보험사에 대해 추가 질문이 가능합니다. 대화를 초기화하지 않으면 맥락이 유지됩니다.</div>
+      <div class="tip-example">"방금 추천한 교보생명 암보험, 온라인 가입 방법도 알려줘"</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S7: 데이터 출처 ════════════════════════════════════════════ -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-icon">📊</div>
+    <div>
+      <div class="section-title">7. 데이터 출처 및 신뢰도</div>
+      <div class="section-desc">이 프로그램이 사용하는 데이터 소스 안내</div>
+    </div>
+  </div>
+
+  <table>
+    <tr><th>신뢰도</th><th>출처</th><th>설명</th><th>갱신 주기</th></tr>
+    <tr>
+      <td>★★★★★</td>
+      <td><strong>보험다모아 공시 엑셀</strong></td>
+      <td>보험협회가 공시하는 표준 보험료 XLS 파일. 연령·성별별 실제 보험료 포함</td>
+      <td>수동 갱신 (분기 1회 권장)</td>
+    </tr>
+    <tr>
+      <td>★★★★★</td>
+      <td><strong>FSS API (금융감독원)</strong></td>
+      <td>연금저축보험 전용 공식 API</td>
+      <td>실시간 (24h 캐시)</td>
+    </tr>
+    <tr>
+      <td>★★★★☆</td>
+      <td><strong>로컬 상품 DB</strong></td>
+      <td>주요 보험사 대표 상품 정적 데이터</td>
+      <td>코드 업데이트 시</td>
+    </tr>
+    <tr>
+      <td>★★★☆☆</td>
+      <td><strong>DuckDuckGo 웹 검색</strong></td>
+      <td>실시간 뉴스·보험료 비교 사이트. 날짜 미보장</td>
+      <td>실시간</td>
+    </tr>
+    <tr>
+      <td>★★★★☆</td>
+      <td><strong>보험 지식베이스</strong></td>
+      <td>보험 구조·약관·용어 설명 내장 데이터</td>
+      <td>스크립트로 재생성 가능</td>
+    </tr>
+  </table>
+
+  <div class="alert warning">
+    <div class="alert-icon">⚠️</div>
+    <div><strong>보험료 안내</strong>: 모든 보험료는 <strong>표준 가입 조건</strong>(건강체, 비흡연, 표준 직업군) 기준입니다. 실제 보험료는 건강 고지사항, 직업, 흡연 여부, 특약 구성에 따라 차이가 발생할 수 있습니다.</div>
+  </div>
+</div>
+
+<!-- ══ S8: FAQ ════════════════════════════════════════════════════ -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <div class="section-icon">❓</div>
+    <div>
+      <div class="section-title">8. 자주 묻는 질문 (FAQ)</div>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">API 키 없이도 사용할 수 있나요?</div>
+    <div class="faq-a">네. Mock 모드로 자동 전환됩니다. 로컬 정적 데이터를 이용한 샘플 응답을 생성하므로 보험 구조 파악·테스트 용도로는 충분합니다. 실제 맞춤형 상담은 Live 모드(API 키 필요)를 권장합니다.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">보험료 데이터는 얼마나 최신인가요?</div>
+    <div class="faq-a">프로젝트 루트에 넣어둔 XLS 파일 기준입니다. 파일명에 날짜가 표시됩니다. 최신 데이터는 보험다모아(e-insmarket.or.kr)에서 직접 다운로드 후 교체하면 됩니다. 보험료는 통상 분기별로 변경됩니다.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">신용점수 CDP 조회가 안 됩니다.</div>
+    <div class="faq-a">Chrome을 <code>--remote-debugging-port=9222</code> 옵션으로 실행하고, NICE 지키미 또는 올크레딧에 먼저 로그인한 상태에서 챗봇에서 "신용점수 조회해줘"라고 입력하세요. CDP 조회가 안 될 때는 신용점수 포트폴리오 탭에서 점수를 직접 입력하는 방식도 가능합니다.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">GPT-4o 비용이 얼마나 드나요?</div>
+    <div class="faq-a">일반 보험 상품 질문 1회에 약 $0.02~0.05 수준입니다. 포트폴리오 추천처럼 긴 응답은 $0.05~0.15 정도 소요됩니다. 비용이 부담스러우면 Mock 모드를 활용하거나, 쿼리를 간결하게 작성하세요.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">보험다모아 스크래핑 중 차단됐습니다.</div>
+    <div class="faq-a">mbuster 봇 차단 시스템으로 IP가 차단된 상태입니다. 수 시간~수일 후 자동 해제됩니다. 차단 중에도 로컬 엑셀 데이터로 챗봇은 정상 동작합니다. VPN 전환 또는 다른 PC에서 CDP 모드로 수집하는 방법을 사용하세요.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">치아보험 검색이 안 됩니다.</div>
+    <div class="faq-a"><code>data/dental_products.py</code>에는 <code>DENTAL_INSURANCE_PRODUCTS</code> 리스트만 있고 함수가 없습니다. 이미 정상 처리되도록 수정되어 있습니다. 만약 치아보험 엑셀 파일이 있다면 루트에 넣어두면 자동으로 인식됩니다.</div>
+  </div>
+</div>
+
+<!-- ══ S9: 문제 해결 ═════════════════════════════════════════════ -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <div class="section-icon">🔧</div>
+    <div>
+      <div class="section-title">9. 문제 해결</div>
+      <div class="section-desc">자주 발생하는 오류와 해결 방법</div>
+    </div>
+  </div>
+
+  <h3>서버 실행 오류</h3>
+  <table>
+    <tr><th>오류 메시지</th><th>원인</th><th>해결</th></tr>
+    <tr>
+      <td><code>ModuleNotFoundError: flask</code></td>
+      <td>패키지 미설치</td>
+      <td><code>pip install flask</code></td>
+    </tr>
+    <tr>
+      <td><code>Address already in use 5000</code></td>
+      <td>포트 충돌</td>
+      <td>run.bat 실행 시 자동 처리. 수동: <code>taskkill /f /im python.exe</code></td>
+    </tr>
+    <tr>
+      <td><code>cannot import 'get_all_dental_products'</code></td>
+      <td>dental_products.py 함수 없음</td>
+      <td>이미 수정됨. <code>DENTAL_INSURANCE_PRODUCTS</code> 리스트 직접 사용</td>
+    </tr>
+  </table>
+
+  <h3>보험다모아 스크래핑 문제</h3>
+  <div class="code-block">
+<span class="comment"># Chrome 디버깅 모드 실행</span>
+<span class="cmd">"C:\Program Files\Google\Chrome\Application\chrome.exe" ^
+    --remote-debugging-port=9222 ^
+    --user-data-dir="%TEMP%\ChromeDebug"</span>
+
+<span class="comment"># 보험다모아 수집 (CDP 모드)</span>
+<span class="cmd">python scripts/fetch_live_data.py --cdp</span>
+
+<span class="comment"># 디버그 HTML 저장 (선택자 확인용)</span>
+<span class="cmd">python scripts/fetch_live_data.py --cdp --debug</span></div>
+
+  <h3>ChromaDB / RAG 문제</h3>
+  <div class="code-block">
+<span class="comment"># 벡터 DB 재구축</span>
+<span class="cmd">python scripts/build_knowledge_from_excel.py --apply --rebuild</span>
+
+<span class="comment"># 또는 CLI에서</span>
+<span class="cmd">/rebuild</span></div>
+
+  <div class="alert success">
+    <div class="alert-icon">✅</div>
+    <div><strong>ChromaDB 없이도 작동</strong>: ChromaDB 미설치 시 키워드 기반 검색으로 자동 fallback 됩니다. 설치하지 않아도 기본 기능 사용에 지장 없습니다.</div>
+  </div>
+</div>
+
+</div><!-- .main -->
+
+<footer>
+  <p>보험 상담 AI 어시스턴트 v2.0 &nbsp;|&nbsp; GPT-4o + 보험다모아 + DuckDuckGo + 신용점수 통합</p>
+  <p style="margin-top:6px;font-size:12px;color:#94a3b8">이 프로그램은 정보 제공 목적이며, 실제 보험 계약의 효력을 갖지 않습니다. 보험 가입 전 반드시 약관을 확인하세요.</p>
+</footer>
+
+</body>
+</html>

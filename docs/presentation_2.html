@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>금융 AI 에이전트 기획안 — 보험 상담 AI 어시스턴트</title>
+<style>
+/* ══════════════════════════════════════════════
+   전체 기본값
+══════════════════════════════════════════════ */
+:root {
+  --blue:   #1d4ed8;
+  --blue2:  #2563eb;
+  --blue3:  #3b82f6;
+  --blight: #eff6ff;
+  --blighter: #f0f7ff;
+  --green:  #16a34a;
+  --glight: #dcfce7;
+  --red:    #dc2626;
+  --rlight: #fee2e2;
+  --yellow: #d97706;
+  --ylight: #fef3c7;
+  --dark:   #0f172a;
+  --text:   #1e293b;
+  --sub:    #475569;
+  --border: #e2e8f0;
+  --gray:   #f8fafc;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  /* PDF 인쇄 시 배경색·그라디언트 강제 출력 */
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+body {
+  font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+  background: #e8edf4;
+  color: var(--text);
+}
+
+/* ══════════════════════════════════════════════
+   슬라이드 공통 — 고정 높이 + 세로 중앙 레이아웃
+══════════════════════════════════════════════ */
+.slide {
+  width: 297mm;
+  height: 210mm;           /* 고정 A4 가로 높이 */
+  margin: 0 auto 12px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+}
+
+/* 슬라이드 번호 */
+.slide-num {
+  position: absolute;
+  bottom: 10mm;
+  right: 14mm;
+  font-size: 10px;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+}
+
+/* 인쇄 설정 */
+@page { size: A4 landscape; margin: 0; }
+@media print {
+  body { background: white; }
+  .slide { margin: 0; page-break-after: always; box-shadow: none; }
+  .slide:last-child { page-break-after: avoid; }
+
+  /* 배경색·그라디언트·이미지 강제 인쇄 */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* 커버 그라디언트 배경 명시 유지 */
+  .s1 {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 45%, #1d4ed8 80%, #3b82f6 100%) !important;
+    color: white !important;
+  }
+
+  /* 아키텍처 박스 색상 유지 */
+  .arch-box.ui   { background: #1d4ed8 !important; color: white !important; }
+  .arch-box.ai   { background: #7c3aed !important; color: white !important; }
+  .arch-box.tool { background: #0f766e !important; color: white !important; }
+  .arch-box.data { background: #b45309 !important; color: white !important; }
+  .arch-box.api  { background: #0891b2 !important; color: white !important; }
+
+  /* 슬라이드 헤더 배경 */
+  .slide-header { background: var(--blighter) !important; }
+
+  /* 카드 배경 */
+  .card.accent { background: var(--blight) !important; }
+  .card.green  { background: var(--glight) !important; }
+  .card.yellow { background: var(--ylight) !important; }
+  .card.red    { background: var(--rlight) !important; }
+
+  /* 주간 아이템 배경 */
+  .week-item.w1 { background: #eff6ff !important; }
+  .week-item.w2 { background: #f0fdf4 !important; }
+  .week-item.w3 { background: #fef3c7 !important; }
+  .week-item.w4 { background: #fff1f2 !important; }
+  .week-item.w5 { background: #f3e8ff !important; }
+
+  /* 테이블 헤더 */
+  .ptable th { background: var(--blue2) !important; color: white !important; }
+
+  /* 결론 배너 그라디언트 */
+  div[style*="linear-gradient(135deg,#1e3a8a"] {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb) !important;
+    color: white !important;
+  }
+
+  /* 데이터 소스 아이템 */
+  .ds-item.s1 { background: #eff6ff !important; }
+  .ds-item.s2 { background: #f0fdf4 !important; }
+  .ds-item.s3 { background: #fef3c7 !important; }
+  .ds-item.s4 { background: #f3e8ff !important; }
+
+  /* stat 박스 */
+  .stat-box { background: var(--blight) !important; }
+
+  /* flow 박스 활성 */
+  .flow-box.active { background: var(--blue2) !important; color: white !important; }
+
+  /* 문제 박스 */
+  .prob-box { background: linear-gradient(135deg, #fef3c7, #fde68a) !important; }
+}
+
+/* ══════════════════════════════════════════════
+   S1 커버
+══════════════════════════════════════════════ */
+.s1 {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 45%, #1d4ed8 80%, #3b82f6 100%);
+  color: white;
+  justify-content: center;
+  align-items: center;
+  padding: 16mm 24mm;
+  text-align: center;
+  gap: 0;
+}
+.s1-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 20px;
+  padding: 5px 18px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+.s1-title {
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+.s1-sub {
+  font-size: 16px;
+  opacity: 0.85;
+  margin-bottom: 22px;
+  line-height: 1.6;
+}
+.s1-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.s1-tag {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 14px;
+  padding: 4px 14px;
+  font-size: 12px;
+}
+.s1-meta {
+  font-size: 12px;
+  opacity: 0.6;
+  margin-top: 8px;
+}
+.s1-deco {
+  position: absolute;
+  right: -30px; top: -40px;
+  font-size: 200px;
+  opacity: 0.05;
+  line-height: 1;
+}
+
+/* ══════════════════════════════════════════════
+   슬라이드 헤더
+══════════════════════════════════════════════ */
+.slide-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 20mm;
+  border-bottom: 3px solid var(--blue2);
+  background: var(--blighter);
+  flex-shrink: 0;   /* 헤더는 압축되지 않음 */
+}
+.sh-icon { font-size: 24px; }
+.sh-qnum {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--blue2);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.sh-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--dark);
+}
+.sh-sub {
+  font-size: 12px;
+  color: var(--sub);
+  margin-top: 1px;
+}
+.sh-accent {
+  margin-left: auto;
+  background: var(--blue2);
+  color: white;
+  border-radius: 10px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ══════════════════════════════════════════════
+   슬라이드 본문 — 세로 가운데 정렬 핵심
+══════════════════════════════════════════════ */
+.slide-body {
+  flex: 1;
+  padding: 8mm 20mm;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* ★ 세로 중앙 정렬 */
+  gap: 10px;
+  overflow: hidden;
+}
+
+/* 2단 / 3단 그리드 — flex:1 제거하여 내용 크기에 맞게 */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.three-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+/* 카드 */
+.card {
+  background: var(--gray);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.card.accent { background: var(--blight); border-color: #bfdbfe; }
+.card.green  { background: var(--glight); border-color: #bbf7d0; }
+.card.yellow { background: var(--ylight); border-color: #fde68a; }
+.card.red    { background: var(--rlight); border-color: #fecaca; }
+.card.dark   { background: var(--dark);   color: white; }
+.card-icon { font-size: 20px; margin-bottom: 5px; }
+.card-title {
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 5px;
+  color: var(--dark);
+}
+.card.dark .card-title { color: white; }
+.card-body { font-size: 12px; color: var(--sub); line-height: 1.6; }
+.card.dark .card-body { color: #cbd5e1; }
+.card-body ul { padding-left: 15px; }
+.card-body li { margin: 2px 0; }
+.card-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--blue2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+}
+.card.green  .card-label { color: var(--green); }
+.card.yellow .card-label { color: var(--yellow); }
+.card.red    .card-label { color: var(--red); }
+
+/* 문제 박스 */
+.prob-box {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 2px solid #f59e0b;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.prob-icon { font-size: 22px; flex-shrink: 0; }
+.prob-text { font-size: 12.5px; line-height: 1.7; color: #78350f; }
+.prob-text strong { color: #92400e; }
+
+/* 흐름 다이어그램 */
+.flow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.flow-box {
+  flex: 1;
+  background: var(--blight);
+  border: 1.5px solid #93c5fd;
+  border-radius: 10px;
+  padding: 8px 10px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--blue);
+}
+.flow-box.active {
+  background: var(--blue2);
+  color: white;
+  border-color: var(--blue);
+}
+.flow-arrow {
+  font-size: 18px;
+  color: var(--blue3);
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+
+/* 테이블 */
+.ptable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.ptable th {
+  background: var(--blue2);
+  color: white;
+  padding: 7px 12px;
+  text-align: left;
+  font-weight: 700;
+}
+.ptable td {
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.ptable tr:nth-child(even) td { background: var(--gray); }
+
+/* 주간 타임라인 */
+.week-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.week-item {
+  flex: 1;
+  border-radius: 10px;
+  padding: 11px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.week-item.w1 { background: #eff6ff; border: 1.5px solid #93c5fd; }
+.week-item.w2 { background: #f0fdf4; border: 1.5px solid #86efac; }
+.week-item.w3 { background: #fef3c7; border: 1.5px solid #fcd34d; }
+.week-item.w4 { background: #fff1f2; border: 1.5px solid #fca5a5; }
+.week-item.w5 { background: #f3e8ff; border: 1.5px solid #c4b5fd; }
+.week-num {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.week-item.w1 .week-num { color: #1d4ed8; }
+.week-item.w2 .week-num { color: #16a34a; }
+.week-item.w3 .week-num { color: #d97706; }
+.week-item.w4 .week-num { color: #dc2626; }
+.week-item.w5 .week-num { color: #7c3aed; }
+.week-title { font-size: 12px; font-weight: 800; color: var(--dark); line-height: 1.3; }
+.week-tasks { font-size: 10.5px; color: var(--sub); line-height: 1.75; padding-left: 12px; }
+.week-deliverable {
+  margin-top: auto;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 6px;
+  text-align: center;
+}
+.week-item.w1 .week-deliverable { background: #dbeafe; color: #1d4ed8; }
+.week-item.w2 .week-deliverable { background: #dcfce7; color: #16a34a; }
+.week-item.w3 .week-deliverable { background: #fef9c3; color: #ca8a04; }
+.week-item.w4 .week-deliverable { background: #ffe4e6; color: #dc2626; }
+.week-item.w5 .week-deliverable { background: #ede9fe; color: #7c3aed; }
+
+/* 아키텍처 다이어그램 */
+.arch {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.arch-layer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.arch-label {
+  width: 28mm;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--sub);
+  text-align: right;
+  flex-shrink: 0;
+}
+.arch-boxes {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+}
+.arch-box {
+  flex: 1;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.3;
+}
+.arch-box.ui   { background: #1d4ed8; color: white; }
+.arch-box.api  { background: #0891b2; color: white; }
+.arch-box.ai   { background: #7c3aed; color: white; }
+.arch-box.tool { background: #0f766e; color: white; }
+.arch-box.data { background: #b45309; color: white; }
+.arch-box.light { background: var(--gray); border: 1px solid var(--border); color: var(--sub); }
+.arch-arrow { text-align: center; font-size: 14px; color: #94a3b8; }
+
+/* 데이터 소스 표 */
+.ds-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.ds-item {
+  flex: 1;
+  border-radius: 10px;
+  padding: 11px 13px;
+  border-left: 4px solid transparent;
+}
+.ds-item.s1 { background: #eff6ff; border-color: #2563eb; }
+.ds-item.s2 { background: #f0fdf4; border-color: #16a34a; }
+.ds-item.s3 { background: #fef3c7; border-color: #d97706; }
+.ds-item.s4 { background: #f3e8ff; border-color: #7c3aed; }
+.ds-item.s5 { background: var(--gray); border-color: #64748b; }
+.ds-name { font-size: 12.5px; font-weight: 800; margin-bottom: 4px; color: var(--dark); }
+.ds-desc { font-size: 11px; color: var(--sub); line-height: 1.5; }
+.ds-badge {
+  display: inline-block;
+  font-size: 10px; font-weight: 700;
+  padding: 2px 7px; border-radius: 8px; margin-top: 5px;
+}
+.ds-item.s1 .ds-badge { background: #dbeafe; color: #1d4ed8; }
+.ds-item.s2 .ds-badge { background: #dcfce7; color: #16a34a; }
+.ds-item.s3 .ds-badge { background: #fef9c3; color: #ca8a04; }
+.ds-item.s4 .ds-badge { background: #ede9fe; color: #7c3aed; }
+.ds-item.s5 .ds-badge { background: #f1f5f9; color: #475569; }
+
+/* 하이라이트 수치 */
+.stat-row {
+  display: flex;
+  gap: 10px;
+}
+.stat-box {
+  flex: 1;
+  text-align: center;
+  padding: 12px 10px;
+  border-radius: 12px;
+  background: var(--blight);
+  border: 1.5px solid #bfdbfe;
+}
+.stat-num { font-size: 26px; font-weight: 900; color: var(--blue2); line-height: 1; }
+.stat-unit { font-size: 13px; font-weight: 700; color: var(--blue2); }
+.stat-label { font-size: 11px; color: var(--sub); margin-top: 4px; }
+
+/* 결론 슬라이드 */
+.conclusion-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+.c-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: var(--gray);
+  border-radius: 12px;
+  padding: 14px 12px;
+  border: 1px solid var(--border);
+  gap: 6px;
+}
+.c-item .c-icon { font-size: 28px; }
+.c-item .c-title { font-size: 13px; font-weight: 800; color: var(--dark); }
+.c-item .c-desc { font-size: 11.5px; color: var(--sub); line-height: 1.55; }
+
+/* 목차 */
+.toc-items {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.toc-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 18px;
+  background: var(--gray);
+  border-radius: 10px;
+  border-left: 4px solid var(--border);
+}
+.toc-item.active { background: var(--blight); border-color: var(--blue2); }
+.toc-q { font-size: 11px; font-weight: 700; color: var(--blue2); width: 14mm; flex-shrink: 0; }
+.toc-title { font-size: 13.5px; font-weight: 800; color: var(--dark); flex: 1; }
+.toc-subtitle { font-size: 11.5px; color: var(--sub); }
+.toc-slide { font-size: 11px; color: #94a3b8; margin-left: auto; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 1 — 커버
+══════════════════════════════════════════ -->
+<div class="slide s1">
+  <div class="s1-deco">🛡️</div>
+  <div class="s1-badge">WEEK 06–10 금융 AI 에이전트 기획안</div>
+  <div class="s1-title">보험 상담 AI 어시스턴트</div>
+  <div class="s1-sub">
+    GPT-4o + 보험다모아 공시 데이터 + 실시간 웹 검색 + 신용점수<br>
+    5주 만에 완성하는 개인 맞춤형 보험 포트폴리오 추천 에이전트
+  </div>
+  <div class="s1-tags">
+    <span class="s1-tag">🤖 GPT-4o Tool Calling</span>
+    <span class="s1-tag">📊 RAG (ChromaDB)</span>
+    <span class="s1-tag">🌐 실시간 웹 검색</span>
+    <span class="s1-tag">💳 신용점수 통합</span>
+    <span class="s1-tag">📑 보험다모아 공시자료</span>
+    <span class="s1-tag">🖥️ Flask SSE 스트리밍</span>
+  </div>
+  <div class="s1-meta">2026년 6월 &nbsp;|&nbsp; 금융 AI 에이전트 실습 과제</div>
+  <div class="slide-num">1 / 10</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 2 — 목차
+══════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="sh-icon">📋</div>
+    <div>
+      <div class="sh-qnum">Contents</div>
+      <div class="sh-title">기획 목차</div>
+      <div class="sh-sub">5가지 핵심 질문으로 구성된 금융 AI 에이전트 기획</div>
+    </div>
+  </div>
+  <div class="slide-body">
+    <div class="toc-items">
+      <div class="toc-item">
+        <div class="toc-q">Q1</div>
+        <div>
+          <div class="toc-title">어떤 문제를 해결하려는가?</div>
+          <div class="toc-subtitle">보험 정보의 비대칭성 — 복잡한 보험을 쉽게 비교·추천</div>
+        </div>
+        <div class="toc-slide">Slide 3</div>
+      </div>
+      <div class="toc-item">
+        <div class="toc-q">Q2</div>
+        <div>
+          <div class="toc-title">누가 사용하는가?</div>
+          <div class="toc-subtitle">보험 비교·가입을 고민하는 30~60대 개인 사용자</div>
+        </div>
+        <div class="toc-slide">Slide 4</div>
+      </div>
+      <div class="toc-item">
+        <div class="toc-q">Q3</div>
+        <div>
+          <div class="toc-title">AI가 어떤 역할을 수행하는가?</div>
+          <div class="toc-subtitle">오케스트레이터 + 도구 호출 + 서브에이전트 3계층 구조</div>
+        </div>
+        <div class="toc-slide">Slide 5–6</div>
+      </div>
+      <div class="toc-item">
+        <div class="toc-q">Q4</div>
+        <div>
+          <div class="toc-title">어떤 데이터를 사용할 것인가?</div>
+          <div class="toc-subtitle">보험다모아 공시자료 / FSS API / 웹 검색 / 신용점수</div>
+        </div>
+        <div class="toc-slide">Slide 7</div>
+      </div>
+      <div class="toc-item">
+        <div class="toc-q">Q5</div>
+        <div>
+          <div class="toc-title">어떻게 구현할 것인가?</div>
+          <div class="toc-subtitle">5주 로드맵 + 기술 스택 + 예상 구현 결과</div>
+        </div>
+        <div class="toc-slide">Slide 8–9</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">2 / 10</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 3 — Q1 문제 정의
+══════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="sh-icon">🎯</div>
+    <div>
+      <div class="sh-qnum">Question 01</div>
+      <div class="sh-title">어떤 문제를 해결하려는가?</div>
+      <div class="sh-sub">보험 시장의 정보 비대칭 문제</div>
+    </div>
+    <div class="sh-accent">Problem Definition</div>
+  </div>
+  <div class="slide-body">
+    <div class="prob-box">
+      <div class="prob-icon">💡</div>
+      <div class="prob-text">
+        한국 보험 시장 규모는 <strong>200조 원 이상</strong>이지만, 소비자는 수백 개 상품을 직접 비교해야 하고
+        설계사에게 의존하면 <strong>수수료 구조로 인한 편향 추천</strong>이 발생합니다.
+        공시 데이터는 존재하지만 <strong>비전문가가 해석하기 어렵습니다.</strong>
+      </div>
+    </div>
+    <div class="two-col" style="gap:10px;">
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div class="card yellow">
+          <div class="card-label">Pain Point 1</div>
+          <div class="card-title">🔍 정보 과부하</div>
+          <div class="card-body">생명보험·손보사 합산 <strong>수천 개</strong> 상품. 보험다모아·보험사 홈페이지를 직접 비교하려면 수십 시간 소요</div>
+        </div>
+        <div class="card red">
+          <div class="card-label">Pain Point 2</div>
+          <div class="card-title">📉 갱신형 함정</div>
+          <div class="card-body">갱신형 보험은 초기 보험료가 낮아 보이지만 5~10년 후 <strong>2~5배 인상</strong>. 소비자가 장기 비용을 예측하기 어려움</div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div class="card accent">
+          <div class="card-label">Pain Point 3</div>
+          <div class="card-title">💳 신용도별 맞춤 전략 부재</div>
+          <div class="card-body">신용점수에 따라 가입 가능한 보험이 다름. 일반 심사 통과 불가 시 <strong>무심사 상품</strong>으로 전환 필요하나 안내 부족</div>
+        </div>
+        <div class="card green">
+          <div class="card-label">Solution</div>
+          <div class="card-title">🤖 AI 중립 상담사</div>
+          <div class="card-body">수수료 이해관계 없이 <strong>공시 데이터 기반</strong> 중립적 비교·추천. 신용점수·나이·예산을 통합 반영한 포트폴리오 제안</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">3 / 10</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 4 — Q2 사용자
+══════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="sh-icon">👥</div>
+    <div>
+      <div class="sh-qnum">Question 02</div>
+      <div class="sh-title">누가 사용하는가?</div>
+      <div class="sh-sub">보험 비교·가입을 스스로 결정하고 싶은 소비자</div>
+    </div>
+    <div class="sh-accent">Target Users</div>
+  </div>
+  <div class="slide-body">
+    <div class="three-col">
+      <div class="card accent">
+        <div class="card-icon">👨‍💼</div>
+        <div class="card-label">Primary User</div>
+        <div class="card-title">30~40대 직장인</div>
+        <div class="card-body">
+          <ul>
+            <li>결혼·출산 후 보험 필요성 인지</li>
+            <li>설계사 추천보다 직접 비교 선호</li>
+            <li>스마트폰·PC에 익숙</li>
+            <li>월 10~20만원 예산 보유</li>
+          </ul>
+          <br>
+          <strong>니즈:</strong> 실손+암+종신 패키지 비교
+        </div>
+      </div>
+      <div class="card yellow">
+        <div class="card-icon">🧓</div>
+        <div class="card-label">Secondary User</div>
+        <div class="card-title">50~60대 은퇴 준비층</div>
+        <div class="card-body">
+          <ul>
+            <li>간병·치매보험 필요성 증가</li>
+            <li>연금 전환·저축보험 관심</li>
+            <li>신용점수 양호한 경우 많음</li>
+            <li>기존 보험 리모델링 니즈</li>
+          </ul>
+          <br>
+          <strong>니즈:</strong> 노후 보장 포트폴리오
+        </div>
+      </div>
+      <div class="card green">
+        <div class="card-icon">📱</div>
+        <div class="card-label">Use Case</div>
+        <div class="card-title">사용 시나리오</div>
+        <div class="card-body">
+          <ul>
+            <li>"암보험 어느 회사 제일 저렴해?"</li>
+            <li>"실손 4세대 5세대 차이가 뭐야?"</li>
+            <li>"내 신용점수로 어떤 보험 유리해?"</li>
+            <li>"50대 남성 포트폴리오 짜줘"</li>
+            <li>"고혈압인데 가입 가능한 보험?"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-box">
+        <div><span class="stat-num">200</span><span class="stat-unit">조+</span></div>
+        <div class="stat-label">국내 보험료 수입 규모</div>
+      </div>
+      <div class="stat-box">
+        <div><span class="stat-num">4,200</span><span class="stat-unit">만</span></div>
+        <div class="stat-label">보험 가입 건수 (생명+손보)</div>
+      </div>
+      <div class="stat-box">
+        <div><span class="stat-num">73</span><span class="stat-unit">%</span></div>
+        <div class="stat-label">보험 불만족 이유: "비교 어려움"</div>
+      </div>
+      <div class="stat-box">
+        <div><span class="stat-num">0</span><span class="stat-unit">원</span></div>
+        <div class="stat-label">AI 상담 수수료 (설계사 대비)</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">4 / 10</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 5 — Q3 AI 역할 (구조)
+══════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="sh-icon">🤖</div>
+    <div>
+      <div class="sh-qnum">Question 03</div>
+      <div class="sh-title">AI가 어떤 역할을 수행하는가? — 시스템 구조</div>
+      <div class="sh-sub">3계층 에이전트 + 5가지 전문 도구</div>
+    </div>
+    <div class="sh-accent">AI Architecture</div>
+  </div>
+  <div class="slide-body">
+    <div class="arch">
+      <div class="arch-layer">
+        <div class="arch-label">사용자 인터페이스</div>
+        <div class="arch-boxes">
+          <div class="arch-box ui">💬 보험 상담 채팅<br><span style="font-weight:400;font-size:10px">SSE 스트리밍</span></div>
+          <div class="arch-box ui">💳 신용점수 포트폴리오<br><span style="font-weight:400;font-size:10px">폼 입력 → 결과</span></div>
+          <div class="arch-box ui">🔄 Live / Mock 모드<br><span style="font-weight:400;font-size:10px">자동 전환</span></div>
+        </div>
+      </div>
+      <div class="arch-arrow">▼</div>
+      <div class="arch-layer">
+        <div class="arch-label">오케스트레이터</div>
+        <div class="arch-boxes">
+          <div class="arch-box ai" style="flex:3">🧠 GPT-4o 오케스트레이터 (agents/orchestrator.py)<br>
+            <span style="font-weight:400;font-size:10px">Tool Calling 루프 · 날짜 동적 주입 · 답변 근거 자동 생성</span></div>
+          <div class="arch-box ai" style="flex:2">🎯 추천 서브에이전트<br>
+            <span style="font-weight:400;font-size:10px">연령별 포트폴리오 GPT-4o</span></div>
+        </div>
+      </div>
+      <div class="arch-arrow">▼</div>
+      <div class="arch-layer">
+        <div class="arch-label">전문 도구 (Tools)</div>
+        <div class="arch-boxes">
+          <div class="arch-box tool">📊 공시자료 검색<br><span style="font-weight:400;font-size:10px">보험다모아 공시</span></div>
+          <div class="arch-box tool">🌐 웹 검색<br><span style="font-weight:400;font-size:10px">실시간 뉴스</span></div>
+          <div class="arch-box tool">🔍 RAG 검색<br><span style="font-weight:400;font-size:10px">ChromaDB</span></div>
+          <div class="arch-box tool">💳 신용점수<br><span style="font-weight:400;font-size:10px">CDP 스크래핑</span></div>
+          <div class="arch-box tool">📈 FSS API<br><span style="font-weight:400;font-size:10px">연금저축</span></div>
+        </div>
+      </div>
+      <div class="arch-arrow">▼</div>
+      <div class="arch-layer">
+        <div class="arch-label">데이터 소스</div>
+        <div class="arch-boxes">
+          <div class="arch-box data">보험다모아<br>공시자료</div>
+          <div class="arch-box data">실시간<br>웹 뉴스</div>
+          <div class="arch-box data">FSS<br>금융감독원</div>
+          <div class="arch-box data">NICE / KCB<br>신용점수</div>
+          <div class="arch-box data">로컬<br>상품 DB</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">5 / 10</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 6 — Q3 AI 역할 (도구 흐름)
+══════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="sh-icon">⚙️</div>
+    <div>
+      <div class="sh-qnum">Question 03 — Detail</div>
+      <div class="sh-title">AI 도구 호출 흐름 및 답변 구조</div>
+      <div class="sh-sub">도구 우선순위 전략과 자동 보강 메커니즘</div>
+    </div>
+    <div class="sh-accent">Tool Calling Flow</div>
+  </div>
+  <div class="slide-body">
+    <div style="display:flex; gap:16px;">
+      <div style="flex:1; display:flex; flex-direction:column; gap:8px;">
+        <div style="font-size:13px; font-weight:800; color:var(--blue); margin-bottom:2px;">📌 도구 호출 우선순위</div>
+        <div class="card accent" style="padding:9px 13px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+            <span style="background:#1d4ed8;color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">1</span>
+            <span style="font-size:13px;font-weight:700;">search_insmarket_products</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--sub);padding-left:28px;">보험다모아 공시자료 → <strong>★★★★★</strong> 실제 공시 보험료</div>
+        </div>
+        <div class="card" style="padding:9px 13px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+            <span style="background:#0891b2;color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">2</span>
+            <span style="font-size:13px;font-weight:700;">search_web + fetch_webpage</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--sub);padding-left:28px;">실시간 웹 검색 → <strong>★★★☆☆</strong> 최신 뉴스</div>
+        </div>
+        <div class="card" style="padding:9px 13px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+            <span style="background:#7c3aed;color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">3</span>
+            <span style="font-size:13px;font-weight:700;">search_insurance_products</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--sub);padding-left:28px;">로컬 상품 DB → <strong>★★★★☆</strong> 안정적 fallback</div>
+        </div>
+        <div class="card" style="padding:9px 13px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+            <span style="background:#64748b;color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">4</span>
+            <span style="font-size:13px;font-weight:700;">retrieve_insurance_knowledge</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--sub);padding-left:28px;">ChromaDB RAG → <strong>★★★★☆</strong> 보험 구조 설명</div>
+        </div>
+      </div>
+      <div style="flex:1; display:flex; flex-direction:column; gap:8px;">
+        <div style="font-size:13px; font-weight:800; color:var(--blue); margin-bottom:2px;">📤 자동 답변 보강 구조</div>
+        <table class="ptable" style="font-size:12px;">
+          <tr>
+            <th>단계</th><th>자동 생성 내용</th>
+          </tr>
+          <tr>
+            <td>① 본문</td>
+            <td>보험 추천·비교·설명 (GPT-4o)</td>
+          </tr>
+          <tr>
+            <td>② 뉴스</td>
+            <td>📰 관련 최신 뉴스 2~3개 자동 첨부</td>
+          </tr>
+          <tr>
+            <td>③ 근거</td>
+            <td>📋 출처·신뢰도 표 자동 생성</td>
+          </tr>
+          <tr>
+            <td>④ 주의</td>
+            <td>보험료 기준 조건·실제 확인 안내</td>
+          </tr>
+        </table>
+        <div class="card green" style="padding:11px 13px; margin-top:4px;">
+          <div class="card-label">핵심 기술</div>
+          <div class="card-title">동적 날짜 주입 + 신용점수 반영</div>
+          <div class="card-body">
+            매 요청마다 오늘 날짜를 시스템 프롬프트에 자동 주입<br>
+            → 웹 검색 쿼리에 2025/2026 연도 자동 포함<br>
+            → 신용점수 5등급별 차별화 포트폴리오 구성
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">6 / 10</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 7 — Q4 데이터
+══════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="sh-icon">📊</div>
+    <div>
+      <div class="sh-qnum">Question 04</div>
+      <div class="sh-title">어떤 데이터를 사용할 것인가?</div>
+      <div class="sh-sub">공식 공시 데이터 + 실시간 웹 + 신용평가 기관 통합</div>
+    </div>
+    <div class="sh-accent">Data Sources</div>
+  </div>
+  <div class="slide-body">
+    <div class="ds-row">
+      <div class="ds-item s1">
+        <div class="ds-name">📊 보험다모아 공시자료</div>
+        <div class="ds-desc">보험협회(생명+손해) 공동 운영 e-insmarket.or.kr에서 제공하는 표준 보험료 공시 파일. 연령·성별별 실제 납입 보험료 포함. 종신·실손·암·치아·간병보험 커버.</div>
+        <div class="ds-badge">★★★★★ 공식 공시</div>
+      </div>
+      <div class="ds-item s2">
+        <div class="ds-name">🏛️ FSS 금융감독원 API</div>
+        <div class="ds-desc">finlife.fss.or.kr 공식 Open API. 연금저축보험 상품 데이터 실시간 조회. 무료 신청 (당일~익일 승인). 24h 캐시로 API 호출 최소화.</div>
+        <div class="ds-badge">★★★★★ 정부 공식 API</div>
+      </div>
+      <div class="ds-item s3">
+        <div class="ds-name">🌐 실시간 웹 검색</div>
+        <div class="ds-desc">실시간 뉴스·비교 정보 검색. API 키 불필요. 2025/2026 연도 키워드 자동 포함으로 최신 정보 우선 수집.</div>
+        <div class="ds-badge">★★★☆☆ 실시간 검색</div>
+      </div>
+    </div>
+    <div class="ds-row" style="margin-top:8px;">
+      <div class="ds-item s4">
+        <div class="ds-name">💳 NICE / KCB 신용점수</div>
+        <div class="ds-desc">Chrome CDP 모드로 NICE 지키미(credit.co.kr) 또는 올크레딧(allcredit.co.kr)에서 실시간 스크래핑. 또는 사용자가 토스·카카오페이에서 확인 후 직접 입력. NICE·KCB 동시 입력 시 평균 산출.</div>
+        <div class="ds-badge">★★★★★ 실시간 / 직접 입력</div>
+      </div>
+      <div class="ds-item s5">
+        <div class="ds-name">📚 보험 지식베이스 (RAG)</div>
+        <div class="ds-desc">실손·암·종신·연금보험 구조·약관·용어 설명 내장 데이터. ChromaDB 벡터 DB로 인덱싱. 공시자료에서 자동 생성 스크립트 포함.</div>
+        <div class="ds-badge">★★★★☆ 내장 지식</div>
+      </div>
+      <div class="ds-item s5" style="border-color:#0891b2; background:#f0feff;">
+        <div class="ds-name">🔄 보험다모아 실시간 스크래핑</div>
+        <div class="ds-desc">Playwright CDP 모드로 e-insmarket.or.kr 직접 수집. mbuster 봇 차단 우회. 30/40/50세 × 남/여 6가지 조합 사전 수집 후 24h 캐시. 공시자료 보완 데이터.</div>
+        <div class="ds-badge" style="background:#cffafe;color:#0891b2;">★★★★☆ CDP 스크래핑</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">7 / 10</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 8 — Q5 구현 방법 (5주 로드맵)
+══════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="sh-icon">🗓️</div>
+    <div>
+      <div class="sh-qnum">Question 05</div>
+      <div class="sh-title">어떻게 구현할 것인가? — 5주 구현 로드맵</div>
+      <div class="sh-sub">WEEK 06~10 단계별 빌드업 전략</div>
+    </div>
+    <div class="sh-accent">Implementation Plan</div>
+  </div>
+  <div class="slide-body">
+    <div class="week-row">
+      <div class="week-item w1">
+        <div class="week-num">WEEK 06</div>
+        <div class="week-title">기반 구조<br>+ GPT-4o 연동</div>
+        <ul class="week-tasks">
+          <li>Flask 웹 서버 구축</li>
+          <li>OpenAI API Tool Calling 루프</li>
+          <li>로컬 정적 상품 DB 구성</li>
+          <li>Mock / Live 모드 전환</li>
+          <li>기본 채팅 UI 구현</li>
+        </ul>
+        <div class="week-deliverable">채팅 가능한 MVP</div>
+      </div>
+      <div class="week-item w2">
+        <div class="week-num">WEEK 07</div>
+        <div class="week-title">RAG 구현<br>+ 지식베이스</div>
+        <ul class="week-tasks">
+          <li>ChromaDB 벡터 DB 구축</li>
+          <li>보험 지식 데이터 임베딩</li>
+          <li>검색 도구 연동</li>
+          <li>FSS API 클라이언트 구현</li>
+          <li>실시간 웹 검색 도구</li>
+        </ul>
+        <div class="week-deliverable">RAG + 실시간 검색</div>
+      </div>
+      <div class="week-item w3">
+        <div class="week-num">WEEK 08</div>
+        <div class="week-title">공시자료 통합<br>+ SSE 스트리밍</div>
+        <ul class="week-tasks">
+          <li>보험다모아 공시자료 파싱</li>
+          <li>연령/성별 필터 로직</li>
+          <li>Flask SSE 스트리밍 구현</li>
+          <li>도구 단계 UI 표시</li>
+          <li>답변 근거 표 자동 생성</li>
+        </ul>
+        <div class="week-deliverable">실시간 스트리밍 UI</div>
+      </div>
+      <div class="week-item w4">
+        <div class="week-num">WEEK 09</div>
+        <div class="week-title">신용점수<br>+ 포트폴리오</div>
+        <ul class="week-tasks">
+          <li>신용점수 5등급 모델</li>
+          <li>CDP 스크래핑 구현</li>
+          <li>연령별 포트폴리오 가이드</li>
+          <li>서브에이전트 구현</li>
+          <li>신용점수 포트폴리오 탭</li>
+        </ul>
+        <div class="week-deliverable">맞춤 포트폴리오</div>
+      </div>
+      <div class="week-item w5">
+        <div class="week-num">WEEK 10</div>
+        <div class="week-title">고도화<br>+ 발표 준비</div>
+        <ul class="week-tasks">
+          <li>최신 뉴스 자동 첨부</li>
+          <li>사용 설명서(HTML) 작성</li>
+          <li>run.bat 원클릭 실행</li>
+          <li>버그 수정 및 안정화</li>
+          <li>데모 시나리오 준비</li>
+        </ul>
+        <div class="week-deliverable">최종 발표 버전</div>
+      </div>
+    </div>
+    <div style="margin-top:8px;">
+      <div class="flow">
+        <div class="flow-box">MVP<br><span style="font-weight:400;font-size:10px">WK06</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">RAG 탑재<br><span style="font-weight:400;font-size:10px">WK07</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box active">실시간 데이터<br><span style="font-weight:400;font-size:10px">WK08</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">개인화<br><span style="font-weight:400;font-size:10px">WK09</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">완성<br><span style="font-weight:400;font-size:10px">WK10</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">8 / 10</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 9 — 기술 스택 + 예상 구현 결과
+══════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="sh-icon">🛠️</div>
+    <div>
+      <div class="sh-qnum">Question 05 — Detail</div>
+      <div class="sh-title">기술 스택 및 예상 구현 결과</div>
+      <div class="sh-sub">선택 이유와 예상 구현 주요 기능</div>
+    </div>
+    <div class="sh-accent">Tech Stack</div>
+  </div>
+  <div class="slide-body">
+    <div class="two-col">
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div style="font-size:13px; font-weight:800; color:var(--blue); margin-bottom:2px;">🔧 기술 스택 선택 이유</div>
+        <table class="ptable">
+          <tr><th>기술</th><th>선택 이유</th></tr>
+          <tr><td><strong>GPT-4o</strong></td><td>Tool Calling 기능 + 한국어 최고 성능</td></tr>
+          <tr><td><strong>Flask + SSE</strong></td><td>경량 서버, 스트리밍 구현 용이</td></tr>
+          <tr><td><strong>ChromaDB</strong></td><td>로컬 설치, pip install 1줄, 빠른 구축</td></tr>
+          <tr><td><strong>실시간 웹 검색</strong></td><td>API 키 불필요, 한국어 검색 지원</td></tr>
+          <tr><td><strong>공시자료 파싱</strong></td><td>보험다모아 공시 포맷 직접 파싱</td></tr>
+          <tr><td><strong>Playwright CDP</strong></td><td>mbuster 봇 차단 우회 필수</td></tr>
+        </table>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div style="font-size:13px; font-weight:800; color:var(--blue); margin-bottom:2px;">🎯 예상 구현 주요 기능</div>
+        <div class="card accent" style="padding:10px 14px;">
+          <div class="card-body">
+            <ul style="font-size:12px;">
+              <li>GPT-4o Tool Calling 8가지 도구 연동</li>
+              <li>SSE 실시간 스트리밍 + 도구 단계 표시</li>
+              <li>보험다모아 공시자료 자동 파싱·캐시</li>
+              <li>실시간 웹 검색</li>
+              <li>ChromaDB RAG (+ 키워드 fallback)</li>
+              <li>FSS API 연금저축보험 조회</li>
+              <li>신용점수 5등급 모델 + 포트폴리오</li>
+              <li>NICE/KCB CDP 스크래핑</li>
+              <li>신용점수 직접 입력 탭 UI</li>
+              <li>최신 뉴스 자동 첨부</li>
+              <li>답변 근거·신뢰도 표 자동 생성</li>
+              <li>run.bat 원클릭 실행</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card yellow" style="padding:10px 14px;">
+          <div class="card-label">추후 추가 예정</div>
+          <div class="card-body" style="font-size:12px;">
+            기술 스택 상세 및 실제 구현 결과는 개발 완료 후 업데이트 예정
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">9 / 10</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+  SLIDE 10 — 결론
+══════════════════════════════════════════ -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="sh-icon">🎯</div>
+    <div>
+      <div class="sh-qnum">Conclusion</div>
+      <div class="sh-title">핵심 가치 및 차별점 요약</div>
+      <div class="sh-sub">5주 만에 완성 예정인 금융 AI 에이전트가 제공할 가치</div>
+    </div>
+    <div class="sh-accent">Summary</div>
+  </div>
+  <div class="slide-body">
+    <div class="conclusion-grid">
+      <div class="c-item">
+        <div class="c-icon">📊</div>
+        <div class="c-title">공식 데이터 기반</div>
+        <div class="c-desc">보험다모아(보험협회 공식)·FSS(금융감독원) 공시 데이터로 신뢰할 수 있는 보험료 제공. 출처와 신뢰도를 모든 답변에 명시.</div>
+      </div>
+      <div class="c-item">
+        <div class="c-icon">🤖</div>
+        <div class="c-title">멀티 도구 에이전트</div>
+        <div class="c-desc">단순 챗봇이 아닌 8가지 전문 도구를 자율적으로 선택·조합하는 Tool Calling 에이전트. 상황에 따라 최적 데이터 소스 자동 선택.</div>
+      </div>
+      <div class="c-item">
+        <div class="c-icon">💳</div>
+        <div class="c-title">신용점수 개인화</div>
+        <div class="c-desc">NICE/KCB 5등급 신용 모델로 개인 신용도에 맞는 보험 포트폴리오 차별화. 무심사·간편심사 상품까지 통합 추천.</div>
+      </div>
+      <div class="c-item">
+        <div class="c-icon">⚡</div>
+        <div class="c-title">실시간 스트리밍</div>
+        <div class="c-desc">Flask SSE로 GPT-4o 답변을 토큰 단위로 즉시 출력. 도구 호출 단계(검색 중, 분석 중)를 UI에 실시간 표시하여 투명한 처리 과정 공개.</div>
+      </div>
+      <div class="c-item">
+        <div class="c-icon">🔄</div>
+        <div class="c-title">Graceful Fallback</div>
+        <div class="c-desc">API 키 없으면 Mock 모드, 스크래핑 차단되면 로컬 공시자료, ChromaDB 없으면 키워드 검색. 어떤 환경에서도 동작하는 다중 fallback 체계.</div>
+      </div>
+      <div class="c-item">
+        <div class="c-icon">📈</div>
+        <div class="c-title">확장 가능 구조</div>
+        <div class="c-desc">새 도구(Tool)를 추가하면 오케스트레이터가 자동으로 활용. 보험 외 금융 상품(대출·펀드)으로 확장 가능한 에이전트 아키텍처.</div>
+      </div>
+    </div>
+    <div style="background:linear-gradient(135deg,#1e3a8a,#2563eb);color:white;border-radius:12px;padding:13px 20px;margin-top:8px;display:flex;align-items:center;gap:16px;">
+      <div style="font-size:22px;">🛡️</div>
+      <div style="flex:1;">
+        <div style="font-size:13.5px;font-weight:800;margin-bottom:3px;">보험 상담 AI 어시스턴트 — 핵심 한 줄 요약</div>
+        <div style="font-size:12.5px;opacity:0.9;">"수수료 없는 중립적 AI 보험 상담사 — 공식 공시 데이터 + 실시간 검색 + 개인 신용점수를 결합해 5주 만에 구현 예정"</div>
+      </div>
+      <div style="text-align:right;font-size:11.5px;opacity:0.7;">WEEK 06–10<br>금융 AI 에이전트</div>
+    </div>
+  </div>
+  <div class="slide-num">10 / 10</div>
+</div>
+
+<div style="text-align:center;padding:16px;font-size:12px;color:#94a3b8;">
+  브라우저에서 <strong>Ctrl+P → PDF로 저장</strong> &nbsp;|&nbsp; 인쇄 설정: <strong>A4 가로 방향, 여백 없음</strong>
+</div>
+
+</body>
+</html>
