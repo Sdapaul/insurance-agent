@@ -148,9 +148,8 @@ def update_knowledge_py(new_items: list[dict]) -> None:
         flags=re.DOTALL,
     )
 
-    # KNOWLEDGE_BASE 리스트 닫는 ] 찾기 — 패턴: 줄 시작이 ']' 이고 바로 뒤가 '\n\n'
-    # (함수 내부의 ] 과 구분하기 위해 정규식 사용)
-    m = re.search(r'\n\]\n\n', src)
+    # KNOWLEDGE_BASE 리스트 닫는 ] 찾기 — 줄 시작 ']' (뒤 공백/줄바꿈 유연하게 허용)
+    m = re.search(r'\n(\]\s*\n)', src)
     if not m:
         print("[오류] KNOWLEDGE_BASE 리스트 닫는 ] 를 찾을 수 없습니다.")
         return
@@ -188,8 +187,8 @@ def update_knowledge_py(new_items: list[dict]) -> None:
 
 def rebuild_chroma():
     try:
-        from rag.vectorstore import VectorStore
-        vs = VectorStore()
+        from rag.vectorstore import InsuranceVectorStore
+        vs = InsuranceVectorStore()
         vs.build_from_knowledge()
         print("[완료] ChromaDB 재구축 완료")
     except Exception as e:
