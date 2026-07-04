@@ -143,7 +143,7 @@ def update_knowledge_py(new_items: list[dict]) -> None:
     # 기존 auto_generated 항목 제거
     src = re.sub(
         r'\n\s*#\s*AUTO-GENERATED START.*?#\s*AUTO-GENERATED END\n',
-        '',
+        '\n',  # leading \n 유지 — 제거 시 ] 앞 개행이 사라져 regex 탐지 실패
         src,
         flags=re.DOTALL,
     )
@@ -187,10 +187,13 @@ def update_knowledge_py(new_items: list[dict]) -> None:
 
 def rebuild_chroma():
     try:
+        from data.knowledge import get_all_knowledge
         from rag.vectorstore import InsuranceVectorStore
-        vs = InsuranceVectorStore()
-        vs.build_from_knowledge()
-        print("[완료] ChromaDB 재구축 완료")
+        docs = get_all_knowledge()
+        vs = InsuranceVectorStore.get_instance()
+        vs.reset()
+        count = vs.add_documents(docs)
+        print(f"[완료] ChromaDB 재구축 완료 — {count}개 문서")
     except Exception as e:
         print(f"[오류] ChromaDB 재구축 실패: {e}")
         print("  → 웹에서 /rebuild 명령으로 직접 재구축하거나")
