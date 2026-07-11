@@ -114,7 +114,15 @@ def assess_cancer_risk(
         }
 
     # ── 추천 보험 유형 (암 위험 기반) ────────────────────────────────
-    rec_types = CANCER_TO_INSURANCE.get(band, [])
+    rec_types = list(CANCER_TO_INSURANCE.get(band, []))
+
+    # DEATH 데이터 연계: 5년 생존율 < 50% 암종이 상위에 있으면 종신·간병보험 추가
+    # (간암 38%, 폐암 36%, 췌장암 15% → 사망 위험 높아 종신·간병 필요)
+    low_surv = [c for c in cancer_list if (c.get("5yr_survival_pct") or 100) < 50]
+    if low_surv:
+        for t in ["종신보험", "간병·치매보험"]:
+            if t not in rec_types:
+                rec_types.append(t)
 
     return json.dumps({
         "cancer_risk": {

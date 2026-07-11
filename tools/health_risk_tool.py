@@ -182,12 +182,24 @@ def assess_health_risk(
                 ag = "50대"
             else:
                 ag = "60대"
+
+            # BFC 분위 기반 보험료 상한 계산 (DEATH/BFC 연계)
+            budget_max_won = None
+            if bfc_tier and 1 <= bfc_tier <= 5:
+                try:
+                    from data.innovation_zone_ref import BFC_TIERS
+                    budget_max_won = BFC_TIERS[bfc_tier]["max_10k"] * 10000
+                except Exception:
+                    pass
+
+            # 암 위험 기반으로 확장된 추천 유형 사용
+            all_rec_types = result.get("recommended_insurance_types", rec_types)
             products = {}
-            for t in rec_types[:3]:
+            for t in all_rec_types[:4]:
                 try:
                     raw = search_insmarket_products(
                         insurance_type=t, gender=("남" if sex == 1 else "여"),
-                        age_group=ag, top_n=3,
+                        age_group=ag, top_n=3, budget_max=budget_max_won,
                     )
                     products[t] = json.loads(raw) if isinstance(raw, str) else raw
                 except Exception as e:

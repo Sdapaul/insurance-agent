@@ -17,6 +17,7 @@ def search_insmarket_products(
     gender: str = None,
     age_group: str = None,
     keyword: str = None,
+    budget_max: int = None,
     top_n: int = 10,
 ) -> str:
     """
@@ -28,6 +29,7 @@ def search_insmarket_products(
         gender: '남' 또는 '여'
         age_group: '30대', '40대', '50대', '60대'
         keyword: 상품명·보장명·비고 내 키워드 검색
+        budget_max: BFC 분위 기반 월 최대 보험료 (원). 예: 120000 (12만원)
         top_n: 반환할 최대 상품 수 (기본 10)
     """
     try:
@@ -84,6 +86,19 @@ def search_insmarket_products(
             ]).lower()
             return kw in text
         filtered = [p for p in filtered if _kw_match(p)]
+
+    # BFC 분위 기반 예산 상한 필터
+    if budget_max is not None:
+        def _in_budget(p: dict) -> bool:
+            pm = p.get("premium_monthly")
+            if pm is None:
+                pm = p.get("premium_female" if gender == "여" else "premium_male")
+            if pm is None:
+                pm = p.get("premium_male") or p.get("premium_female")
+            if pm is None:
+                return True   # 보험료 정보 없으면 통과 (표시는 됨)
+            return pm <= budget_max
+        filtered = [p for p in filtered if _in_budget(p)]
 
     # 보험료 기준 정렬
     def _sort_key(p: dict) -> int:
