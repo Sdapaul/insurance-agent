@@ -27,6 +27,8 @@ from tools.web_search_tool import search_web
 from tools.web_fetch_tool import fetch_webpage
 from tools.excel_search_tool import search_insmarket_products
 from tools.credit_score_tool import get_credit_score
+from tools.health_risk_tool import assess_health_risk
+from tools.cancer_risk_tool import assess_cancer_risk
 
 # ───────────────────────────────────────────
 # 도구 정의 (OpenAI 형식)
@@ -276,6 +278,45 @@ TOOLS = [
     {
         "type": "function",
         "function": {
+            "name": "assess_health_risk",
+            "description": (
+                "건강검진 수치로 만성질환(당뇨·대사질환) 위험을 예측하고, 그 위험에 맞는 "
+                "보험 유형과 실제 보험다모아 상품을 추천합니다. "
+                "개인정보 이노베이션 존 RGST(국립암센터 암등록)·DEATH·BFC(보험료분위) 데이터 패턴을 "
+                "활용해 암 위험과 납부 가능 보험료 범위도 함께 분석합니다. "
+                "사용자가 건강검진 결과(혈압·혈당·BMI·간수치·콜레스테롤 등)를 알려주거나, "
+                "'내 건강 상태에 맞는 보험', '건강 위험 기반 보장 설계'를 원할 때 사용하세요. "
+                "나이·성별만 있어도 동작하며, 검진 수치가 많을수록 정확합니다."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "age": {"type": "integer", "description": "나이"},
+                    "gender": {"type": "string", "enum": ["남", "여"], "description": "성별"},
+                    "height": {"type": "number", "description": "키(cm)"},
+                    "weight": {"type": "number", "description": "몸무게(kg)"},
+                    "waist": {"type": "number", "description": "허리둘레(cm)"},
+                    "sbp": {"type": "number", "description": "수축기 혈압"},
+                    "dbp": {"type": "number", "description": "이완기 혈압"},
+                    "total_cholesterol": {"type": "number", "description": "총콜레스테롤"},
+                    "triglyceride": {"type": "number", "description": "중성지방(TG)"},
+                    "hdl": {"type": "number", "description": "HDL 콜레스테롤"},
+                    "ldl": {"type": "number", "description": "LDL 콜레스테롤"},
+                    "ast": {"type": "number", "description": "AST(간수치)"},
+                    "alt": {"type": "number", "description": "ALT(간수치)"},
+                    "ggt": {"type": "number", "description": "감마지티피(GGT)"},
+                    "smoke": {"type": "integer", "enum": [1, 2, 3], "description": "1=비흡연,2=과거흡연,3=현재흡연"},
+                    "drink": {"type": "integer", "enum": [0, 1], "description": "0=비음주,1=음주"},
+                    "bfc_tier": {"type": "integer", "enum": [1, 2, 3, 4, 5],
+                                 "description": "BFC 보험료 분위 1~5 (1=하위20%~5=상위20%). 소득 수준을 알 때 제공"},
+                },
+                "required": ["age", "gender"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "get_personalized_recommendation",
             "description": (
                 "사용자 프로필을 바탕으로 개인화된 보험 포트폴리오를 추천합니다. "
@@ -357,6 +398,9 @@ def execute_tool(tool_name: str, tool_input: dict, client: openai.OpenAI) -> str
             query=tool_input["query"],
             max_results=tool_input.get("max_results", 5),
         )
+
+    elif tool_name == "assess_health_risk":
+        return assess_health_risk(**tool_input)
 
     elif tool_name == "get_personalized_recommendation":
         return _run_recommendation_subagent(tool_input, client)

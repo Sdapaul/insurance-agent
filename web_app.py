@@ -943,6 +943,228 @@ HTML = r"""<!DOCTYPE html>
   .bubble table td:last-child,
   #credit-result-body table th:last-child,
   #credit-result-body table td:last-child { white-space: nowrap; text-align: center; }
+
+  /* ── Health Risk Panel ── */
+  .health-panel {
+    flex: 1; overflow-y: auto; padding: 20px; background: #f0f4f8;
+  }
+  .health-form-card {
+    background: white; border-radius: 12px; padding: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 16px;
+  }
+  .health-form-card h3 { font-size: 14px; color: #1e293b; font-weight: 700; margin-bottom: 14px; }
+  .health-section-label {
+    font-size: 12px; font-weight: 700; color: #047857;
+    margin: 14px 0 8px; padding-bottom: 4px; border-bottom: 1.5px solid #d1fae5;
+  }
+  .health-gen-btn {
+    width: 100%; margin-top: 16px; padding: 13px;
+    background: linear-gradient(135deg, #059669, #047857);
+    color: white; border: none; border-radius: 10px;
+    font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.2s;
+  }
+  .health-gen-btn:hover { opacity: 0.92; }
+  .health-gen-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  /* 위험도 게이지 */
+  .risk-gauge-card {
+    background: white; border-radius: 12px; padding: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 16px;
+  }
+  .risk-gauge-title { font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 14px; }
+  .risk-bar-track {
+    width: 100%; height: 16px; border-radius: 8px;
+    background: linear-gradient(to right, #22c55e 0%, #eab308 40%, #f97316 65%, #ef4444 100%);
+    position: relative; margin-bottom: 6px;
+  }
+  .risk-bar-pointer {
+    position: absolute; top: -6px; width: 28px; height: 28px; border-radius: 50%;
+    background: white; border: 3px solid #374151; transform: translateX(-50%);
+    transition: left 0.8s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+  .risk-bar-labels {
+    display: flex; justify-content: space-between;
+    font-size: 10.5px; color: #94a3b8; margin-bottom: 14px;
+  }
+  .risk-score-num { font-size: 30px; font-weight: 800; letter-spacing: -1px; color: #1e293b; }
+  .risk-band-chip {
+    display: inline-block; padding: 3px 12px; border-radius: 20px;
+    font-size: 13px; font-weight: 700; margin-left: 10px; vertical-align: middle;
+  }
+  .risk-band-low  { background: #dcfce7; color: #15803d; }
+  .risk-band-mid  { background: #fef3c7; color: #b45309; }
+  .risk-band-high { background: #fee2e2; color: #dc2626; }
+  .hr-model-note { font-size: 10.5px; color: #94a3b8; margin-top: 3px; }
+  /* 임상 플래그 */
+  .flag-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .flag-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;
+    background: #fef3c7; color: #92400e; border: 1px solid #fde68a;
+  }
+  .flag-chip-ok { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+  /* 추천 보험 유형 태그 */
+  .ins-type-tags { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0 12px; }
+  .ins-type-tag {
+    padding: 5px 14px; border-radius: 20px; font-size: 12.5px; font-weight: 600;
+    background: #eff6ff; color: #1d4ed8; border: 1.5px solid #bfdbfe;
+  }
+  .hr-guidance {
+    font-size: 12.5px; color: #475569; line-height: 1.6; padding: 10px 12px;
+    background: #f0fdf4; border-radius: 8px; border-left: 3px solid #22c55e;
+  }
+  /* 상품 카드 */
+  .product-type-sec {
+    border: 1.5px solid #e2e8f0; border-radius: 10px; margin-bottom: 10px; overflow: hidden;
+  }
+  .product-type-hdr {
+    background: #f8fafc; padding: 10px 14px; font-size: 13px; font-weight: 700;
+    color: #1e40af; display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; user-select: none;
+  }
+  .product-type-hdr:hover { background: #eff6ff; }
+  .product-cards-body { padding: 10px 14px; }
+  .hr-product-card {
+    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;
+    padding: 12px 14px; margin-bottom: 8px;
+  }
+  .hr-product-card:last-child { margin-bottom: 0; }
+  .hr-prod-name { font-weight: 700; color: #1e293b; font-size: 13px; margin-bottom: 2px; }
+  .hr-prod-co { color: #64748b; font-size: 11.5px; margin-bottom: 7px; }
+  .hr-prod-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12.5px; padding: 2px 0; color: #374151;
+  }
+  .hr-prod-premium { font-weight: 700; color: #1d4ed8; }
+  /* 면책 고지 */
+  .health-disclaimer {
+    background: #fefce8; border: 1px solid #fde68a; border-radius: 8px;
+    padding: 12px 14px; font-size: 11.5px; color: #92400e;
+    margin-bottom: 16px; line-height: 1.7;
+  }
+  /* 이노베이션 존 배지 */
+  .inno-zone-badge {
+    display:inline-flex; align-items:center; gap:5px;
+    background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px;
+    padding:4px 10px; font-size:11px; color:#1d4ed8; font-weight:600;
+    margin-bottom:10px;
+  }
+  /* 암 위험 바 */
+  .cancer-bar-wrap { margin: 6px 0; }
+  .cancer-bar-label { display:flex; justify-content:space-between; font-size:12px; color:#334155; margin-bottom:3px; }
+  .cancer-bar-track { height:10px; background:#e2e8f0; border-radius:5px; overflow:hidden; }
+  .cancer-bar-fill  { height:100%; border-radius:5px; transition:width 0.4s ease; }
+  .cancer-surv { font-size:11px; color:#64748b; margin-top:2px; }
+  .cancer-risk-summary { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+  .cancer-band-chip {
+    padding:3px 10px; border-radius:20px; font-size:12px; font-weight:700;
+  }
+  .cancer-band-high { background:#fee2e2; color:#991b1b; }
+  .cancer-band-mid  { background:#fef3c7; color:#92400e; }
+  .cancer-band-low  { background:#dcfce7; color:#166534; }
+  /* BFC 분위 바 */
+  .bfc-tier-bar { height:14px; border-radius:6px; margin:8px 0; transition:width 0.4s ease; }
+  .bfc-tier-row { display:flex; justify-content:space-between; font-size:12px; color:#334155; margin-top:4px; }
+  /* 건강검진 데이터 소스 카드 */
+  .health-source-cards {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;
+  }
+  .health-source-card {
+    flex: 1; min-width: 120px; border: 1px solid #e2e8f0; border-radius: 10px;
+    padding: 11px 13px; background: #f8fafc; cursor: pointer; transition: all 0.15s;
+  }
+  .health-source-card:hover { border-color: #22c55e; background: #f0fdf4; }
+  .health-source-card .src-icon { font-size: 20px; margin-bottom: 4px; }
+  .health-source-card .src-name { font-size: 12.5px; font-weight: 700; color: #1e293b; }
+  .health-source-card .src-desc { font-size: 11px; color: #64748b; margin-top: 2px; line-height: 1.4; }
+  /* 건강검진 가져오기 상세 가이드 탭 */
+  .health-guide-tabs { display:flex; gap:0; border-bottom:2px solid #e2e8f0; margin:10px 0 0; flex-wrap:wrap; }
+  .hg-tab { padding:7px 14px; font-size:12.5px; font-weight:600; cursor:pointer;
+    color:#64748b; border:none; border-bottom:2px solid transparent; margin-bottom:-2px;
+    background:none; transition:all 0.15s; }
+  .hg-tab.active { color:#047857; border-bottom-color:#047857; }
+  .hg-pane { display:none; padding:12px 0 0; }
+  .hg-pane.active { display:block; }
+  .hg-steps { list-style:none; padding:0; margin:0; }
+  .hg-step { display:flex; gap:10px; align-items:flex-start; padding:7px 0;
+    border-bottom:1px solid #f1f5f9; font-size:12.5px; line-height:1.55; color:#334155; }
+  .hg-step:last-child { border-bottom:none; }
+  .hg-num { flex-shrink:0; width:20px; height:20px; border-radius:50%;
+    background:#047857; color:white; font-size:11px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; }
+  .hg-app-table { width:100%; border-collapse:collapse; font-size:12px; margin-top:6px; }
+  .hg-app-table th { background:#f0fdf4; padding:7px 10px; border:1px solid #d1fae5;
+    text-align:left; font-size:11.5px; color:#065f46; font-weight:700; }
+  .hg-app-table td { padding:8px 10px; border:1px solid #e5e7eb; font-size:12px;
+    color:#334155; vertical-align:top; line-height:1.55; }
+  .hg-app-table tr:hover td { background:#f9fafb; }
+  .hg-link { display:inline-block; margin-top:10px; font-size:12px;
+    color:#047857; font-weight:600; text-decoration:none; }
+  .hg-link:hover { text-decoration:underline; }
+  /* PDF 드롭존 */
+  .pdf-drop-zone {
+    border: 2px dashed #d1d5db; border-radius: 10px; padding: 22px 16px;
+    text-align: center; cursor: pointer; transition: all 0.2s; background: #fafafa;
+  }
+  .pdf-drop-zone:hover, .pdf-drop-zone.dragover {
+    border-color: #047857; background: #f0fdf4;
+  }
+  .pdf-drop-icon { font-size: 28px; margin-bottom: 6px; }
+  .pdf-drop-text { font-size: 13px; font-weight: 600; color: #374151; }
+  .pdf-drop-sub  { font-size: 11px; color: #94a3b8; margin-top: 3px; }
+  .pdf-or-divider {
+    display: flex; align-items: center; gap: 10px;
+    margin: 14px 0; font-size: 12px; color: #94a3b8;
+  }
+  .pdf-or-divider::before, .pdf-or-divider::after {
+    content: ''; flex: 1; height: 1px; background: #e2e8f0;
+  }
+  /* 텍스트 붙여넣기 */
+  .paste-area {
+    width: 100%; min-height: 88px; padding: 10px 12px;
+    border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 12px;
+    font-family: inherit; resize: vertical; outline: none; color: #374151;
+    transition: border-color 0.15s; line-height: 1.5; background: #fafafa;
+  }
+  .paste-area:focus { border-color: #22c55e; background: white; }
+  .parse-btn {
+    margin-top: 8px; padding: 8px 18px;
+    background: #047857; color: white; border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.15s;
+  }
+  .parse-btn:hover { opacity: 0.88; }
+  .parse-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  /* AI 추천 카드 */
+  .ai-rec-card {
+    background: white; border-radius: 12px; padding: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 16px;
+    border-top: 3px solid #6d28d9;
+  }
+  .ai-rec-card-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 14px;
+  }
+  .ai-rec-btn {
+    width: 100%; padding: 12px;
+    background: linear-gradient(135deg, #7c3aed, #5b21b6);
+    color: white; border: none; border-radius: 10px;
+    font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.2s;
+  }
+  .ai-rec-btn:hover { opacity: 0.9; }
+  .ai-rec-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .ai-rec-body {
+    line-height: 1.7; font-size: 13.5px; color: #1e293b; margin-top: 14px;
+  }
+  .ai-rec-body h2 { font-size: 15px; color: #5b21b6; margin: 0 0 10px; padding-bottom: 6px; border-bottom: 2px solid #ede9fe; }
+  .ai-rec-body h3 { font-size: 14px; color: #374151; margin: 14px 0 6px; }
+  .ai-rec-body h4 { font-size: 13px; color: #374151; margin: 10px 0 5px; }
+  .ai-rec-body table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 12.5px; }
+  .ai-rec-body th { background: #f5f3ff; padding: 7px 10px; border: 1px solid #ddd6fe; text-align: left; font-weight: 600; }
+  .ai-rec-body td { padding: 7px 10px; border: 1px solid #e5e7eb; }
+  .ai-rec-body ul, .ai-rec-body ol { padding-left: 18px; margin: 5px 0; }
+  .ai-rec-body blockquote { border-left: 3px solid #7c3aed; padding-left: 12px; color: #475569; margin: 8px 0; }
+  .ai-rec-body strong { color: #5b21b6; }
+  .ai-rec-body p { margin: 6px 0; }
 </style>
 </head>
 <body>
@@ -967,6 +1189,7 @@ HTML = r"""<!DOCTYPE html>
 <div class="tab-nav">
   <button class="tab-btn active" onclick="switchTab('chat')">💬 보험 상담</button>
   <button class="tab-btn" onclick="switchTab('credit')">💳 신용점수 포트폴리오</button>
+  <button class="tab-btn" onclick="switchTab('health')">🏥 건강위험 포트폴리오</button>
 </div>
 
 <!-- Tab: 보험 상담 -->
@@ -1237,6 +1460,364 @@ HTML = r"""<!DOCTYPE html>
       <div id="composite-score-card-area"></div>
       <div id="policy-loan-card-area"></div>
       <div class="credit-result-body" id="credit-result-body"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Tab: 건강위험 포트폴리오 -->
+<div class="tab-panel" id="tab-health">
+  <div class="health-panel">
+
+    <!-- 소개 + 사용 방법 -->
+    <div class="credit-guide">
+      <h3>🏥 건강검진 기반 보험 위험 분석 (CareLink)</h3>
+      <p style="font-size:12.5px;color:#475569;margin-bottom:4px;">건강검진 수치를 입력하면 만성질환(당뇨·대사) 위험도를 예측하고, 맞춤 보험 유형과 보험다모아 실제 상품을 추천합니다.</p>
+      <p style="font-size:11.5px;color:#94a3b8;margin-bottom:10px">나이·성별만 입력해도 동작하며, 수치가 많을수록 더 정확합니다 (AUC ≈ 0.78).</p>
+
+      <!-- 사용 방법 아코디언 -->
+      <div style="border-top:1px solid #e2e8f0;padding-top:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer"
+          onclick="toggleSection('hr-howto')">
+          <span style="font-size:12.5px;font-weight:700;color:#047857">📖 사용 방법 보기</span>
+          <span class="extra-section-toggle" id="toggle-hr-howto" style="font-size:12px;color:#94a3b8">▼</span>
+        </div>
+        <div class="extra-section-body" id="body-hr-howto">
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:10px">
+
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div style="flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#dcfce7;color:#15803d;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">1</div>
+              <div>
+                <div style="font-size:12.5px;font-weight:700;color:#1e293b;margin-bottom:2px">건강검진 데이터 가져오기 (선택)</div>
+                <div style="font-size:12px;color:#475569">「📂 건강검진 데이터 가져오기」를 클릭해 펼친 뒤,<br>
+                  <strong>PDF 업로드</strong>(국민건강보험공단·나의건강기록 앱에서 저장한 PDF)하거나<br>
+                  결과지 텍스트를 <strong>붙여넣기</strong>하면 수치가 자동 입력됩니다.</div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div style="flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#dcfce7;color:#15803d;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">2</div>
+              <div>
+                <div style="font-size:12.5px;font-weight:700;color:#1e293b;margin-bottom:2px">수치 입력</div>
+                <div style="font-size:12px;color:#475569"><strong>나이·성별</strong>은 필수, 나머지는 선택입니다.<br>
+                  키·몸무게 입력 시 BMI가 자동 계산됩니다.</div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div style="flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#dcfce7;color:#15803d;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">3</div>
+              <div>
+                <div style="font-size:12.5px;font-weight:700;color:#1e293b;margin-bottom:2px">「위험 분석」 클릭</div>
+                <div style="font-size:12px;color:#475569">당뇨·대사 <strong>위험 점수(게이지)</strong>, 임상 플래그(비만·고혈압 등),<br>
+                  위험에 맞는 <strong>보험다모아 실제 상품</strong>이 표시됩니다.</div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div style="flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#dcfce7;color:#15803d;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">4</div>
+              <div>
+                <div style="font-size:12.5px;font-weight:700;color:#1e293b;margin-bottom:2px">「AI 맞춤 추천 받기」 클릭</div>
+                <div style="font-size:12px;color:#475569">GPT-4o가 위험도를 해석하고 <strong>우선순위별 보험 포트폴리오</strong>를 표 형식으로 추천합니다.<br>
+                  표 오른쪽 <strong>「가입하기」버튼</strong>으로 보험사 사이트로 바로 이동 가능합니다.</div>
+              </div>
+            </div>
+
+            <div style="background:#f0fdf4;border-radius:8px;padding:9px 12px;font-size:11.5px;color:#166534;margin-top:2px">
+              ⚠️ 이 분석은 <strong>예방·보장 강화 목적</strong>의 참고 정보이며, 의학적 진단이 아닙니다.<br>
+              보험 가입 심사·거절의 근거로 사용되지 않습니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 건강검진 데이터 가져오기 -->
+    <div class="health-form-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer"
+        onclick="toggleSection('health-source')">
+        <h3 style="margin:0">📂 건강검진 데이터 가져오기</h3>
+        <span class="extra-section-toggle" id="toggle-health-source">▼</span>
+      </div>
+      <div class="extra-section-body" id="body-health-source">
+        <p style="font-size:12.5px;color:#475569;margin-bottom:10px">
+          국민건강보험공단 앱·사이트에서 건강검진 결과를 확인하거나,
+          결과 통보서 내용을 붙여넣으면 수치를 자동으로 입력해 드립니다.
+        </p>
+        <!-- 탭 가이드 -->
+        <div class="health-guide-tabs">
+          <button class="hg-tab active" onclick="hrGuideTab(this,'hg-web')">🖥️ PC 웹사이트</button>
+          <button class="hg-tab" onclick="hrGuideTab(this,'hg-mhw')">📲 나의 건강기록 앱</button>
+        </div>
+
+        <!-- 방법 1: nhis.or.kr PC -->
+        <div class="hg-pane active" id="hg-web">
+          <ul class="hg-steps">
+            <li class="hg-step"><div class="hg-num">1</div><div><strong>nhis.or.kr</strong> 접속</div></li>
+            <li class="hg-step"><div class="hg-num">2</div><div>상단 메뉴 <strong>"건강iN"</strong> 클릭</div></li>
+            <li class="hg-step"><div class="hg-num">3</div><div>공동인증서 / 간편인증(카카오·네이버·PASS)으로 <strong>로그인</strong></div></li>
+            <li class="hg-step"><div class="hg-num">4</div><div>나의건강관리 → 건강검진 → <strong>건강검진 결과 조회</strong></div></li>
+            <li class="hg-step"><div class="hg-num">5</div><div>연도 선택 후 검진 결과 확인</div></li>
+            <li class="hg-step"><div class="hg-num">6</div><div><strong>"결과 인쇄"</strong> 버튼 클릭 → 인쇄 화면에서 <strong>PDF로 저장</strong> → 아래 PDF 업로드 이용</div></li>
+          </ul>
+          <a class="hg-link" href="https://www.nhis.or.kr" target="_blank" rel="noopener">nhis.or.kr 바로가기 →</a>
+        </div>
+
+<!-- 방법 3: 나의 건강기록 앱 (마이헬스웨이) -->
+        <div class="hg-pane" id="hg-mhw">
+          <div style="background:#fefce8;border:1px solid #fde68a;border-radius:8px;padding:10px 12px;font-size:12px;color:#92400e;margin-bottom:12px">
+            ⚠️ myhealthway.go.kr PC 웹은 <strong>앱 다운로드 안내 페이지</strong>만 제공합니다.<br>
+            건강검진 결과는 <strong>나의 건강기록</strong> 모바일 앱에서 확인하세요.
+          </div>
+          <ul class="hg-steps">
+            <li class="hg-step"><div class="hg-num">1</div><div>스마트폰에서 <strong>「나의 건강기록」</strong> 앱 설치<br>
+              <span style="font-size:11px;color:#64748b">App Store / Google Play에서 검색</span></div></li>
+            <li class="hg-step"><div class="hg-num">2</div><div>공동인증서 또는 간편인증(카카오·네이버·PASS)으로 <strong>로그인</strong></div></li>
+            <li class="hg-step"><div class="hg-num">3</div><div>하단 메뉴 → <strong>건강검진</strong> → 검진 연도 선택</div></li>
+            <li class="hg-step"><div class="hg-num">4</div><div>결과 화면에서 <strong>공유 버튼 → PDF 저장</strong> → 아래 PDF 업로드 이용</div></li>
+          </ul>
+          <a class="hg-link" href="https://www.myhealthway.go.kr" target="_blank" rel="noopener">myhealthway.go.kr (앱 다운로드 안내) →</a>
+        </div>
+        <!-- PDF 업로드 -->
+        <div style="margin-top:14px">
+          <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:6px">
+            📄 건강검진결과통보서 PDF 업로드
+          </label>
+          <div class="pdf-drop-zone" id="hr-pdf-drop"
+            onclick="document.getElementById('hr-pdf-input').click()"
+            ondragover="hrDragOver(event)" ondragleave="hrDragLeave(event)"
+            ondrop="hrDropFile(event)">
+            <div class="pdf-drop-icon">📄</div>
+            <div class="pdf-drop-text">클릭하거나 PDF를 여기에 드래그</div>
+            <div class="pdf-drop-sub">건강검진결과통보서 PDF · 최대 10MB</div>
+          </div>
+          <input type="file" id="hr-pdf-input" accept=".pdf" style="display:none"
+            onchange="hrUploadPDF(this.files[0])">
+          <div id="hr-pdf-status" style="font-size:11.5px;margin-top:6px"></div>
+        </div>
+
+        <div class="pdf-or-divider">또는 텍스트 직접 붙여넣기</div>
+
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:6px">
+            📋 건강검진결과통보서 붙여넣기 → 자동 입력
+          </label>
+          <textarea class="paste-area" id="hr-paste-area"
+            placeholder="건강검진 결과 내용을 여기에 붙여넣으세요.
+예) 신장 172cm / 체중 78kg / 허리둘레 88cm
+    수축기혈압 130 / 이완기혈압 85
+    총콜레스테롤 210 / 중성지방 160 / HDL 48 / LDL 135
+    AST(GOT) 28 / ALT(GPT) 32 / GGT(감마GTP) 45
+    흡연: 비흡연 / 음주: 음주"></textarea>
+          <button class="parse-btn" id="hr-parse-btn" onclick="hrParseHealthData()">
+            ✨ 자동 입력
+          </button>
+          <div id="hr-parse-status" style="font-size:11.5px;margin-top:6px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 입력 폼 -->
+    <div class="health-form-card">
+      <h3>✏️ 건강검진 수치 입력</h3>
+
+      <div class="health-section-label">👤 기본 정보 <span style="font-weight:400;color:#94a3b8;font-size:11px">(필수)</span></div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>나이</label>
+          <input type="number" id="hr-age" placeholder="예: 48" min="20" max="80">
+        </div>
+        <div class="form-group">
+          <label>성별</label>
+          <select id="hr-gender">
+            <option value="남">남성</option>
+            <option value="여">여성</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="health-section-label">⚖️ 신체계측 <span style="font-weight:400;color:#94a3b8;font-size:11px">(선택)</span></div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>키 (cm)</label>
+          <input type="number" id="hr-height" placeholder="예: 172" min="100" max="220" oninput="hrCalcBMI()">
+        </div>
+        <div class="form-group">
+          <label>몸무게 (kg)</label>
+          <input type="number" id="hr-weight-val" placeholder="예: 78" min="30" max="200" oninput="hrCalcBMI()">
+        </div>
+        <div class="form-group">
+          <label>허리둘레 (cm)</label>
+          <input type="number" id="hr-waist" placeholder="예: 88" min="50" max="160">
+        </div>
+        <div class="form-group">
+          <label>BMI <span style="font-weight:400;color:#94a3b8">(자동)</span></label>
+          <input type="text" id="hr-bmi-disp" placeholder="키·몸무게 입력 후 자동" readonly
+            style="background:#f8fafc;color:#64748b;cursor:default">
+        </div>
+      </div>
+
+      <div class="health-section-label">💓 혈압 <span style="font-weight:400;color:#94a3b8;font-size:11px">(선택)</span></div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>수축기혈압 SBP (mmHg)</label>
+          <input type="number" id="hr-sbp" placeholder="예: 130" min="70" max="250">
+        </div>
+        <div class="form-group">
+          <label>이완기혈압 DBP (mmHg)</label>
+          <input type="number" id="hr-dbp" placeholder="예: 85" min="40" max="150">
+        </div>
+      </div>
+
+      <div class="health-section-label">🩸 혈중 지질 <span style="font-weight:400;color:#94a3b8;font-size:11px">(선택)</span></div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>총콜레스테롤 (mg/dL)</label>
+          <input type="number" id="hr-tc" placeholder="예: 200" min="50" max="500">
+        </div>
+        <div class="form-group">
+          <label>중성지방 TG (mg/dL)</label>
+          <input type="number" id="hr-tg" placeholder="예: 150" min="20" max="2000">
+        </div>
+        <div class="form-group">
+          <label>HDL 콜레스테롤 (mg/dL)</label>
+          <input type="number" id="hr-hdl" placeholder="예: 55" min="10" max="150">
+        </div>
+        <div class="form-group">
+          <label>LDL 콜레스테롤 (mg/dL)</label>
+          <input type="number" id="hr-ldl" placeholder="예: 130" min="20" max="400">
+        </div>
+      </div>
+
+      <div class="health-section-label">🫁 간 수치 <span style="font-weight:400;color:#94a3b8;font-size:11px">(선택)</span></div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>AST (U/L)</label>
+          <input type="number" id="hr-ast" placeholder="예: 28" min="5" max="1000">
+        </div>
+        <div class="form-group">
+          <label>ALT (U/L)</label>
+          <input type="number" id="hr-alt" placeholder="예: 25" min="5" max="1000">
+        </div>
+        <div class="form-group">
+          <label>GGT (U/L)</label>
+          <input type="number" id="hr-ggt" placeholder="예: 30" min="5" max="1000">
+        </div>
+      </div>
+
+      <div class="health-section-label">🚬 생활습관 <span style="font-weight:400;color:#94a3b8;font-size:11px">(선택)</span></div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>흡연 여부</label>
+          <select id="hr-smoke">
+            <option value="">선택 안함</option>
+            <option value="1">비흡연</option>
+            <option value="2">과거 흡연</option>
+            <option value="3">현재 흡연</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>음주 여부</label>
+          <select id="hr-drink">
+            <option value="">선택 안함</option>
+            <option value="0">비음주</option>
+            <option value="1">음주</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="health-section-label">💰 보험료 분위 (BFC) <span style="font-weight:400;color:#94a3b8;font-size:11px">(선택 — 이노베이션 존 BFC 데이터 연계)</span></div>
+      <div class="form-grid">
+        <div class="form-group" style="grid-column:1/-1">
+          <label>소득/보험료 분위 <span style="font-weight:400;font-size:11px;color:#64748b">— 납부 가능 보험료 범위 자동 산정</span></label>
+          <select id="hr-bfc-tier">
+            <option value="">선택 안함</option>
+            <option value="1">1분위 — 하위 20% (월 0~3만원)</option>
+            <option value="2">2분위 — 하위 40% (월 3~7만원)</option>
+            <option value="3">3분위 — 중위 (월 7~12만원)</option>
+            <option value="4">4분위 — 상위 40% (월 12~20만원)</option>
+            <option value="5">5분위 — 상위 20% (월 20만원+)</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="health-gen-btn" id="health-gen-btn" onclick="generateHealthPortfolio()">
+        🏥 건강위험 분석 및 보험 추천
+      </button>
+    </div>
+
+    <!-- 결과 영역 -->
+    <div id="health-result-area" style="display:none">
+
+      <!-- 위험도 게이지 -->
+      <div class="risk-gauge-card">
+        <div class="risk-gauge-title">📊 만성질환(당뇨·대사) 위험도</div>
+        <div class="risk-bar-track">
+          <div class="risk-bar-pointer" id="hr-risk-pointer" style="left:0%"></div>
+        </div>
+        <div class="risk-bar-labels">
+          <span>저위험 (0%)</span><span>중간위험 (15%)</span><span>고위험 (30%+)</span>
+        </div>
+        <div>
+          <span class="risk-score-num" id="hr-score-num"></span>
+          <span class="risk-band-chip" id="hr-band-chip"></span>
+        </div>
+        <div class="hr-model-note" id="hr-model-note"></div>
+        <div class="flag-chips" id="hr-flag-chips"></div>
+      </div>
+
+      <!-- 추천 보험 유형 -->
+      <div class="risk-gauge-card">
+        <div class="risk-gauge-title">🛡️ 맞춤 보험 유형 추천</div>
+        <div class="ins-type-tags" id="hr-ins-type-tags"></div>
+        <div class="hr-guidance" id="hr-guidance"></div>
+      </div>
+
+      <!-- 보험다모아 상품 -->
+      <div class="risk-gauge-card">
+        <div class="risk-gauge-title">📋 보험다모아 추천 상품</div>
+        <div id="hr-products"></div>
+      </div>
+
+      <!-- 이노베이션 존: 암 위험 분석 (RGST/DEATH) -->
+      <div class="risk-gauge-card" id="hr-cancer-card" style="display:none">
+        <div class="risk-gauge-title">🔬 암 위험 분석
+          <span class="inno-zone-badge">🏛️ 개인정보 이노베이션 존 · RGST/DEATH</span>
+        </div>
+        <div class="cancer-risk-summary">
+          <div id="hr-cancer-ratio" style="font-size:22px;font-weight:800;color:#1e293b"></div>
+          <span class="cancer-band-chip" id="hr-cancer-band"></span>
+          <span id="hr-cancer-vs" style="font-size:12px;color:#64748b"></span>
+        </div>
+        <div id="hr-cancer-bars"></div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:8px" id="hr-cancer-source"></div>
+      </div>
+
+      <!-- 이노베이션 존: BFC 보험료 분위 -->
+      <div class="risk-gauge-card" id="hr-bfc-card" style="display:none">
+        <div class="risk-gauge-title">💰 납부 가능 보험료 범위
+          <span class="inno-zone-badge">🏛️ 개인정보 이노베이션 존 · BFC</span>
+        </div>
+        <div id="hr-bfc-body"></div>
+      </div>
+
+      <!-- AI 맞춤 추천 -->
+      <div class="ai-rec-card">
+        <div class="ai-rec-card-title">
+          <span style="font-size:20px">🤖</span>
+          <span>AI 맞춤 보험 추천 (GPT-4o)</span>
+        </div>
+        <button class="ai-rec-btn" id="hr-ai-btn" onclick="hrGetAiRec()">
+          🤖 AI 맞춤 추천 받기
+        </button>
+        <div class="ai-rec-body" id="hr-ai-body" style="display:none"></div>
+      </div>
+
+      <!-- 면책 고지 -->
+      <div class="health-disclaimer">
+        ⚠️ 예측 결과는 <strong>예방·보장 강화 목적</strong>이며, 보험 가입 거절·불이익·차별의 근거로 사용하지 않습니다.<br>
+        본 예측은 선별용 위험도이며 <strong>의학적 진단이 아닙니다.</strong> 정확한 진단은 의료기관에서 받으세요.
+      </div>
+
     </div>
 
   </div>
@@ -1937,6 +2518,454 @@ async function generatePortfolio() {
   }
 }
 
+// ── Health Risk 전역 상태 ──────────────────────────────────
+let _hrLastResult = null;
+
+// ── Health Risk: BMI 자동계산 ──────────────────────────────
+function hrCalcBMI() {
+  const h = parseFloat(document.getElementById('hr-height').value);
+  const w = parseFloat(document.getElementById('hr-weight-val').value);
+  const el = document.getElementById('hr-bmi-disp');
+  if (h > 0 && w > 0) {
+    const bmi = (w / ((h / 100) ** 2)).toFixed(1);
+    const lbl = bmi < 18.5 ? '저체중' : bmi < 23 ? '정상' : bmi < 25 ? '과체중' : '비만';
+    el.value = `${bmi} (${lbl})`;
+    el.style.color = bmi >= 25 ? '#dc2626' : bmi >= 23 ? '#d97706' : '#16a34a';
+  } else {
+    el.value = '';
+    el.style.color = '#64748b';
+  }
+}
+
+// ── Health Risk: 포트폴리오 생성 ───────────────────────────
+async function generateHealthPortfolio() {
+  const age = parseInt(document.getElementById('hr-age').value);
+  const gender = document.getElementById('hr-gender').value;
+  if (!age || age < 20 || age > 80) {
+    alert('나이를 20~80세 사이로 입력해주세요.');
+    return;
+  }
+
+  const num = id => {
+    const v = document.getElementById(id).value;
+    return v !== '' ? parseFloat(v) : null;
+  };
+  const sel = id => {
+    const v = document.getElementById(id).value;
+    return v !== '' ? parseInt(v) : null;
+  };
+
+  const payload = {
+    age, gender,
+    height: num('hr-height'),
+    weight: num('hr-weight-val'),
+    waist:  num('hr-waist'),
+    sbp:    num('hr-sbp'),
+    dbp:    num('hr-dbp'),
+    total_cholesterol: num('hr-tc'),
+    triglyceride:      num('hr-tg'),
+    hdl:    num('hr-hdl'),
+    ldl:    num('hr-ldl'),
+    ast:    num('hr-ast'),
+    alt:    num('hr-alt'),
+    ggt:    num('hr-ggt'),
+    smoke:  sel('hr-smoke'),
+    drink:  sel('hr-drink'),
+    bfc_tier: sel('hr-bfc-tier'),
+  };
+
+  const resultArea = document.getElementById('health-result-area');
+  const btn = document.getElementById('health-gen-btn');
+  resultArea.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = '⏳ 분석 중...';
+
+  try {
+    const resp = await fetch('/api/health-risk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await resp.json();
+    if (data.error) {
+      alert('오류: ' + data.error);
+      return;
+    }
+    hrRenderResult(data);
+    resultArea.style.display = 'block';
+    resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (e) {
+    alert('서버 연결 오류가 발생했습니다.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🏥 건강위험 분석 및 보험 추천';
+  }
+}
+
+function hrRenderResult(data) {
+  _hrLastResult = data;
+  const ra  = data.risk_assessment || {};
+  const ins = data.input_summary   || {};
+  const rTypes   = data.recommended_insurance_types || [];
+  const products = data.insmarket_products || {};
+
+  // 위험도 게이지 (risk_score 0~1 → 0~100%)
+  const score = ra.risk_score || 0;
+  const pct   = Math.min(99, Math.round(score * 100));
+  document.getElementById('hr-risk-pointer').style.left = pct + '%';
+  document.getElementById('hr-score-num').textContent   = (score * 100).toFixed(1) + '%';
+
+  const band   = ra.risk_band || '';
+  const chipEl = document.getElementById('hr-band-chip');
+  chipEl.textContent = band;
+  chipEl.className   = 'risk-band-chip ' + (
+    band === '고위험'   ? 'risk-band-high' :
+    band === '중간위험' ? 'risk-band-mid'  : 'risk-band-low'
+  );
+  document.getElementById('hr-model-note').textContent = ra.model || '';
+
+  // 임상 플래그
+  const flags = ins.flags || [];
+  document.getElementById('hr-flag-chips').innerHTML = flags.map(f =>
+    f === '특이소견 없음'
+      ? `<span class="flag-chip flag-chip-ok">✓ ${f}</span>`
+      : `<span class="flag-chip">⚠ ${f}</span>`
+  ).join('');
+
+  // 추천 보험 유형
+  document.getElementById('hr-ins-type-tags').innerHTML =
+    rTypes.map(t => `<span class="ins-type-tag">${t}</span>`).join('');
+  document.getElementById('hr-guidance').textContent = data.guidance || '';
+
+  // 보험다모아 상품
+  const prodEl = document.getElementById('hr-products');
+  const types  = Object.keys(products);
+  if (!types.length) {
+    prodEl.innerHTML = '<p style="color:#94a3b8;font-size:13px;padding:4px 0">상품 조회 결과가 없습니다.</p>';
+    return;
+  }
+
+  let html = '';
+  for (const [type, td] of Object.entries(products)) {
+    if (td && td.error) {
+      html += `<div class="product-type-sec">
+        <div class="product-type-hdr">${type}
+          <span style="font-weight:400;color:#94a3b8;font-size:11px">데이터 없음</span>
+        </div>
+      </div>`;
+      continue;
+    }
+    const results = (td && td.results) || [];
+    const total   = (td && td.total_found) || results.length;
+    html += `<div class="product-type-sec">
+      <div class="product-type-hdr" onclick="hrToggleProducts(this)">
+        <span>${type} <span style="font-weight:400;color:#64748b;font-size:11px">— ${total}개 조회됨</span></span>
+        <span class="hr-prod-arrow">▼</span>
+      </div>
+      <div class="product-cards-body">`;
+
+    if (!results.length) {
+      html += '<p style="color:#94a3b8;font-size:12px;margin:4px 0">해당 조건의 상품이 없습니다.</p>';
+    } else {
+      for (const p of results.slice(0, 3)) {
+        const co  = p.company      || '-';
+        const nm  = p.product_name || '-';
+        const pr  = p.premium      || '보험료 정보 없음';
+        const ag  = (p.file_context && p.file_context.age_group) || p.age_range || '';
+        const ge  = (p.file_context && p.file_context.gender) || '';
+        const covStr = (p.coverages || []).slice(0, 2).join(' · ');
+        const url  = INSURER_URLS[co] || DAMOAH_URL;
+        const lCls = INSURER_URLS[co] ? 'ins-link-btn' : 'ins-link-btn ins-link-damoah';
+        const lTxt = INSURER_URLS[co] ? '가입하기 →' : '비교하기 →';
+        html += `<div class="hr-product-card">
+          <div class="hr-prod-name">${nm}</div>
+          <div class="hr-prod-co">${co}${ag ? ' · ' + ag : ''}${ge ? ' · ' + ge : ''}</div>
+          <div class="hr-prod-row"><span>월 보험료</span><span class="hr-prod-premium">${pr}</span></div>
+          ${covStr ? `<div style="font-size:11.5px;color:#64748b;margin-top:5px">${covStr}</div>` : ''}
+          <div style="margin-top:8px">
+            <a href="${url}" target="_blank" rel="noopener noreferrer" class="${lCls}">${lTxt}</a>
+          </div>
+        </div>`;
+      }
+    }
+    html += '</div></div>';
+  }
+  prodEl.innerHTML = html || '<p style="color:#94a3b8;font-size:13px">추천 상품이 없습니다.</p>';
+
+  // ── 이노베이션 존: 암 위험 렌더링 (RGST/DEATH) ───────────────────
+  const cr = data.cancer_risk;
+  const cancerCard = document.getElementById('hr-cancer-card');
+  if (cr && !cr.error) {
+    cancerCard.style.display = 'block';
+    document.getElementById('hr-cancer-ratio').textContent =
+      '인구 평균 대비 ' + (cr.risk_ratio >= 1 ? '+' : '') +
+      Math.round((cr.risk_ratio - 1) * 100) + '%';
+    const bandEl = document.getElementById('hr-cancer-band');
+    bandEl.textContent = cr.band;
+    bandEl.className = 'cancer-band-chip ' + (
+      cr.band === '고위험' ? 'cancer-band-high' :
+      cr.band === '중위험' ? 'cancer-band-mid'  : 'cancer-band-low'
+    );
+    document.getElementById('hr-cancer-vs').textContent =
+      `${cr.age_group} ${cr.gender}성 연간 암 발생률: 인구 10만명당 ${cr.pop_total_per_100k.toFixed(0)}명 → 개인 추정 ${cr.ind_total_per_100k.toFixed(0)}명`;
+
+    const maxRate = Math.max(...(cr.top3_cancers || []).map(c => c.rate_per_100k), 1);
+    const barsHtml = (cr.top3_cancers || []).map(c => {
+      const pct   = Math.min(100, Math.round(c.rate_per_100k / maxRate * 100));
+      const base  = Math.min(100, Math.round(c.base_per_100k  / maxRate * 100));
+      const mult  = c.risk_multiplier > 1 ? `<span style="color:#dc2626;font-weight:700">×${c.risk_multiplier}</span>` : '';
+      const surv  = c['5yr_survival_pct'] != null ? `5년 생존율 ${c['5yr_survival_pct']}%` : '';
+      const color = pct >= 70 ? '#ef4444' : pct >= 40 ? '#f59e0b' : '#34d399';
+      return `<div class="cancer-bar-wrap">
+        <div class="cancer-bar-label">
+          <span>${c.type} ${mult}</span>
+          <span style="color:#64748b">${c.rate_per_100k.toFixed(0)} / 10만명</span>
+        </div>
+        <div class="cancer-bar-track">
+          <div class="cancer-bar-fill" style="width:${pct}%;background:${color}"></div>
+        </div>
+        ${surv ? `<div class="cancer-surv">DEATH 연계 ${surv}</div>` : ''}
+      </div>`;
+    }).join('');
+    document.getElementById('hr-cancer-bars').innerHTML = barsHtml;
+    document.getElementById('hr-cancer-source').textContent = '데이터 출처: ' + (cr.data_source || '');
+  } else {
+    cancerCard.style.display = 'none';
+  }
+
+  // ── 이노베이션 존: BFC 보험료 분위 렌더링 ──────────────────────────
+  const bfc = data.bfc_info;
+  const bfcCard = document.getElementById('hr-bfc-card');
+  if (bfc) {
+    bfcCard.style.display = 'block';
+    const tierPct = Math.round(bfc.tier / 5 * 100);
+    document.getElementById('hr-bfc-body').innerHTML = `
+      <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:4px">
+        ${bfc.label} <span style="font-weight:400;font-size:12px;color:#64748b">(${bfc.desc})</span>
+      </div>
+      <div class="bfc-tier-bar" style="width:${tierPct}%;background:${bfc.color}"></div>
+      <div class="bfc-tier-row">
+        <span>1분위</span><span>2분위</span><span>3분위</span><span>4분위</span><span>5분위</span>
+      </div>
+      <div style="margin-top:10px;padding:10px;background:#f0fdf4;border-radius:8px;font-size:12.5px;color:#065f46">
+        💡 <strong>추천 보험료 범위:</strong>
+        월 ${bfc.budget_min_10k}~${bfc.budget_max_10k}만원
+        <div style="font-size:11.5px;color:#047857;margin-top:4px">${bfc.guidance}</div>
+      </div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:6px">데이터 출처: 개인정보 이노베이션 존 — NHIS BFC(자격및보험료 3,706만건)</div>`;
+  } else {
+    bfcCard.style.display = 'none';
+  }
+}
+
+function hrToggleProducts(hdr) {
+  const body  = hdr.nextElementSibling;
+  const arrow = hdr.querySelector('.hr-prod-arrow');
+  const open  = body.style.display !== 'none';
+  body.style.display = open ? 'none' : 'block';
+  if (arrow) arrow.textContent = open ? '▶' : '▼';
+}
+
+// ── Health Risk: 가이드 탭 전환 ───────────────────────────
+function hrGuideTab(el, paneId) {
+  document.querySelectorAll('.hg-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.hg-pane').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(paneId).classList.add('active');
+}
+
+// ── Health Risk: PDF 업로드 ────────────────────────────────
+function hrDragOver(e) {
+  e.preventDefault();
+  document.getElementById('hr-pdf-drop').classList.add('dragover');
+}
+function hrDragLeave(e) {
+  document.getElementById('hr-pdf-drop').classList.remove('dragover');
+}
+function hrDropFile(e) {
+  e.preventDefault();
+  document.getElementById('hr-pdf-drop').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file && file.name.toLowerCase().endsWith('.pdf')) {
+    hrUploadPDF(file);
+  } else {
+    alert('PDF 파일만 업로드 가능합니다.');
+  }
+}
+
+async function hrUploadPDF(file) {
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) { alert('파일이 10MB를 초과합니다.'); return; }
+
+  const status = document.getElementById('hr-pdf-status');
+  const drop   = document.getElementById('hr-pdf-drop');
+
+  status.textContent = '⏳ PDF 분석 중...';
+  status.style.color = '#64748b';
+  drop.style.pointerEvents = 'none';
+  drop.style.opacity = '0.6';
+  drop.querySelector('.pdf-drop-text').textContent = file.name;
+  drop.querySelector('.pdf-drop-sub').textContent  = '텍스트 추출 중...';
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const resp = await fetch('/api/upload-health-pdf', { method: 'POST', body: formData });
+    const d    = await resp.json();
+
+    if (d.error) {
+      status.textContent = '⚠️ ' + d.error;
+      status.style.color = '#dc2626';
+      drop.querySelector('.pdf-drop-sub').textContent = '오류 — 다시 시도하세요';
+      return;
+    }
+
+    // 폼 자동 채우기
+    const fill = (id, val) => {
+      if (val == null) return;
+      const el = document.getElementById(id);
+      if (el) { el.value = val; el.dispatchEvent(new Event('input')); }
+    };
+    const fillSel = (id, val) => {
+      if (val == null) return;
+      const el = document.getElementById(id);
+      if (el) el.value = String(val);
+    };
+    fill('hr-age',        d.age);
+    if (d.gender) fillSel('hr-gender', d.gender);
+    fill('hr-height',     d.height);
+    fill('hr-weight-val', d.weight);
+    fill('hr-waist',      d.waist);
+    fill('hr-sbp',        d.sbp);    fill('hr-dbp', d.dbp);
+    fill('hr-tc',         d.total_cholesterol);
+    fill('hr-tg',         d.triglyceride);
+    fill('hr-hdl',        d.hdl);    fill('hr-ldl', d.ldl);
+    fill('hr-ast',        d.ast);    fill('hr-alt', d.alt); fill('hr-ggt', d.ggt);
+    if (d.smoke != null) fillSel('hr-smoke', d.smoke);
+    if (d.drink != null) fillSel('hr-drink', d.drink);
+    hrCalcBMI();
+
+    const cnt = Object.entries(d).filter(([k, v]) => !k.startsWith('_') && v != null).length;
+    drop.querySelector('.pdf-drop-icon').textContent = '✅';
+    drop.querySelector('.pdf-drop-text').textContent = file.name;
+    drop.querySelector('.pdf-drop-sub').textContent  = `${cnt}개 항목 추출 완료`;
+    drop.style.borderColor = '#22c55e';
+    drop.style.background  = '#f0fdf4';
+    status.textContent = `✅ ${cnt}개 항목이 자동 입력됐습니다. 확인 후 분석해 주세요.`;
+    status.style.color = '#16a34a';
+
+    // 입력 폼으로 스크롤
+    document.getElementById('hr-age').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } catch (e) {
+    status.textContent = '⚠️ 업로드 오류가 발생했습니다.';
+    status.style.color = '#dc2626';
+  } finally {
+    drop.style.pointerEvents = '';
+    drop.style.opacity = '';
+  }
+}
+
+// ── Health Risk: 건강검진 결과 텍스트 자동 파싱 ───────────
+async function hrParseHealthData() {
+  const text = document.getElementById('hr-paste-area').value.trim();
+  if (!text) { alert('건강검진 결과를 붙여넣어 주세요.'); return; }
+
+  const btn    = document.getElementById('hr-parse-btn');
+  const status = document.getElementById('hr-parse-status');
+  btn.disabled = true;
+  btn.textContent = '⏳ 파싱 중...';
+  status.textContent = '';
+
+  try {
+    const resp = await fetch('/api/parse-health-data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+    const d = await resp.json();
+    if (d.error) {
+      status.textContent = '⚠️ ' + d.error;
+      status.style.color = '#dc2626';
+      return;
+    }
+
+    const fill = (id, val) => {
+      if (val == null) return;
+      const el = document.getElementById(id);
+      if (el) { el.value = val; el.dispatchEvent(new Event('input')); }
+    };
+    const fillSel = (id, val) => {
+      if (val == null) return;
+      const el = document.getElementById(id);
+      if (el) el.value = String(val);
+    };
+
+    fill('hr-age',        d.age);
+    if (d.gender) fillSel('hr-gender', d.gender);
+    fill('hr-height',     d.height);
+    fill('hr-weight-val', d.weight);
+    fill('hr-waist',      d.waist);
+    fill('hr-sbp',        d.sbp);
+    fill('hr-dbp',        d.dbp);
+    fill('hr-tc',         d.total_cholesterol);
+    fill('hr-tg',         d.triglyceride);
+    fill('hr-hdl',        d.hdl);
+    fill('hr-ldl',        d.ldl);
+    fill('hr-ast',        d.ast);
+    fill('hr-alt',        d.alt);
+    fill('hr-ggt',        d.ggt);
+    if (d.smoke != null) fillSel('hr-smoke', d.smoke);
+    if (d.drink != null) fillSel('hr-drink', d.drink);
+    hrCalcBMI();
+
+    const filledCount = Object.values(d).filter(v => v != null).length;
+    status.textContent = `✅ ${filledCount}개 항목이 자동 입력됐습니다. 확인 후 분석해 주세요.`;
+    status.style.color = '#16a34a';
+  } catch (e) {
+    status.textContent = '⚠️ 서버 연결 오류가 발생했습니다.';
+    status.style.color = '#dc2626';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✨ 자동 입력';
+  }
+}
+
+// ── Health Risk: AI 맞춤 추천 ──────────────────────────────
+async function hrGetAiRec() {
+  if (!_hrLastResult) {
+    alert('먼저 건강위험 분석을 실행해주세요.');
+    return;
+  }
+
+  const btn  = document.getElementById('hr-ai-btn');
+  const body = document.getElementById('hr-ai-body');
+  btn.disabled = true;
+  btn.textContent = '⏳ AI 추천 생성 중... (30~60초)';
+  body.style.display = 'none';
+
+  try {
+    const resp = await fetch('/api/health-risk-ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ risk_data: _hrLastResult }),
+    });
+    const d = await resp.json();
+    if (d.error) {
+      body.innerHTML = `<p style="color:#dc2626">⚠️ ${d.error}</p>`;
+    } else {
+      body.innerHTML = addLinksToTables(marked.parse(preprocessMd(d.result || '')));
+    }
+    body.style.display = 'block';
+  } catch (e) {
+    body.innerHTML = '<p style="color:#dc2626">⚠️ 서버 연결 오류가 발생했습니다.</p>';
+    body.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🤖 AI 맞춤 추천 다시 받기';
+  }
+}
+
 // 초기화
 checkMode();
 addMessage('bot',
@@ -2144,6 +3173,404 @@ def credit_portfolio():
         from data.credit_model import parse_recommended_products, calculate_policy_loans
         mock_loan = calculate_policy_loans(parse_recommended_products(mock_result))
         return jsonify({'result': mock_result, 'avg_score': avg_score, 'composite_score_data': cs, 'policy_loan_data': mock_loan})
+
+
+@app.route('/api/health-risk', methods=['POST'])
+def api_health_risk():
+    """건강검진 기반 위험예측 + 맞춤 보험 추천"""
+    d = request.get_json(force=True) or {}
+
+    def num(k):
+        v = d.get(k)
+        return float(v) if v not in (None, '', 'null') else None
+
+    try:
+        from tools.health_risk_tool import assess_health_risk
+        smoke = d.get('smoke')
+        drink = d.get('drink')
+        bfc_raw = d.get('bfc_tier')
+        out = assess_health_risk(
+            age=int(d['age']), gender=d.get('gender', '남'),
+            height=num('height'), weight=num('weight'), waist=num('waist'),
+            sbp=num('sbp'), dbp=num('dbp'),
+            total_cholesterol=num('total_cholesterol'), triglyceride=num('triglyceride'),
+            hdl=num('hdl'), ldl=num('ldl'),
+            ast=num('ast'), alt=num('alt'), ggt=num('ggt'),
+            smoke=int(smoke) if smoke not in (None, '', 'null') else None,
+            drink=int(drink) if drink not in (None, '', 'null') else None,
+            bfc_tier=int(bfc_raw) if bfc_raw not in (None, '', 'null') else None,
+            include_products=True,
+        )
+        return app.response_class(out, mimetype='application/json')
+    except KeyError:
+        return jsonify({'error': '나이를 입력해주세요.'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+def _parse_health_regex(text: str) -> dict:
+    """건강검진 결과 텍스트에서 수치를 정규식으로 추출"""
+    import datetime
+    result = {}
+
+    def find_num(patterns):
+        for p in patterns:
+            m = re.search(p, text, re.IGNORECASE)
+            if m:
+                try:
+                    return float(m.group(1).replace(',', ''))
+                except Exception:
+                    pass
+        return None
+
+    # ── 나이 추출 (우선순위 순) ─────────────────────────────
+    age_val = None
+    # 1) "만 48세" / "만48세"
+    m = re.search(r'만\s*(\d{2,3})\s*세', text)
+    if m:
+        age_val = int(m.group(1))
+    # 2) "연령: 48" / "나이: 48" / "연령(세): 48"
+    if age_val is None:
+        m = re.search(r'(?:연령|나이)\s*(?:\(세\))?\s*[:\s]\s*(\d{2,3})', text)
+        if m:
+            age_val = int(m.group(1))
+    # 3) 생년월일에서 역산 "생년월일: 1976-05-15" / "1976년 05월"
+    if age_val is None:
+        m = re.search(r'생년월일[:\s]*(\d{4})', text)
+        if not m:
+            m = re.search(r'(\d{4})\s*년\s*(?:\d{1,2}\s*월)', text)
+        if m:
+            birth_year = int(m.group(1))
+            if 1930 <= birth_year <= 2015:
+                age_val = datetime.datetime.now().year - birth_year
+    # 4) 검진서 상단에 단독으로 나오는 두 자리 나이 "48세"
+    #    단, 혈액검사 수치와 혼동 방지를 위해 문장 처음이나 줄 시작만
+    if age_val is None:
+        m = re.search(r'(?:^|\s|,)(\d{2})\s*세(?!\s*대)', text, re.MULTILINE)
+        if m:
+            age_val = int(m.group(1))
+    if age_val is not None and 15 <= age_val <= 90:
+        result['age'] = age_val
+
+    # ── 성별 추출 ────────────────────────────────────────────
+    if re.search(r'성별[:\s]*(남|M)\b|^남성$', text, re.IGNORECASE | re.MULTILINE):
+        result['gender'] = '남'
+    elif re.search(r'성별[:\s]*(여|F)\b|^여성$', text, re.IGNORECASE | re.MULTILINE):
+        result['gender'] = '여'
+
+    v = find_num([r'신장[:\s/]*(\d+\.?\d*)\s*cm', r'키[:\s]*(\d+\.?\d*)\s*cm'])
+    if v: result['height'] = v
+
+    v = find_num([r'체중[:\s/]*(\d+\.?\d*)\s*kg', r'몸무게[:\s]*(\d+\.?\d*)\s*kg'])
+    if v: result['weight'] = v
+
+    v = find_num([r'허리둘레[:\s/]*(\d+\.?\d*)', r'복부둘레[:\s]*(\d+\.?\d*)'])
+    if v: result['waist'] = v
+
+    m = re.search(r'수축기[혈압]?[:\s/]*(\d+)', text, re.IGNORECASE)
+    if m: result['sbp'] = float(m.group(1))
+    m = re.search(r'이완기[혈압]?[:\s/]*(\d+)', text, re.IGNORECASE)
+    if m: result['dbp'] = float(m.group(1))
+    if 'sbp' not in result:
+        m = re.search(r'혈압[:\s]*(\d{2,3})\s*/\s*(\d{2,3})', text)
+        if m:
+            result['sbp'] = float(m.group(1))
+            result['dbp'] = float(m.group(2))
+
+    v = find_num([r'총콜레스테롤[:\s/]*(\d+)', r'\bTC[:\s]*(\d+)'])
+    if v: result['total_cholesterol'] = v
+
+    v = find_num([r'중성지방[:\s/]*(\d+)', r'\bTG[:\s]*(\d+)', r'트리글리세라이드[:\s]*(\d+)'])
+    if v: result['triglyceride'] = v
+
+    v = find_num([r'HDL[콜레스테롤]?[:\s/]*(\d+)', r'고밀도지단백[:\s]*(\d+)'])
+    if v: result['hdl'] = v
+
+    v = find_num([r'LDL[콜레스테롤]?[:\s/]*(\d+)', r'저밀도지단백[:\s]*(\d+)'])
+    if v: result['ldl'] = v
+
+    v = find_num([r'AST[^:\d\n]*[:\s/]*(\d+)', r'GOT[:\s/]*(\d+)'])
+    if v: result['ast'] = v
+
+    v = find_num([r'ALT[^:\d\n]*[:\s/]*(\d+)', r'GPT[:\s/]*(\d+)'])
+    if v: result['alt'] = v
+
+    v = find_num([r'\bGGT[:\s/]*(\d+)', r'감마.{0,3}GTP[:\s/]*(\d+)', r'γ.{0,3}GTP[:\s/]*(\d+)'])
+    if v: result['ggt'] = v
+
+    if re.search(r'현재\s*흡연|흡연[:\s]*(현재|예)', text, re.IGNORECASE):
+        result['smoke'] = 3
+    elif re.search(r'과거\s*흡연|금연', text, re.IGNORECASE):
+        result['smoke'] = 2
+    elif re.search(r'비흡연|흡연[:\s]*(비|아니|no)', text, re.IGNORECASE):
+        result['smoke'] = 1
+
+    if re.search(r'음주[:\s]*(예|함|있음|yes)', text, re.IGNORECASE):
+        result['drink'] = 1
+    elif re.search(r'음주[:\s]*(아니|안|없음|no|비)', text, re.IGNORECASE):
+        result['drink'] = 0
+
+    return result
+
+
+def _extract_pdf_text(pdf_bytes: bytes) -> str:
+    """PDF 바이트에서 텍스트 추출. pdfplumber → pypdf → PyPDF2 순 시도."""
+    import io
+    text = ""
+    try:
+        import pdfplumber
+        with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
+            pages = [p.extract_text() or "" for p in pdf.pages]
+        text = "\n".join(pages)
+        if text.strip():
+            return text
+    except Exception:
+        pass
+    try:
+        import pypdf
+        reader = pypdf.PdfReader(io.BytesIO(pdf_bytes))
+        text = "\n".join(p.extract_text() or "" for p in reader.pages)
+        if text.strip():
+            return text
+    except Exception:
+        pass
+    try:
+        import PyPDF2
+        reader = PyPDF2.PdfReader(io.BytesIO(pdf_bytes))
+        text = "\n".join(p.extract_text() or "" for p in reader.pages)
+    except Exception as e:
+        raise RuntimeError(f"PDF 텍스트 추출 실패: {e}")
+    return text
+
+
+@app.route('/api/upload-health-pdf', methods=['POST'])
+def api_upload_health_pdf():
+    """건강검진 결과 PDF 업로드 → 텍스트 추출 → 수치 파싱"""
+    if 'file' not in request.files:
+        return jsonify({'error': '파일이 없습니다.'}), 400
+    f = request.files['file']
+    if not f.filename.lower().endswith('.pdf'):
+        return jsonify({'error': 'PDF 파일만 지원합니다.'}), 400
+
+    pdf_bytes = f.read()
+    if len(pdf_bytes) > 10 * 1024 * 1024:
+        return jsonify({'error': '파일이 10MB를 초과합니다.'}), 400
+
+    try:
+        raw_text = _extract_pdf_text(pdf_bytes)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+    if not raw_text.strip():
+        return jsonify({'error': 'PDF에서 텍스트를 추출할 수 없습니다. 스캔된 이미지 PDF는 지원하지 않습니다.'}), 422
+
+    result = _parse_health_regex(raw_text)
+
+    # LLM 보완 (API 사용 가능한 경우)
+    api_live = _check_api_live()
+    if api_live:
+        try:
+            from openai import OpenAI
+            client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY', ''))
+            import datetime as _dt
+            current_year = _dt.datetime.now().year
+            already = {k: v for k, v in result.items() if v is not None and not k.startswith('_')}
+            already_hint = ', '.join(f'{k}={v}' for k, v in already.items()) if already else '(없음)'
+            prompt = f"""다음은 국민건강보험공단 건강검진 결과 PDF에서 추출한 텍스트입니다.
+오늘은 {current_year}년입니다. 아래 JSON 형식으로 수치를 추출해주세요. 없는 항목은 null로 설정하세요.
+
+【중요】
+- age(나이): 반드시 {current_year}년 기준 만 나이(정수)로 반환. 생년월일이 있으면 {current_year} - 출생연도 로 계산.
+  예) 1976년생 → {current_year - 1976}세. 절대 혈액검사 수치를 나이로 착각하지 말 것.
+- 이미 정규식으로 추출된 항목: {already_hint} — 이 항목들은 null로 반환해도 됨(덮어쓰지 않음).
+
+{{
+  "age": 만 나이(정수, {current_year}년 기준) or null,
+  "gender": "남" or "여" or null,
+  "height": 키(cm 숫자) or null,
+  "weight": 몸무게(kg 숫자) or null,
+  "waist": 허리둘레(cm 숫자) or null,
+  "sbp": 수축기혈압(mmHg 숫자) or null,
+  "dbp": 이완기혈압(mmHg 숫자) or null,
+  "total_cholesterol": 총콜레스테롤(mg/dL 숫자) or null,
+  "triglyceride": 중성지방(mg/dL 숫자) or null,
+  "hdl": HDL콜레스테롤(mg/dL 숫자) or null,
+  "ldl": LDL콜레스테롤(mg/dL 숫자) or null,
+  "ast": AST/GOT(U/L 숫자) or null,
+  "alt": ALT/GPT(U/L 숫자) or null,
+  "ggt": 감마GTP(U/L 숫자) or null,
+  "smoke": 1(비흡연) or 2(과거흡연) or 3(현재흡연) or null,
+  "drink": 0(비음주) or 1(음주) or null
+}}
+
+텍스트:
+{raw_text[:3000]}"""
+            resp = client.chat.completions.create(
+                model='gpt-4o-mini',
+                messages=[{'role': 'user', 'content': prompt}],
+                response_format={'type': 'json_object'},
+                temperature=0,
+                max_tokens=512,
+            )
+            llm_data = json.loads(resp.choices[0].message.content)
+            for k, v in llm_data.items():
+                if v is not None and result.get(k) is None:
+                    result[k] = v
+        except Exception:
+            pass
+
+    result['_source'] = 'pdf'
+    return jsonify(result)
+
+
+@app.route('/api/parse-health-data', methods=['POST'])
+def api_parse_health_data():
+    """건강검진 결과 텍스트 → 구조화된 수치 추출 (정규식 + LLM 보완)"""
+    d = request.get_json(force=True) or {}
+    text = d.get('text', '').strip()
+    if not text:
+        return jsonify({'error': '텍스트를 입력해주세요.'}), 400
+
+    result = _parse_health_regex(text)
+
+    api_live = _check_api_live()
+    effective = _get_effective_mode(api_live)
+    if effective == 'live':
+        try:
+            import openai as _oai
+            client = _oai.OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+            resp = client.chat.completions.create(
+                model='gpt-4o-mini',
+                max_tokens=400,
+                response_format={'type': 'json_object'},
+                messages=[
+                    {
+                        'role': 'system',
+                        'content': (
+                            '건강검진 결과 텍스트에서 수치를 추출해서 JSON으로만 반환해. '
+                            'key: age(나이 정수), gender("남"또는"여"), '
+                            'height(cm), weight(kg), waist(cm), sbp, dbp, '
+                            'total_cholesterol, triglyceride, hdl, ldl, ast, alt, ggt, '
+                            'smoke(1=비흡연/2=과거/3=현재흡연), drink(0=비음주/1=음주). '
+                            '없는 값은 null. 단위 없이 숫자만.'
+                        ),
+                    },
+                    {'role': 'user', 'content': text[:2000]},
+                ],
+            )
+            llm_result = json.loads(resp.choices[0].message.content)
+            for k, v in llm_result.items():
+                if v is not None and k not in result:
+                    result[k] = v
+        except Exception:
+            pass
+
+    return jsonify(result)
+
+
+@app.route('/api/health-risk-ai', methods=['POST'])
+def api_health_risk_ai():
+    """건강위험 분석 결과 기반 GPT-4o AI 맞춤 보험 추천"""
+    d = request.get_json(force=True) or {}
+    risk_data = d.get('risk_data', {})
+    if not risk_data:
+        return jsonify({'error': '위험 분석 결과가 없습니다.'}), 400
+
+    ra    = risk_data.get('risk_assessment', {})
+    ins   = risk_data.get('input_summary', {})
+    recs  = risk_data.get('recommended_insurance_types', [])
+    prods = risk_data.get('insmarket_products', {})
+
+    age    = ins.get('age', '불명')
+    gender = ins.get('gender', '남')
+    bmi    = ins.get('bmi', '')
+    flags  = ins.get('flags', [])
+    score  = ra.get('risk_score', 0)
+    band   = ra.get('risk_band', '')
+
+    prod_lines = []
+    prod_table_rows = []  # 보험사명 포함 상품 목록 (프롬프트용)
+    for t, td in prods.items():
+        if isinstance(td, dict) and td.get('results'):
+            for r in td['results'][:2]:
+                co = (r.get('company') or '').strip()
+                nm = (r.get('product_name') or '').strip()
+                pr = (r.get('premium') or '문의').strip()
+                if nm:
+                    prod_table_rows.append(f"| {t} | {co} | {nm} | {pr} |")
+                    prod_lines.append(f"- {t}: {co} {nm} ({pr})")
+    prod_section = '\n'.join(prod_lines) if prod_lines else '(보험다모아 조회 결과 없음)'
+
+    prompt = (
+        f"{age}세 {gender}성, 건강검진 위험 분석 결과를 바탕으로 맞춤 보험 포트폴리오를 추천해줘.\n\n"
+        f"## 위험도 분석 결과\n"
+        f"- 당뇨·대사 위험도: {score*100:.1f}% ({band})\n"
+        f"- BMI: {bmi if bmi else '미입력'}\n"
+        f"- 임상 플래그: {', '.join(flags) if flags else '없음'}\n"
+        f"- 추천 보험 유형: {', '.join(recs)}\n\n"
+        f"## 보험다모아 조회 상품 (보험사명 포함)\n{prod_section}\n\n"
+        f"다음 4가지를 포함해서 마크다운으로 추천해줘:\n"
+        f"1. **위험도 해석** — 이 위험도가 보험 가입에 어떤 의미인지\n"
+        f"2. **우선순위별 보험 포트폴리오** — 반드시 아래 형식의 마크다운 **표**로 정리. "
+        f"**보험사 컬럼에 반드시 실제 보험사명**을 기재할 것 (위 조회 상품 활용, 없으면 삼성생명·한화생명·교보생명 등 주요사 직접 기재):\n"
+        f"   | 순위 | 보험 종류 | 보험사 | 추천 이유 | 예상 월보험료 |\n"
+        f"3. **심사 전략** — 현재 건강 상태에서 가입 시 유의사항 (간편심사/일반심사 등)\n"
+        f"4. **예방 포인트** — 위험 요인 개선으로 보험료 절감·재심사 가능성"
+    )
+
+    api_live = _check_api_live()
+    effective = _get_effective_mode(api_live)
+
+    if effective == 'live':
+        try:
+            from agents.orchestrator import InsuranceChatbot
+            bot = InsuranceChatbot()
+            result = bot.chat(prompt)
+            return jsonify({'result': result})
+        except Exception as e:
+            return jsonify({'error': f'AI 추천 생성 실패: {str(e)}'}), 500
+    else:
+        flag_str = ', '.join(flags) if flags and flags != ['특이소견 없음'] else '특별한 이상 소견 없음'
+        # 실제 조회 상품이 있으면 활용, 없으면 샘플
+        if prod_table_rows:
+            portfolio_table = (
+                "| 순위 | 보험 종류 | 보험사 | 추천 상품 | 예상 월보험료 |\n"
+                "|------|-----------|--------|-----------|---------------|\n" +
+                '\n'.join(
+                    f"| {i+1}순위 | {row.split('|')[1].strip()} | {row.split('|')[2].strip()} "
+                    f"| {row.split('|')[3].strip()} | {row.split('|')[4].strip()} |"
+                    for i, row in enumerate(prod_table_rows[:4])
+                )
+            )
+        else:
+            portfolio_table = (
+                "| 순위 | 보험 종류 | 보험사 | 추천 이유 | 예상 월보험료 |\n"
+                "|------|-----------|--------|-----------|---------------|\n"
+                "| 1순위 | 실손의료보험 (5세대) | 삼성화재 | 기본 의료비 보장 필수 | 2~4만원 |\n"
+                "| 2순위 | 질병보험 | 한화생명 | 당뇨·대사 위험 대비 진단금 | 3~5만원 |\n"
+                "| 3순위 | 암보험 | 교보생명 | 대사증후군 → 암 위험 상관관계 | 2~4만원 |"
+            )
+        mock = f"""## 🤖 AI 맞춤 보험 추천 (Mock 모드)
+
+> ⚠️ Mock 모드: OpenAI API 키 설정 후 Live 모드에서 정확한 추천을 받을 수 있습니다.
+
+### 1. 위험도 해석
+**{band}** ({score*100:.1f}%)으로 분석됐습니다. 임상 소견: {flag_str}
+
+### 2. 우선순위별 보험 포트폴리오
+
+{portfolio_table}
+
+### 3. 심사 전략
+- **일반심사** 가능 여부를 먼저 확인하세요.
+- 고혈압·당뇨 치료 이력 있으면 **간편심사형** 상품 비교 필요.
+
+### 4. 예방 포인트
+- 규칙적 유산소 운동 (주 3~5회, 30분+)
+- 금연 및 절주 → 2년 후 보험료 재산정 기회
+- 1~2년 주기 정기 건강검진 권장
+"""
+        return jsonify({'result': mock})
 
 
 @app.route('/api/chat', methods=['POST'])
