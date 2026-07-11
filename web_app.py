@@ -3480,6 +3480,8 @@ def api_health_risk_ai():
     ins   = risk_data.get('input_summary', {})
     recs  = risk_data.get('recommended_insurance_types', [])
     prods = risk_data.get('insmarket_products', {})
+    bfc   = risk_data.get('bfc_info') or {}
+    cancer = risk_data.get('cancer_risk') or {}
 
     age    = ins.get('age', '불명')
     gender = ins.get('gender', '남')
@@ -3488,8 +3490,34 @@ def api_health_risk_ai():
     score  = ra.get('risk_score', 0)
     band   = ra.get('risk_band', '')
 
+    # BFC 분위 예산 정보
+    bfc_section = ''
+    if bfc:
+        bfc_label = bfc.get('label', '')
+        bfc_min   = bfc.get('budget_min_10k', 0)
+        bfc_max   = bfc.get('budget_max_10k', 0)
+        bfc_section = (
+            f"\n## BFC 보험료 분위 (이노베이션 존 · NHIS 3,706만 건)\n"
+            f"- 분위: {bfc_label}\n"
+            f"- 납부 가능 보험료 범위: 월 {bfc_min}~{bfc_max}만원\n"
+            f"⚠️ 추천 포트폴리오 합산 월보험료가 반드시 {bfc_max}만원 이내가 되도록 구성할 것.\n"
+        )
+
+    # 암 위험 상위 3개
+    cancer_section = ''
+    cancer_items = cancer.get('cancer_risks', []) if isinstance(cancer, dict) else []
+    if cancer_items:
+        top3 = cancer_items[:3]
+        lines = [f"- {c['cancer']}: {c['risk_level']} (5년 생존율 {c.get('survival_5yr', '?')}%)" for c in top3]
+        death_flag = any((c.get('survival_5yr') or 100) < 50 for c in top3)
+        cancer_section = (
+            f"\n## 암 위험 분석 (이노베이션 존 RGST/DEATH 연계)\n"
+            + '\n'.join(lines) +
+            ('\n⚠️ 5년 생존율 50% 미만 고위험 암종 감지 → 종신보험·간병보험을 포트폴리오에 반드시 포함할 것.' if death_flag else '')
+        )
+
     prod_lines = []
-    prod_table_rows = []  # 보험사명 포함 상품 목록 (프롬프트용)
+    prod_table_rows = []
     for t, td in prods.items():
         if isinstance(td, dict) and td.get('results'):
             for r in td['results'][:2]:
@@ -3501,17 +3529,25 @@ def api_health_risk_ai():
                     prod_lines.append(f"- {t}: {co} {nm} ({pr})")
     prod_section = '\n'.join(prod_lines) if prod_lines else '(보험다모아 조회 결과 없음)'
 
+    budget_note = (
+        f"월 {bfc.get('budget_max_10k', '?')}만원 이하 범위 내 포트폴리오 구성 필수."
+        if bfc else "예산 제한 없음."
+    )
+
     prompt = (
         f"{age}세 {gender}성, 건강검진 위험 분석 결과를 바탕으로 맞춤 보험 포트폴리오를 추천해줘.\n\n"
         f"## 위험도 분석 결과\n"
         f"- 당뇨·대사 위험도: {score*100:.1f}% ({band})\n"
         f"- BMI: {bmi if bmi else '미입력'}\n"
         f"- 임상 플래그: {', '.join(flags) if flags else '없음'}\n"
-        f"- 추천 보험 유형: {', '.join(recs)}\n\n"
+        f"- 추천 보험 유형: {', '.join(recs)}\n"
+        f"{bfc_section}"
+        f"{cancer_section}\n\n"
         f"## 보험다모아 조회 상품 (보험사명 포함)\n{prod_section}\n\n"
         f"다음 4가지를 포함해서 마크다운으로 추천해줘:\n"
         f"1. **위험도 해석** — 이 위험도가 보험 가입에 어떤 의미인지\n"
         f"2. **우선순위별 보험 포트폴리오** — 반드시 아래 형식의 마크다운 **표**로 정리. "
+        f"{budget_note} "
         f"**보험사 컬럼에 반드시 실제 보험사명**을 기재할 것 (위 조회 상품 활용, 없으면 삼성생명·한화생명·교보생명 등 주요사 직접 기재):\n"
         f"   | 순위 | 보험 종류 | 보험사 | 추천 이유 | 예상 월보험료 |\n"
         f"3. **심사 전략** — 현재 건강 상태에서 가입 시 유의사항 (간편심사/일반심사 등)\n"
