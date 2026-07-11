@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareLink — 2026 가명정보 활용 경진대회 발표자료</title>
+<style>
+:root {
+  --bg:     #0f172a;
+  --card:   #1e293b;
+  --card2:  #0f1f3d;
+  --border: #334155;
+  --blue:   #0ea5e9;
+  --blue2:  #38bdf8;
+  --purple: #8b5cf6;
+  --green:  #10b981;
+  --red:    #ef4444;
+  --orange: #f97316;
+  --yellow: #f59e0b;
+  --pink:   #ec4899;
+  --text:   #f1f5f9;
+  --sub:    #94a3b8;
+  --dim:    #475569;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden;
+  background: var(--bg); font-family: 'Malgun Gothic','Apple SD Gothic Neo',sans-serif;
+  color: var(--text); }
+
+/* ── 슬라이드 컨테이너 ── */
+#deck { width: 100%; height: 100%; position: relative; }
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  padding: 48px 72px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .35s ease;
+}
+.slide.active { opacity: 1; pointer-events: all; }
+
+/* ── 네비게이션 ── */
+#nav {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 10px; align-items: center; z-index: 100;
+}
+#nav button {
+  background: var(--card); border: 1px solid var(--border); color: var(--sub);
+  padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 14px;
+  font-family: inherit; transition: background .2s;
+}
+#nav button:hover { background: var(--border); color: var(--text); }
+#slide-counter { font-size: 13px; color: var(--dim); min-width: 60px; text-align: center; }
+#progress {
+  position: fixed; top: 0; left: 0; height: 3px;
+  background: linear-gradient(90deg, var(--blue), var(--purple));
+  transition: width .35s ease; z-index: 100;
+}
+
+/* ── 공통 ── */
+.tag {
+  display: inline-block; padding: 4px 12px; border-radius: 20px;
+  font-size: 12px; font-weight: 700; letter-spacing: .5px;
+}
+.tag-blue   { background: #0c2d48; color: var(--blue2); border: 1px solid #1d4ed8; }
+.tag-purple { background: #2e1065; color: #c4b5fd; border: 1px solid var(--purple); }
+.tag-green  { background: #064e3b; color: #6ee7b7; border: 1px solid var(--green); }
+.tag-red    { background: #450a0a; color: #fca5a5; border: 1px solid var(--red); }
+.tag-orange { background: #431407; color: #fdba74; border: 1px solid var(--orange); }
+.tag-yellow { background: #451a03; color: #fde68a; border: 1px solid var(--yellow); }
+
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 24px 28px;
+}
+.card-blue   { border-color: var(--blue); }
+.card-purple { border-color: var(--purple); }
+.card-green  { border-color: var(--green); }
+.card-red    { border-color: var(--red); }
+
+.num { font-size: 52px; font-weight: 800; line-height: 1; }
+.num-blue   { color: var(--blue2); }
+.num-green  { color: var(--green); }
+.num-orange { color: var(--orange); }
+.num-purple { color: var(--purple); }
+
+h1 { font-size: 42px; font-weight: 800; line-height: 1.2; }
+h2 { font-size: 32px; font-weight: 700; line-height: 1.3; }
+h3 { font-size: 22px; font-weight: 700; }
+.sub { color: var(--sub); }
+.em { color: var(--blue2); font-weight: 700; }
+
+.row { display: flex; gap: 20px; width: 100%; }
+.col { flex: 1; }
+.w-full { width: 100%; }
+
+/* ── 화살표 흐름 ── */
+.flow {
+  display: flex; align-items: center; gap: 0; width: 100%;
+}
+.flow-box {
+  flex: 1; background: var(--card); border-radius: 12px; padding: 20px 16px;
+  text-align: center; border: 1px solid var(--border);
+}
+.flow-arrow {
+  font-size: 28px; color: var(--blue); padding: 0 6px; flex-shrink: 0;
+}
+
+/* ── 게이지 바 ── */
+.gauge-wrap { width: 100%; background: #1e3a5f; border-radius: 8px; height: 20px; overflow: hidden; }
+.gauge-fill { height: 100%; border-radius: 8px; transition: width 1s ease; }
+
+/* ── 체크리스트 ── */
+.check-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+.check-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+.check-ok   { background: #064e3b; color: #34d399; }
+.check-plan { background: #1e3a5f; color: var(--blue2); }
+
+/* ── 테이블 ── */
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { background: #0f1f3d; color: var(--blue2); padding: 10px 14px; text-align: left; font-size: 13px; }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); }
+tr:last-child td { border-bottom: none; }
+tr:nth-child(even) td { background: #0a1628; }
+
+/* ── 슬라이드별 배경 강조 ── */
+.slide-title  { background: radial-gradient(ellipse at 30% 40%, #0c2d48 0%, var(--bg) 60%); }
+.slide-purple { background: radial-gradient(ellipse at 70% 30%, #1a0533 0%, var(--bg) 60%); }
+.slide-green  { background: radial-gradient(ellipse at 30% 60%, #031f13 0%, var(--bg) 60%); }
+.slide-red    { background: radial-gradient(ellipse at 60% 40%, #1a0505 0%, var(--bg) 60%); }
+
+/* 슬라이드 번호 배지 */
+.slide-num {
+  position: absolute; top: 24px; right: 32px;
+  font-size: 12px; color: var(--dim);
+}
+.slide-label {
+  position: absolute; top: 24px; left: 32px;
+  font-size: 12px; color: var(--dim); letter-spacing: 1px; text-transform: uppercase;
+}
+
+/* 강조 숫자 카드 */
+.stat-card {
+  background: var(--card); border-radius: 16px; padding: 28px 24px;
+  text-align: center; flex: 1; border: 1px solid var(--border);
+}
+.stat-label { font-size: 13px; color: var(--sub); margin-top: 8px; line-height: 1.4; }
+
+/* 타임라인 */
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.tl-item { display: flex; gap: 20px; padding-bottom: 24px; position: relative; }
+.tl-item:not(:last-child)::before {
+  content: ''; position: absolute; left: 19px; top: 38px;
+  width: 2px; height: calc(100% - 14px); background: var(--border);
+}
+.tl-dot { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; z-index: 1; }
+.tl-content { flex: 1; padding-top: 6px; }
+
+/* 비교 표 */
+.vs-table { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; }
+.vs-cell { background: var(--card); border-radius: 10px; padding: 12px 16px; font-size: 14px; }
+.vs-label { font-size: 12px; color: var(--sub); margin-bottom: 4px; }
+.vs-mid { font-size: 22px; color: var(--dim); text-align: center; font-weight: 300; }
+.vs-good { background: #0f1f3d; border: 1px solid var(--blue); }
+.vs-bad  { background: #1c1917; }
+
+/* 시나리오 카드 */
+.scenario { border-radius: 14px; padding: 20px; border: 1px solid var(--border);
+  background: var(--card); }
+.scenario-title { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+.scenario-step  { font-size: 13px; color: var(--sub); line-height: 1.8; }
+.scenario-result{ font-size: 14px; font-weight: 700; margin-top: 10px; padding: 10px;
+  border-radius: 8px; }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="deck">
+
+<!-- ════════════════════════════════════════════
+  01. 표지
+════════════════════════════════════════════ -->
+<div class="slide slide-title active" id="s1">
+  <div class="slide-num">01 / 16</div>
+  <div style="text-align:center; max-width:860px;">
+    <div style="display:flex; justify-content:center; gap:10px; margin-bottom:32px;">
+      <span class="tag tag-blue">지정과제① 이노베이션 존</span>
+      <span class="tag tag-green">지정과제② NHIS 건강검진</span>
+    </div>
+    <h1 style="font-size:52px; line-height:1.15; margin-bottom:20px;">
+      건강검진 · 진료 가명정보<br>
+      <span style="color:var(--blue2);">×</span>
+      보험 공시데이터 결합 기반<br>
+      <span style="background:linear-gradient(90deg,var(--blue2),var(--purple));
+        -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
+        AI 맞춤 보험 추천 시스템
+      </span>
+    </h1>
+    <p style="font-size:26px; color:var(--sub); font-weight:300; margin-bottom:48px;">
+      CareLink
+    </p>
+    <div style="display:flex; justify-content:center; gap:40px; font-size:14px; color:var(--dim);">
+      <span>2026 가명정보 활용 경진대회 · 아이디어 부문</span>
+      <span>|</span>
+      <span>CareLink팀 · 이종재</span>
+      <span>|</span>
+      <span>2026. 7.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+  02. 문제: 검진 후 아무도 알려주지 않는다
+════════════════════════════════════════════ -->
+<div class="slide" id="s2">
+  <div class="slide-num">02 / 16</div>
+  <div class="slide-label">문제 제기</div>
+  <div style="width:100%; max-width:1000px;">
+    <h2 style="margin-bottom:10px;">건강검진을 받아도 <span class="em">아무도 알려주지 않습니다</span></h2>
+    <p style="color:var(--sub); margin-bottom:36px; font-size:16px;">
+      매년 1,500만 명이 건강검진을 받지만 — 내 위험에 맞는 보험을 찾는 건 오롯이 소비자 몫입니다
+    </p>
+    <div class="row" style="gap:24px; margin-bottom:32px;">
+      <div class="card" style="flex:1; border-color:#dc2626; text-align:center;">
+        <div class="num num-blue" style="color:#ef4444;">1,500<span style="font-size:24px;">만명</span></div>
+        <p style="color:var(--sub); font-size:14px; margin-top:8px;">연간 건강검진 수검자<br>이 중 적정 보험 가입자 비율은?</p>
+      </div>
+      <div class="card" style="flex:1; text-align:center;">
+        <div class="num num-blue" style="color:var(--orange);">250<span style="font-size:24px;">조원</span></div>
+        <p style="color:var(--sub); font-size:14px; margin-top:8px;">국내 보험 시장 규모<br>만성질환 위험군은 보장 공백 상태</p>
+      </div>
+      <div class="card" style="flex:1; text-align:center;">
+        <div class="num num-blue" style="color:var(--purple);">3분<span style="font-size:24px;">이내</span></div>
+        <p style="color:var(--sub); font-size:14px; margin-top:8px;">CareLink의 분석 시간<br>검진 수치 입력 → 맞춤 추천 완료</p>
+      </div>
+    </div>
+    <div class="row" style="gap:20px;">
+      <div class="card" style="flex:1;">
+        <div style="font-size:28px; margin-bottom:8px;">🩺</div>
+        <p style="font-weight:700; color:var(--red); margin-bottom:6px;">보험 사각지대</p>
+        <p style="font-size:14px; color:var(--sub);">만성질환 위험군 약 1,500만 명이<br>발병 전 적절한 보장을 갖추지 못함</p>
+      </div>
+      <div class="card" style="flex:1;">
+        <div style="font-size:28px; margin-bottom:8px;">🔀</div>
+        <p style="font-weight:700; color:var(--orange); margin-bottom:6px;">정보 비대칭</p>
+        <p style="font-size:14px; color:var(--sub);">보험설계사는 수치 해석 불가<br>의사는 보험 상품 정보 없음</p>
+      </div>
+      <div class="card" style="flex:1;">
+        <div style="font-size:28px; margin-bottom:8px;">💸</div>
+        <p style="font-weight:700; color:var(--yellow); margin-bottom:6px;">접근성 격차</p>
+        <p style="font-size:14px; color:var(--sub);">저소득·고령층은 건강 위험이 높은데<br>보험 정보 접근성은 오히려 낮음</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+  03. 해결책: CareLink가 연결합니다
+════════════════════════════════════════════ -->
+<div class="slide slide-green" id="s3">
+  <div class="slide-num">03 / 16</div>
+  <div class="slide-label">해결책</div>
+  <div style="width:100%; max-width:960px;">
+    <h2 style="margin-bottom:8px;"><span class="em">CareLink</span>가 연결합니다</h2>
+    <p style="color:var(--sub); margin-bottom:40px;">건강 위험과 보험 사이의 빈 공간을 AI가 채웁니다</p>
+
+    <div class="flow" style="margin-bottom:40px;">
+      <div class="flow-box">
+        <div style="font-size:32px; margin-bottom:10px;">📋</div>
+        <p style="font-weight:700; margin-bottom:6px; font-size:16px;">Step 1<br>건강 데이터 입력</p>
+        <p style="font-size:13px; color:var(--sub);">수치 직접 입력<br>또는 PDF 업로드<br>나이·성별만도 OK</p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color:var(--blue);">
+        <div style="font-size:32px; margin-bottom:10px;">🤖</div>
+        <p style="font-weight:700; margin-bottom:6px; font-size:16px; color:var(--blue2);">Step 2<br>AI 위험 분석</p>
+        <p style="font-size:13px; color:var(--sub);">만성질환 위험도<br>암종별 위험도<br>납부 가능 예산</p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color:var(--green);">
+        <div style="font-size:32px; margin-bottom:10px;">🛡️</div>
+        <p style="font-weight:700; margin-bottom:6px; font-size:16px; color:#34d399;">Step 3<br>맞춤 보험 추천</p>
+        <p style="font-size:13px; color:var(--sub);">실제 공시 상품<br>예산 범위 내 필터<br>가입 링크 직접 연결</p>
+      </div>
+    </div>
+
+    <div class="card" style="border-color:var(--green); text-align:center; padding:24px;">
+      <p style="font-size:20px; font-weight:700; line-height:1.7;">
+        <span style="color:var(--blue2);">가명정보</span>에서 발견한 <span style="color:var(--orange);">위험 패턴</span>을<br>
+        실제 국민이 <span style="color:#34d399;">보험 가입</span>으로 이어지는 서비스
+      </p>
+      <p style="color:var(--sub); margin-top:12px; font-size:14px;">
+        ✅ 동작하는 웹 데모 시스템 완성 — 즉시 시연 가능
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+  04. 활용 데이터: 이노베이션 존이란?
+════════════════════════════════════════════ -->
+<div class="slide" id="s4">
+  <div class="slide-num">04 / 16</div>
+  <div class="slide-label">지정과제① 데이터</div>
+  <div style="width:100%; max-width:1000px;">
+    <h2 style="margin-bottom:8px;">활용 데이터 ① — <span style="color:var(--blue2);">개인정보 이노베이션 존</span></h2>
+    <p style="color:var(--sub); margin-bottom:30px; font-size:15px;">
+      국립암센터 보관 가명정보 5개 테이블 — 암·진료·사망·소득 정보를 안전하게 결합합니다
+    </p>
+    <table style="margin-bottom:24px;">
+      <thead>
+        <tr>
+          <th>테이블</th>
+          <th>내용</th>
+          <th>건수</th>
+          <th>적재기간</th>
+          <th>CareLink 활용 방식</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag tag-blue">RGST</span></td>
+          <td>국립암센터 암등록</td>
+          <td style="color:var(--blue2); font-weight:700;">261만건</td>
+          <td>2012~2021</td>
+          <td>연령·성별·암종별 <strong>발생률 기저율</strong> → 개인 암위험 산출</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-purple">T200</span></td>
+          <td>명세서일반내역</td>
+          <td style="color:var(--purple); font-weight:700;">15억건</td>
+          <td>2007~2023</td>
+          <td>만성질환 <strong>진료비·반복 진료 패턴</strong> → 고위험군 식별</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-purple">T400</span></td>
+          <td>상병내역</td>
+          <td style="color:var(--purple); font-weight:700;">35억건</td>
+          <td>2007~2023</td>
+          <td>상병코드(KCD) → <strong>질환 진행 경로</strong> 분석</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-green">BFC</span></td>
+          <td>자격및보험료 (분위)</td>
+          <td style="color:var(--green); font-weight:700;">3,706만건</td>
+          <td>2007~2023</td>
+          <td>건강보험료 분위 → <strong>납부 가능 보험료 범위</strong> 자동 산정</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-red">DEATH</span></td>
+          <td>사망</td>
+          <td style="color:var(--red); font-weight:700;">78만건</td>
+          <td>2012~2022</td>
+          <td>암종별 <strong>5년 생존율</strong> → 종신·간병보험 필요 자동 판단</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="card card-blue" style="padding:16px 24px; font-size:14px; color:var(--sub);">
+      <span style="color:var(--blue2); font-weight:700;">핵심 포인트:</span>
+      원본 데이터는 이노베이션 존 밖으로 나오지 않습니다.
+      분석된 <strong style="color:var(--text);">모델 파라미터(숫자 값)만</strong> 추출하여 서비스에 활용 —
+      어떠한 개인도 식별되지 않습니다.
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+  05. 활용 데이터: NHIS + 보험다모아
+════════════════════════════════════════════ -->
+<div class="slide" id="s5">
+  <div class="slide-num">05 / 16</div>
+  <div class="slide-label">지정과제② · 공개 데이터</div>
+  <div style="width:100%; max-width:960px;">
+    <h2 style="margin-bottom:8px;">활용 데이터 ② — <span style="color:#34d399;">NHIS 건강검진</span> + <span style="color:var(--yellow);">보험다모아</span></h2>
+    <p style="color:var(--sub); margin-bottom:32px;">두 출처 데이터를 이노베이션 존 데이터와 결합해 서비스를 완성합니다</p>
+
+    <div class="row" style="margin-bottom:28px;">
+      <div class="card" style="flex:1; border-color:#34d399;">
+        <div class="tag tag-green" style="margin-bottom:14px;">지정과제② NHIS 건강검진정보</div>
+        <p style="font-size:14px; color:var(--sub); margin-bottom:16px;">
+          국민건강보험공단이 보유한 건강검진 수치 항목
+        </p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:13px;">
+          <div style="background:#031f13; padding:8px 12px; border-radius:8px;">혈압 (수축기/이완기)</div>
+          <div style="background:#031f13; padding:8px 12px; border-radius:8px;">혈당 (공복)</div>
+          <div style="background:#031f13; padding:8px 12px; border-radius:8px;">BMI · 허리둘레</div>
+          <div style="background:#031f13; padding:8px 12px; border-radius:8px;">총콜레스테롤 · TG</div>
+          <div style="background:#031f13; padding:8px 12px; border-radius:8px;">HDL · LDL</div>
+          <div style="background:#031f13; padding:8px 12px; border-radius:8px;">간수치 AST/ALT/GGT</div>
+        </div>
+        <p style="font-size:12px; color:var(--dim); margin-top:12px;">
+          → 이 수치로 로지스틱 회귀 모델 학습 (AUC 0.78)
+        </p>
+      </div>
+      <div class="card" style="flex:1; border-color:var(--yellow);">
+        <div class="tag tag-yellow" style="margin-bottom:14px;">공개 데이터 · 보험다모아</div>
+        <p style="font-size:14px; color:var(--sub); margin-bottom:16px;">
+          금융위원회 · 보험협회 공시 보험 상품 정보
+        </p>
+        <div style="font-size:13px; line-height:2.0;">
+          <div>📦 보험 상품명 · 보험사명</div>
+          <div>💰 월 보험료 (연령·성별 기준)</div>
+          <div>📋 보장 내용 · 특약</div>
+          <div>🔗 보험사 가입 링크</div>
+          <div>📊 비갱신형·갱신형 구분</div>
+        </div>
+        <p style="font-size:12px; color:var(--dim); margin-top:12px;">
+          → 엑셀(XLS) 자동 파싱 · BFC 예산 범위 필터 적용
+        </p>
+      </div>
+    </div>
+
+    <div class="card" style="border-color:var(--blue);">
+      <p style="font-size:15px; font-weight:700; color:var(--blue2); margin-bottom:8px;">데이터 결합 흐름</p>
+      <div class="flow" style="font-size:13px;">
+        <div class="flow-box" style="padding:12px; font-size:13px; background:#0c2d48; border-color:var(--blue);">
+          이노베이션 존<br><span style="color:var(--sub);">RGST·T200·T400<br>BFC·DEATH</span>
+        </div>
+        <div class="flow-arrow" style="font-size:20px;">+</div>
+        <div class="flow-box" style="padding:12px; font-size:13px; background:#031f13; border-color:#34d399;">
+          NHIS<br><span style="color:var(--sub);">건강검진 수치</span>
+        </div>
+        <div class="flow-arrow" style="font-size:20px;">+</div>
+        <div class="flow-box" style="padding:12px; font-size:13px; background:#1c1100; border-color:var(--yellow);">
+          보험다모아<br><span style="color:var(--sub);">공시 상품</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box" style="padding:12px; font-size:13px; background:#1e1b4b; border-color:var(--purple); flex:1.5;">
+          <strong style="color:#c4b5fd;">AI 위험 예측 + 맞춤 추천</strong><br>
+          <span style="color:var(--sub);">GPT-4o · 로지스틱 회귀 · ChromaDB</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+  06. 핵심 기능 1: 만성질환 위험 예측 (AUC 0.78)
+════════════════════════════════════════════ -->
+<div class="slide slide-purple" id="s6">
+  <div class="slide-num">06 / 16</div>
+  <div class="slide-label">핵심 기능 ①</div>
+  <div style="width:100%; max-width:960px;">
+    <h2 style="margin-bottom:8px;">건강검진 수치 → <span style="color:#c4b5fd;">만성질환 위험도</span> 자동 산출</h2>
+    <p style="color:var(--sub); margin-bottom:32px;">NHIS 건강검진 스키마 기반 로지스틱 회귀 모델 — <strong style="color:#c4b5fd;">AUC 0.78</strong></p>
+
+    <div class="row" style="margin-bottom:24px;">
+      <div style="flex:1.2">
+        <p style="font-size:14px; color:var(--sub); margin-bottom:14px;">
+          ► 입력 수치 17개 항목 → 당뇨·대사·고혈압 복합 위험도 0~100% 산출
+        </p>
+        <div style="margin-bottom:16px; background:var(--card); border-radius:12px; padding:20px;">
+          <p style="font-size:13px; color:var(--sub); margin-bottom:6px;">예시: 55세 남성 · 흡연 · 혈압 145/92</p>
+          <p style="font-size:28px; font-weight:800; color:var(--red); margin-bottom:10px;">위험도 72% — 고위험</p>
+          <div class="gauge-wrap">
+            <div class="gauge-fill" style="width:72%; background:linear-gradient(90deg,#f97316,#ef4444);"></div>
+          </div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <p style="font-size:13px; color:var(--sub); margin-bottom:10px;">자동 감지되는 임상 플래그:</p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <span style="background:#450a0a; color:#fca5a5; padding:5px 12px; border-radius:20px; font-size:13px; border:1px solid var(--red);">고혈압 의심</span>
+            <span style="background:#431407; color:#fdba74; padding:5px 12px; border-radius:20px; font-size:13px; border:1px solid var(--orange);">간수치 이상</span>
+            <span style="background:#451a03; color:#fde68a; padding:5px 12px; border-radius:20px; font-size:13px; border:1px solid var(--yellow);">이상지질혈증</span>
+            <span style="background:#450a0a; color:#fca5a5; padding:5px 12px; border-radius:20px; font-size:13px; border:1px solid var(--red);">현재 흡연</span>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1; display:flex; flex-direction:column; gap:12px;">
+        <div class="card card-purple" style="padding:18px;">
+          <p style="font-size:13px; color:var(--sub); margin-bottom:4px;">모델 성능</p>
+          <div style="font-size:36px; font-weight:800; color:#c4b5fd;">AUC 0.78</div>
+          <p style="font-size:12px; color:var(--dim);">NHIS 공개 스키마 기반 합성데이터<br>학습 샘플 32,000건 · 특징 17개</p>
+        </div>
+        <div class="card" style="padding:18px;">
+          <p style="font-size:13px; color:var(--sub); margin-bottom:4px;">최적 임계점</p>
+          <p style="font-size:15px; font-weight:700;">민감도 88% / 특이도 86%</p>
+          <p style="font-size:12px; color:var(--dim); margin-top:4px;">이노베이션 존 실데이터 재학습 시<br>AUC 0.85+ 목표</p>
+        </div>
+        <div class="card" style="padding:18px;">
+          <p style="font-size:13px; color:var(--sub); margin-bottom:4px;">기술 방식</p>
+          <p style="font-size:14px; font-weight:700;">순수 파이썬 추론</p>
+          <p style="font-size:12px; color:var(--dim); margin-top:4px;">외부 ML 라이브러리 없이 동작<br>파라미터(JSON) 교체로 즉시 갱신</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+  07. 핵심 기능 2: 암 위험 분석 (RGST 연계)
+════════════════════════════════════════════ -->
+<div class="slide slide-red" id="s7">
+  <div class="slide-num">07 / 16</div>
+  <div class="slide-label">핵심 기능 ②</div>
+  <div style="width:100%; max-width:960px;">
+    <h2 style="margin-bottom:6px;"><span style="color:#fca5a5;">암 위험 분석</span> — RGST 261만건 기반</h2>
+    <p style="color:var(--sub); margin-bottom:28px; font-size:15px;">
+      이노베이션 존 암등록 데이터에서 연령·성별·암종별 발생률을 추출 → 임상 위험인자로 개인화
+    </p>
+
+    <div class="row" style="margin-bottom:20px; gap:24px;">
+      <div style="flex:1.3">
+        <p style="font-size:13px; color:var(--sub); margin-bottom:12px;">
+          ► RGST 기저율(연령·성별 평균 발생률) × 임상 위험 배율 = 개인화 위험도
+        </p>
+        <!-- 암종별 바 -->
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="width:60px; font-size:13px; text-align:right; color:var(--sub);">폐암</span>
+            <div style="flex:1; height:22px; background:#1e293b; border-radius:6px; overflow:hidden; position:relative;">
+              <div style="width:87%; height:100%; background:var(--red); border-radius:6px; opacity:.85;"></div>
+            </div>
+            <span style="width:80px; font-size:12px; color:var(--red); font-weight:700;">87% · 고위험</span>
+            <span style="font-size:11px; color:var(--dim);">흡연 ×10배</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="width:60px; font-size:13px; text-align:right; color:var(--sub);">간암</span>
+            <div style="flex:1; height:22px; background:#1e293b; border-radius:6px; overflow:hidden;">
+              <div style="width:72%; height:100%; background:var(--orange); border-radius:6px; opacity:.85;"></div>
+            </div>
+            <span style="width:80px; font-size:12px; color:var(--orange); font-weight:700;">72% · 고위험</span>
+            <span style="font-size:11px; color:var(--dim);">간수치 ×3배 + 흡연 ×1.5배</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="width:60px; font-size:13px; text-align:right; color:var(--sub);">췌장암</span>
+            <div style="flex:1; height:22px; background:#1e293b; border-radius:6px; overflow:hidden;">
+              <div style="width:55%; height:100%; background:var(--orange); border-radius:6px; opacity:.85;"></div>
+            </div>
+            <span style="width:80px; font-size:12px; color:var(--orange); font-weight:700;">55% · 중고위험</span>
+            <span style="font-size:11px; color:var(--dim);">흡연 ×2배</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="width:60px; font-size:13px; text-align:right; color:var(--sub);">대장암</span>
+            <div style="flex:1; height:22px; background:#1e293b; border-radius:6px; overflow:hidden;">
+              <div style="width:45%; height:100%; background:var(--yellow); border-radius:6px; opacity:.85;"></div>
+            </div>
+            <span style="width:80px; font-size:12px; color:var(--yellow); font-weight:700;">45% · 중위험</span>
+            <span style="font-size:11px; color:var(--dim);">비만 ×1.3배</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="width:60px; font-size:13px; text-align:right; color:var(--sub);">위암</span>
+            <div style="flex:1; height:22px; background:#1e293b; border-radius:6px; overflow:hidden;">
+              <div style="width:38%; height:100%; background:#84cc16; border-radius:6px; opacity:.85;"></div>
+            </div>
+            <span style="width:80px; font-size:12px; color:#84cc16; font-weight:700;">38% · 중위험</span>
+            <span style="font-size:11px; color:var(--dim);">기저율</span>
+          </div>
+        </div>
+        <div style="background:#0c2d48; border-radius:8px; padding:10px 14px; font-size:13px; color:var(--sub);">
+          위험 배율 출처: RGST 암등록 + T400 상병내역 패턴 분석<br>
+          (흡연→폐암 10배, 간수치 이상→간암 3배 등 위험인자별 상대위험도 적용)
+        </div>
+      </div>
+      <div style="flex:1; display:flex; flex-direction:column; gap:12px;">
+        <div class="card card-red" style="padding:18px;">
+          <p style="font-size:13px; color:var(--sub); margin-bottom:8px;">RGST 활용 방식</p>
+          <p style="font-size:14px; line-height:1.8;">
+            ① 연령대 × 성별 × 암종별<br>&nbsp;&nbsp;&nbsp;발생률 기저율 추출<br>
+            ② 임상 플래그(흡연·비만 등)<br>&nbsp;&nbsp;&nbsp;위험 배율 곱셈 적용<br>
+            ③ 개인화 암종별 위험도 산출
+          </p>
+        </div>
+        <div class="card" style="padding:18px; border-color:var(--orange);">
+          <p style="font-size:13px; color:var(--sub); margin-bottom:6px;">서비스 내 표시 방식</p>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <span class="tag tag-red">이노베이션 존</span>
+            <span class="tag tag-red">RGST 배지</span>
+          </div>
+          <p style="font-size:12px; color:var(--dim); margin-top:8px;">
+            심사위원·이용자 모두 어떤 데이터에서<br>나온 결과인지 UI에서 바로 확인 가능
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+  08. 핵심 기능 3: DEATH 5년 생존율 연계
+════════════════════════════════════════════ -->
+<div class="slide" id="s8">
+  <div class="slide-num">08 / 16</div>
+  <div class="slide-label">핵심 기능 ③</div>
+  <div style="width:100%; max-width:960px;">
+    <h2 style="margin-bottom:8px;">사망 데이터 연계 → <span style="color:#fca5a5;">5년 생존율로 보험 종류를 자동 결정</span></h2>
+    <p style="color:var(--sub); margin-bottom:28px;">이노베이션 존 DEATH(사망 78만건) → 암종별 치명도 파악 → 종신·간병보험 필요 여부 자동 판단</p>
+
+    <div class="row" style="margin-bottom:24px;">
+      <div style="flex:1.4;">
+        <p style="font-size:14px; font-weight:700; color:var(--sub); margin-bottom:14px;">암종별 5년 생존율 (DEATH 데이터 기반)</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:20px;">
+          <div style="background:#064e3b; border-radius:10px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:14px;">갑상선암</span>
+            <span style="font-size:18px; font-weight:800; color:#34d399;">99%</span>
+          </div>
+          <div style="background:#064e3b; border-radius:10px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:14px;">유방암</span>
+            <span style="font-size:18px; font-weight:800; color:#34d399;">93%</span>
+          </div>
+          <div style="background:#1e3a1e; border-radius:10px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:14px;">위암</span>
+            <span style="font-size:18px; font-weight:800; color:#84cc16;">80%</span>
+          </div>
+          <div style="background:#1e3a1e; border-radius:10px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:14px;">대장암</span>
+            <span style="font-size:18px; font-weight:800; color:#84cc16;">73%</span>
+          </div>
+          <div style="background:#450a0a; border-radius:10px; padding:12px; display:flex; justify-content:space-between; align-items:center; border:1px solid var(--red);">
+            <span style="font-size:14px; font-weight:700;">간암</span>
+            <span style="font-size:18px; font-weight:800; color:#fca5a5;">38% ⚠</span>
+          </div>
+          <div style="background:#450a0a; border-radius:10px; padding:12px; display:flex; justify-content:space-between; align-items:center; border:1px solid var(--red);">
+            <span style="font-size:14px; font-weight:700;">폐암</span>
+            <span style="font-size:18px; font-weight:800; color:#fca5a5;">36% ⚠</span>
+          </div>
+          <div style="background:#450a0a; border-radius:10px; padding:12px; display:flex; justify-content:space-between; align-items:center; border:2px solid var(--red); grid-column:1/-1;">
+            <span style="font-size:15px; font-weight:700;">췌장암</span>
+            <span style="font-size:20px; font-weight:800; color:#ef4444;">15% ⚠⚠</span>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1; display:flex; flex-direction:column; gap:12px;">
+        <div class="card card-red" style="padding:20px;">
+          <p style="font-size:14px; font-weight:700; color:#fca5a5; margin-bottom:10px;">CareLink 자동 로직</p>
+          <div style="font-size:13px; line-height:2.0;">
+            <div>고위험 암종의 5년 생존율 &lt; 50% 감지</div>
+            <div style="color:var(--red); font-size:20px; margin:4px 0;">↓</div>
+            <div style="font-weight:700;">종신보험 · 간병보험</div>
+            <div>포트폴리오에 <span style="color:#fca5a5; font-weight:700;">자동 추가</span></div>
+          </div>
+        </div>
+        <div class="card" style="padding:20px; border-color:var(--orange);">
+          <p style="font-size:13px; color:var(--sub); margin-bottom:10px;">왜 중요한가?</p>
+          <p style="font-size:14px; line-height:1.8; color:var(--text);">
+            간암·폐암·췌장암은 치명적이지만<br>
+            일반 암보험만으로는 <br>
+            사후 가족 생계 · 간병비를<br>
+            충당하기 어렵습니다.<br>
+            <span style="color:var(--orange); font-weight:700;">DEATH 데이터가 이를 자동으로 판단합니다.</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+  09. 핵심 기능 4: BFC 분위 납부 예산 연계
+════════════════════════════════════════════ -->
+<div class="slide slide-green" id="s9">
+  <div class="slide-num">09 / 16</div>
+  <div class="slide-label">핵심 기능 ④</div>
+  <div style="width:100%; max-width:960px;">
+    <h2 style="margin-bottom:8px;"><span style="color:#34d399;">BFC 보험료 분위</span> — 소득 수준별 맞춤 예산 자동 산정</h2>
+    <p style="color:var(--sub); margin-bottom:28px;">
+      이노베이션 존 BFC(건강보험료 자격및보험료 <strong style="color:#34d399;">3,706만건</strong>) → 소득 분위별 납부 가능 보험료 범위 → 상품 자동 필터
+    </p>
+
+    <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:28px;">
+      <div style="background:#1e293b; border-radius:12px; padding:16px; text-align:center; border:1px solid #334155;">
+        <p style="font-size:12px; color:var(--sub); margin-bottom:6px;">1분위</p>
+        <p style="font-size:11px; color:var(--dim);">하위 20%</p>
+        <p style="font-size:22px; font-weight:800; color:#94a3b8; margin:8px 0;">0~3<span style="font-size:14px;">만원</span></p>
+        <p style="font-size:11px; color:var(--dim);">기초생활~저소득</p>
+      </div>
+      <div style="background:#0c2d48; border-radius:12px; padding:16px; text-align:center; border:1px solid #1d4ed8;">
+        <p style="font-size:12px; color:var(--sub); margin-bottom:6px;">2분위</p>
+        <p style="font-size:11px; color:var(--dim);">하위 40%</p>
+        <p style="font-size:22px; font-weight:800; color:var(--blue2); margin:8px 0;">3~7<span style="font-size:14px;">만원</span></p>
+        <p style="font-size:11px; color:var(--dim);">저소득~중하위</p>
+      </div>
+      <div style="background:#064e3b; border-radius:12px; padding:16px; text-align:center; border:2px solid var(--green);">
+        <p style="font-size:12px; color:#34d399; margin-bottom:6px; font-weight:700;">3분위 ★</p>
+        <p style="font-size:11px; color:var(--dim);">중위 소득</p>
+        <p style="font-size:22px; font-weight:800; color:#34d399; margin:8px 0;">7~12<span style="font-size:14px;">만원</span></p>
+        <p style="font-size:11px; color:var(--dim);">중위 소득 수준</p>
+      </div>
+      <div style="background:#1c1100; border-radius:12px; padding:16px; text-align:center; border:1px solid var(--yellow);">
+        <p style="font-size:12px; color:var(--sub); margin-bottom:6px;">4분위</p>
+        <p style="font-size:11px; color:var(--dim);">상위 40%</p>
+        <p style="font-size:22px; font-weight:800; color:var(--yellow); margin:8px 0;">12~20<span style="font-size:14px;">만원</span></p>
+        <p style="font-size:11px; color:var(--dim);">중상위층</p>
+      </div>
+      <div style="background:#450a0a; border-radius:12px; padding:16px; text-align:center; border:1px solid var(--red);">
+        <p style="font-size:12px; color:var(--sub); margin-bottom:6px;">5분위</p>
+        <p style="font-size:11px; color:var(--dim);">상위 20%</p>
+        <p style="font-size:22px; font-weight:800; color:var(--red); margin:8px 0;">20~50<span style="font-size:14px;">만원</span></p>
+        <p style="font-size:11px; color:var(--dim);">고소득층</p>
+      </div>
+    </div>
+
+    <div class="row" style="gap:20px;">
+      <div class="card card-green" style="flex:1; padding:18px;">
+        <p style="font-size:14px; font-weight:700; color:#34d399; margin-bottom:10px;">BFC 연계 효과</p>
+        <div style="font-size:13px; line-height:2.0; color:var(--sub);">
+          ✅ 분위 선택 시 예산 상한 자동 설정<br>
+          ✅ 보험다모아 상품 예산 초과 시 제외<br>
+          ✅ GPT-4o 추천 프롬프트에 예산 자동 주입<br>
+          ✅ 총 월 보험료가 예산 내로 구성됨을 보장
+        </div>
+      </div>
+      <div class="card" style="flex:1; padding:18px;">
+        <p style="font-size:14px; font-weight:700; margin-bottom:10px;">왜 BFC를 씁니까?</p>
+        <p style="font-size:13px; color:var(--sub); line-height:1.9;">
+          소득 수준과 무관하게 '좋은 보험'을 추천하면<br>
+          <strong style="color:var(--text);">저소득층은 결국 가입 못하는</strong> 구조가 됩니다.<br>
+          BFC 분위는 실제 건강보험료 납부 실적 기반이라<br>
+          <span style="color:#34d399; font-weight:700;">가장 정확한 납부 여력 지표</span>입니다.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+  10. 실제 화면 — UI 목업 3종
+════════════════════════════════════════════ -->
+<div class="slide" id="s10">
+  <div class="slide-num">10 / 16</div>
+  <div class="slide-label">서비스 데모</div>
+  <div style="width:100%; max-width:1000px;">
+    <h2 style="margin-bottom:8px;">실제 동작하는 웹 서비스 화면</h2>
+    <p style="color:var(--sub); margin-bottom:24px; font-size:15px;">
+      Python Flask 웹앱 — 즉시 시연 가능 (http://localhost:5000)
+    </p>
+    <div class="row" style="gap:16px;">
+      <!-- 화면 1 목업 -->
+      <div style="flex:1; background:#1e293b; border-radius:14px; overflow:hidden; border:1px solid var(--border);">
+        <div style="background:#0f172a; padding:8px 14px; font-size:12px; color:var(--blue2); font-weight:700;">
+          ① 입력 폼 + BFC 분위 선택
+        </div>
+        <div style="padding:14px; font-size:12px;">
+          <div style="background:#0f172a; border-radius:8px; padding:10px; margin-bottom:8px;">
+            <div style="color:var(--sub); font-size:11px; margin-bottom:4px;">나이 / 성별 / 혈압 / BMI</div>
+            <div style="display:flex; gap:4px; flex-wrap:wrap;">
+              <span style="background:#1e3a5f; padding:3px 8px; border-radius:4px; font-size:11px;">55세</span>
+              <span style="background:#1e3a5f; padding:3px 8px; border-radius:4px; font-size:11px;">남</span>
+              <span style="background:#1e3a5f; padding:3px 8px; border-radius:4px; font-size:11px;">145/92</span>
+              <span style="background:#1e3a5f; padding:3px 8px; border-radius:4px; font-size:11px;">BMI 27</span>
+            </div>
+          </div>
+          <div style="background:#0f172a; border-radius:8px; padding:10px; margin-bottom:8px;">
+            <div style="color:var(--sub); font-size:11px; margin-bottom:4px;">BFC 보험료 분위 선택</div>
+            <div style="display:flex; gap:4px;">
+              <span style="background:#334155; padding:3px 8px; border-radius:4px; font-size:11px;">1분위</span>
+              <span style="background:#334155; padding:3px 8px; border-radius:4px; font-size:11px;">2분위</span>
+              <span style="background:#0ea5e9; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:700;">3분위 ✓</span>
+              <span style="background:#334155; padding:3px 8px; border-radius:4px; font-size:11px;">4분위</span>
+              <span style="background:#334155; padding:3px 8px; border-radius:4px; font-size:11px;">5분위</span>
+            </div>
+          </div>
+          <div style="background:#0ea5e9; border-radius:8px; padding:8px; text-align:center; font-size:12px; font-weight:700;">
+            분석 시작
+          </div>
+        </div>
+      </div>
+
+      <!-- 화면 2 목업 -->
+      <div style="flex:1; background:#1e293b; border-radius:14px; overflow:hidden; border:1px solid var(--border);">
+        <div style="background:#0f172a; padding:8px 14px; font-size:12px; color:var(--red); font-weight:700;">
+          ② 위험도 게이지 + BFC 카드
+        </div>
+        <div style="padding:14px; font-size:12px;">
+          <div style="text-align:center; margin-bottom:10px;">
+            <div style="font-size:24px; font-weight:800; color:var(--red);">72%</div>
+            <div style="font-size:11px; color:var(--sub);">당뇨·대사 위험도 — 고위험</div>
+          </div>
+          <div style="background:#0f172a; border-radius:6px; height:12px; margin-bottom:10px; overflow:hidden;">
+            <div style="width:72%; height:100%; background:linear-gradient(90deg,var(--orange),var(--red));"></div>
+          </div>
+          <div style="display:flex; gap:4px; flex-wrap:wrap; margin-bottom:10px;">
+            <span style="background:#450a0a; color:#fca5a5; padding:3px 8px; border-radius:10px; font-size:11px;">고혈압 의심</span>
+            <span style="background:#431407; color:#fdba74; padding:3px 8px; border-radius:10px; font-size:11px;">간수치 이상</span>
+            <span style="background:#450a0a; color:#fca5a5; padding:3px 8px; border-radius:10px; font-size:11px;">현재 흡연</span>
+          </div>
+          <div style="background:#0c2d48; border-radius:8px; padding:8px; font-size:11px; border:1px solid var(--blue);">
+            <span style="color:var(--blue2); font-weight:700;">BFC 3분위</span> — 월 7~12만원 범위
+          </div>
+        </div>
+      </div>
+
+      <!-- 화면 3 목업 -->
+      <div style="flex:1; background:#1e293b; border-radius:14px; overflow:hidden; border:1px solid var(--border);">
+        <div style="background:#0f172a; padding:8px 14px; font-size:12px; color:var(--purple); font-weight:700;">
+          ③ GPT-4o AI 추천 결과
+        </div>
+        <div style="padding:14px; font-size:12px;">
+          <div style="background:#0f172a; border-radius:8px; padding:10px; margin-bottom:8px;">
+            <div style="color:var(--blue2); font-size:11px; font-weight:700; margin-bottom:6px;">우선순위별 포트폴리오</div>
+            <div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border);">
+              <span>1순위 암보험</span><span style="color:var(--blue2);">9.2만원</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border);">
+              <span>2순위 실손의료</span><span style="color:var(--blue2);">3.1만원</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:4px 0;">
+              <span>합계</span><span style="color:#34d399; font-weight:700;">12.3만원 ✓</span>
+            </div>
+          </div>
+          <div style="background:#0f172a; border-radius:8px; padding:8px; font-size:11px; color:var(--sub);">
+            금연 후 6개월 뒤 간편심사 재신청 권장<br>
+            GGT 정상화 시 간암 위험 1/3 감소
+          </div>
+        </div>
+      </div>
+    </div>
+    <p style="text-align:center; font-size:13px; color:var(--dim); margin-top:16px;">
+      ✅ 현재 동작하는 웹 앱 완성 · PDF 업로드 자동 파싱 · 챗봇 자연어 상담 · 보험다모아 실제 상품 연결 포함
+    </p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+  11. 국민 체감성: 3가지 시나리오
+════════════════════════════════════════════ -->
+<div class="slide" id="s11">
+  <div class="slide-num">11 / 16</div>
+  <div class="slide-label">국민 체감성 · 30점</div>
+  <div style="width:100%; max-width:1000px;">
+    <h2 style="margin-bottom:8px;">누가, 어떻게 혜택을 받나요?</h2>
+    <p style="color:var(--sub); margin-bottom:28px; font-size:15px;">
+      연 건강검진 수검자 1,500만 명 전원이 대상 — 3가지 대표 시나리오
+    </p>
+    <div class="row" style="gap:16px;">
+      <div class="scenario" style="flex:1; border-color:var(--red);">
+        <div class="scenario-title" style="color:#fca5a5;">시나리오 A — 50대 남성 흡연자</div>
+        <p style="font-size:12px; color:var(--sub); margin-bottom:8px;">김○○ (55세, 남, 흡연, GGT 110)</p>
+        <div class="scenario-step">
+          📋 검진 결과지 PDF 업로드<br>
+          → 위험도 72%, 간수치 이상 + 흡연 감지<br>
+          → RGST: 간암 3배·폐암 10배 위험<br>
+          → DEATH: 간암 38% · 폐암 36%<br>
+          → 종신보험·간병보험 <strong>자동 추가</strong><br>
+          → BFC 3분위: 월 12만원 이내 구성
+        </div>
+        <div class="scenario-result" style="background:#450a0a; color:#fca5a5;">
+          3분 이내 → 암보험+실손+종신 세트 12만원
+        </div>
+      </div>
+      <div class="scenario" style="flex:1; border-color:var(--blue);">
+        <div class="scenario-title" style="color:var(--blue2);">시나리오 B — 40대 여성</div>
+        <p style="font-size:12px; color:var(--sub); margin-bottom:8px;">이○○ (42세, 여, BMI 27, TC 240)</p>
+        <div class="scenario-step">
+          📋 수치 직접 입력<br>
+          → 위험도 45%, 비만 + 이상지질혈증<br>
+          → RGST: 유방암 연 140/10만명 (최고)<br>
+          → DEATH: 유방암 93% (생존율 양호)<br>
+          → 암보험·실손 중심 추천<br>
+          → BFC 2분위: 월 7만원 이내 구성
+        </div>
+        <div class="scenario-result" style="background:#0c2d48; color:var(--blue2);">
+          3분 이내 → 실손+암보험 세트 6.5만원
+        </div>
+      </div>
+      <div class="scenario" style="flex:1; border-color:#34d399;">
+        <div class="scenario-title" style="color:#34d399;">시나리오 C — 70대 고령자</div>
+        <p style="font-size:12px; color:var(--sub); margin-bottom:8px;">박○○ (72세, 남, 스마트폰 불편)</p>
+        <div class="scenario-step">
+          📋 나이·성별만 입력 (수치 없어도 OK)<br>
+          → 70대 남성 기저율 자동 적용<br>
+          → 전립선암·폐암·대장암 주의 감지<br>
+          → BFC 1분위: 월 3만원 이내 필터<br>
+          → 저렴한 실손·간병보험 우선 제시<br>
+          → 3클릭으로 추천 수령 완료
+        </div>
+        <div class="scenario-result" style="background:#031f13; color:#34d399;">
+          3분 이내 → 디지털 취약계층도 이용 가능
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+  12. 경제적 효과
+════════════════════════════════════════════ -->
+<div class="slide slide-purple" id="s12">
+  <div class="slide-num">12 / 16</div>
+  <div class="slide-label">경제적 효과 · 25점</div>
+  <div style="width:100%; max-width:1000px;">
+    <h2 style="margin-bottom:8px;"><span style="color:#c4b5fd;">경제적 파급 효과</span></h2>
+    <p style="color:var(--sub); margin-bottom:28px;">가명정보 활용이 열어주는 새로운 시장</p>
+
+    <div class="row" style="gap:16px; margin-bottom:24px;">
+      <div class="stat-card" style="border-color:var(--purple);">
+        <div class="num num-purple">250<span style="font-size:24px;">조원</span></div>
+        <p class="stat-label">국내 보험시장 규모<br>의료 데이터 연계 시 과소보험 해소</p>
+      </div>
+      <div class="stat-card" style="border-color:var(--green);">
+        <div class="num num-green">1,500<span style="font-size:24px;">만명</span></div>
+        <p class="stat-label">연 건강검진 수검자<br>즉시 활용 가능한 서비스 대상</p>
+      </div>
+      <div class="stat-card" style="border-color:var(--blue);">
+        <div class="num num-blue">9<span style="font-size:24px;">조원</span></div>
+        <p class="stat-label">잠재 시장 규모<br>수검자×월 5만원×12개월 추산</p>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+      <div class="card" style="border-color:var(--purple); padding:18px;">
+        <p style="font-weight:700; color:#c4b5fd; margin-bottom:12px;">직접 경제 효과</p>
+        <div style="font-size:13px; line-height:2.0; color:var(--sub);">
+          ✅ 과소·과다 보험 가입 방지 → 적정 보장 연계<br>
+          ✅ 보험사 심사비 절감 (위험정보 사전 제공)<br>
+          ✅ 건강보험 재정 절감 (예방적 보장 → 중증화 감소)<br>
+          ✅ 보험다모아 공시 데이터 실질 활용도 상승
+        </div>
+      </div>
+      <div class="card" style="border-color:var(--green); padding:18px;">
+        <p style="font-weight:700; color:#34d399; margin-bottom:12px;">B2B 확장 경로</p>
+        <div style="font-size:13px; line-height:2.0; color:var(--sub);">
+          📌 보험사 20곳 × 가입전환 수수료 SaaS<br>
+          📌 토스·카카오페이 건강위험 보험 추천 API<br>
+          📌 국민건강보험공단 검진 후 상담 연계<br>
+          📌 동남아 수출 (건강검진+보험 연계 모델)
+        </div>
+      </div>
+      <div class="card card-blue" style="padding:18px; grid-column:1/-1;">
+        <p style="font-size:14px; color:var(--blue2); font-weight:700; margin-bottom:8px;">가명정보 생태계 기여</p>
+        <p style="font-size:13px; color:var(--sub); line-height:1.8;">
+          의료 → 금융 도메인 이종 가명데이터 결합 성공 사례를 만들면,
+          타 기관의 벤치마킹을 유도하고 이노베이션 존 보관데이터의 실질 가치를 입증합니다.
+          <span style="color:var(--text); font-weight:700;">가명정보 제도 활성화의 촉매제</span>가 됩니다.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+  13. 기존 서비스와의 차별성 (참신성)
+════════════════════════════════════════════ -->
+<div class="slide" id="s13">
+  <div class="slide-num">13 / 16</div>
+  <div class="slide-label">참신성 · 10점</div>
+  <div style="width:100%; max-width:960px;">
+    <h2 style="margin-bottom:8px;">기존 보험 추천과 <span class="em">무엇이 다른가?</span></h2>
+    <p style="color:var(--sub); margin-bottom:28px;">단순 설문 → 실측 위험도 기반 추천으로의 패러다임 전환</p>
+    <table style="margin-bottom:24px;">
+      <thead>
+        <tr>
+          <th style="width:22%;">비교 항목</th>
+          <th style="background:#1c1917; color:var(--dim);">기존 보험 추천 서비스</th>
+          <th style="background:#0c2d48; color:var(--blue2);">CareLink (본 아이디어)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--sub);">추천 근거</td>
+          <td style="color:var(--dim);">나이·성별·예산 설문 3~5개</td>
+          <td style="color:var(--blue2); font-weight:700;">건강검진·진료 가명데이터 기반 실측 위험도</td>
+        </tr>
+        <tr>
+          <td style="color:var(--sub);">데이터 결합</td>
+          <td style="color:var(--dim);">단일 출처</td>
+          <td style="color:var(--blue2); font-weight:700;">의료(국립암센터·NHIS) × 금융(보험다모아) 이종 5개 결합</td>
+        </tr>
+        <tr>
+          <td style="color:var(--sub);">암 위험 분석</td>
+          <td style="color:var(--dim);">없음</td>
+          <td style="color:var(--red); font-weight:700;">RGST 261만건 기반 암종별 개인화 위험도</td>
+        </tr>
+        <tr>
+          <td style="color:var(--sub);">사망 위험 연계</td>
+          <td style="color:var(--dim);">없음</td>
+          <td style="color:var(--red); font-weight:700;">DEATH 78만건 → 5년 생존율로 보험 종류 자동 결정</td>
+        </tr>
+        <tr>
+          <td style="color:var(--sub);">소득 연계</td>
+          <td style="color:var(--dim);">없음</td>
+          <td style="color:#34d399; font-weight:700;">BFC 3,706만건 → 납부 가능 보험료 자동 필터</td>
+        </tr>
+        <tr>
+          <td style="color:var(--sub);">추천 시점</td>
+          <td style="color:var(--dim);">가입 희망 시점 (사후)</td>
+          <td style="color:var(--blue2); font-weight:700;">위험 감지 즉시 — 예방적 선제 추천</td>
+        </tr>
+        <tr>
+          <td style="color:var(--sub);">즉시 시연</td>
+          <td style="color:var(--dim);">개념 단계</td>
+          <td style="color:#34d399; font-weight:700;">✅ 동작하는 웹 데모 완성</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="card card-blue" style="padding:14px 20px; text-align:center;">
+      <span style="font-size:16px; font-weight:700; color:var(--blue2);">
+        의료·금융 이종 가명데이터 결합 → AI 추천 — 국내 최초 시도
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+  14. 실현 가능성: 이미 만들었습니다
+════════════════════════════════════════════ -->
+<div class="slide slide-green" id="s14">
+  <div class="slide-num">14 / 16</div>
+  <div class="slide-label">실현 및 확산 가능성 · 20점</div>
+  <div style="width:100%; max-width:960px;">
+    <h2 style="margin-bottom:8px;"><span style="color:#34d399;">이미 만들었습니다</span> — 즉시 시연 가능</h2>
+    <p style="color:var(--sub); margin-bottom:28px;">개념 제안이 아닌 동작하는 시스템입니다</p>
+
+    <div class="row" style="gap:20px; margin-bottom:24px;">
+      <div style="flex:1.2;">
+        <p style="font-size:14px; font-weight:700; color:#34d399; margin-bottom:14px;">현재 구현 완료 기능</p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div class="check-item"><div class="check-icon check-ok">✓</div><div><strong>건강위험 포트폴리오 탭</strong> — 입력→분석→추천 전체 흐름</div></div>
+          <div class="check-item"><div class="check-icon check-ok">✓</div><div><strong>만성질환 위험 예측 모델</strong> — AUC 0.78 로지스틱 회귀</div></div>
+          <div class="check-item"><div class="check-icon check-ok">✓</div><div><strong>RGST 기반 암종별 위험도</strong> — 7~8개 암종 바 표시</div></div>
+          <div class="check-item"><div class="check-icon check-ok">✓</div><div><strong>DEATH 5년 생존율 연계</strong> — 종신·간병보험 자동 추가</div></div>
+          <div class="check-item"><div class="check-icon check-ok">✓</div><div><strong>BFC 분위 예산 필터</strong> — 5분위 + 상품 자동 필터링</div></div>
+          <div class="check-item"><div class="check-icon check-ok">✓</div><div><strong>보험다모아 상품 연결</strong> — 실제 공시 상품 + 가입 링크</div></div>
+          <div class="check-item"><div class="check-icon check-ok">✓</div><div><strong>GPT-4o AI 추천</strong> — BFC+암위험 통합 프롬프트</div></div>
+          <div class="check-item"><div class="check-icon check-ok">✓</div><div><strong>PDF 자동 파싱</strong> — 검진 결과지 수치 자동 추출</div></div>
+          <div class="check-item"><div class="check-icon check-ok">✓</div><div><strong>챗봇 자연어 상담</strong> — GPT-4o Tool Calling</div></div>
+        </div>
+      </div>
+      <div style="flex:1;">
+        <p style="font-size:14px; font-weight:700; margin-bottom:14px;">실데이터 전환 로드맵</p>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot" style="background:#064e3b; color:#34d399;">완</div>
+            <div class="tl-content">
+              <p style="font-weight:700; font-size:13px;">현재 — 완성</p>
+              <p style="font-size:12px; color:var(--sub);">NHIS 스키마 기반 합성데이터 모델 + 동작 데모</p>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="background:#0c2d48; color:var(--blue2);">1단</div>
+            <div class="tl-content">
+              <p style="font-weight:700; font-size:13px;">~6개월 — 재학습</p>
+              <p style="font-size:12px; color:var(--sub);">이노베이션 존 실데이터로 모델 재학습 → AUC 0.85+</p>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="background:#1c1100; color:var(--yellow);">2단</div>
+            <div class="tl-content">
+              <p style="font-weight:700; font-size:13px;">~1년 — B2B 서비스화</p>
+              <p style="font-size:12px; color:var(--sub);">보험사 파트너십 → SaaS 서비스</p>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="background:#1e1b4b; color:#c4b5fd;">3단</div>
+            <div class="tl-content">
+              <p style="font-weight:700; font-size:13px;">~2년 — 전국 서비스</p>
+              <p style="font-size:12px; color:var(--sub);">마이데이터 연동 → 전국민 건강·보험 통합</p>
+            </div>
+          </div>
+        </div>
+        <div class="card card-green" style="padding:14px; font-size:13px; margin-top:12px;">
+          <span style="color:#34d399; font-weight:700;">핵심 강점:</span>
+          params.json 파일 교체만으로 실데이터 즉시 적용 가능
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+  15. 데이터 윤리
+════════════════════════════════════════════ -->
+<div class="slide" id="s15">
+  <div class="slide-num">15 / 16</div>
+  <div class="slide-label">데이터 윤리</div>
+  <div style="width:100%; max-width:960px;">
+    <h2 style="margin-bottom:8px;">안전하게, 윤리적으로</h2>
+    <p style="color:var(--sub); margin-bottom:32px; font-size:15px;">가명정보의 공익적 활용과 개인정보 보호를 동시에 달성합니다</p>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
+      <div class="card" style="border-color:var(--red); padding:20px;">
+        <p style="font-size:15px; font-weight:700; color:#fca5a5; margin-bottom:14px;">핵심 원칙</p>
+        <div style="font-size:13px; line-height:2.2; color:var(--sub);">
+          🚫 건강 위험 예측 결과를 <strong style="color:var(--text);">보험 가입 거절·차별의 근거로 사용 금지</strong><br>
+          📋 예측 결과는 예방·보장 목적의 <strong style="color:var(--text);">참고 정보</strong>일 뿐<br>
+          🏛 가명정보는 결합·분석 목적 외 사용 금지<br>
+          ⚖️ 개인정보보호법 제28조의2~5 법정 절차 준수
+        </div>
+      </div>
+      <div class="card" style="border-color:var(--blue); padding:20px;">
+        <p style="font-size:15px; font-weight:700; color:var(--blue2); margin-bottom:14px;">기술적 보호 조치</p>
+        <div style="font-size:13px; line-height:2.2; color:var(--sub);">
+          🔒 <strong style="color:var(--text);">원본 데이터 비반출</strong> — 이노베이션 존 내 분석<br>
+          🔢 <strong style="color:var(--text);">파라미터(숫자)만</strong> 외부 사용<br>
+          👤 사용자 건강 정보 서버 <strong style="color:var(--text);">저장 없음</strong> (세션 내 처리)<br>
+          📢 서비스 화면 윤리 고지문 상시 노출 (구현 완료)
+        </div>
+      </div>
+      <div class="card" style="border-color:#34d399; padding:20px; grid-column:1/-1;">
+        <p style="font-size:15px; font-weight:700; color:#34d399; margin-bottom:10px;">공익적 정당성</p>
+        <p style="font-size:14px; color:var(--sub); line-height:1.8;">
+          개인정보보호법 제28조의2 — <strong style="color:var(--text);">"통계 작성, 과학적 연구, 공익적 기록 보존"</strong> 목적에 해당합니다.<br>
+          분석 결과로 도출된 모델 파라미터는 어떠한 개인도 식별할 수 없으며,<br>
+          서비스는 <span style="color:#34d399; font-weight:700;">국민의 건강 보장 강화</span>라는 명백한 공익 목적을 가집니다.
+        </p>
+      </div>
+    </div>
+
+    <div style="background:#1c1917; border-radius:12px; padding:16px 24px; border:1px solid #78716c; text-align:center;">
+      <p style="font-size:15px; color:#a8a29e;">
+        ⚠️ &nbsp;
+        <strong style="color:var(--text);">본 예측 결과는 예방·보장 목적의 참고 정보이며,
+        보험 가입 거절·차별의 근거로 사용될 수 없습니다.</strong>
+        &nbsp; ⚠️
+      </p>
+      <p style="font-size:12px; color:#57534e; margin-top:6px;">서비스 화면 상시 노출 문구 — 현재 구현 완료</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+  16. 마무리 — 비전
+════════════════════════════════════════════ -->
+<div class="slide slide-title" id="s16">
+  <div class="slide-num">16 / 16</div>
+  <div style="text-align:center; max-width:860px;">
+    <p style="color:var(--sub); font-size:15px; margin-bottom:20px;">가명정보가 만들어 낼 미래</p>
+    <h1 style="font-size:44px; line-height:1.3; margin-bottom:28px;">
+      건강검진 결과를 받은 날,<br>
+      <span style="color:var(--blue2);">내 위험에 딱 맞는 보험을</span><br>
+      3분 안에 알 수 있는 세상
+    </h1>
+    <p style="font-size:18px; color:var(--sub); margin-bottom:40px; line-height:1.8;">
+      가명정보는 이미 있습니다 — 활용 방법만 찾으면 됩니다.<br>
+      CareLink는 그 방법을 <strong style="color:var(--text);">이미 구현했습니다.</strong>
+    </p>
+
+    <div class="row" style="justify-content:center; gap:12px; margin-bottom:40px; flex-wrap:wrap;">
+      <div style="background:var(--card); border:1px solid var(--blue); border-radius:12px; padding:14px 24px; text-align:center; min-width:140px;">
+        <div style="font-size:28px; font-weight:800; color:var(--blue2);">1,500만</div>
+        <div style="font-size:12px; color:var(--sub); margin-top:4px;">연 수혜 가능 인원</div>
+      </div>
+      <div style="background:var(--card); border:1px solid var(--green); border-radius:12px; padding:14px 24px; text-align:center; min-width:140px;">
+        <div style="font-size:28px; font-weight:800; color:#34d399;">5종</div>
+        <div style="font-size:12px; color:var(--sub); margin-top:4px;">이노베이션 존 데이터 활용</div>
+      </div>
+      <div style="background:var(--card); border:1px solid var(--purple); border-radius:12px; padding:14px 24px; text-align:center; min-width:140px;">
+        <div style="font-size:28px; font-weight:800; color:#c4b5fd;">AUC 0.78</div>
+        <div style="font-size:12px; color:var(--sub); margin-top:4px;">위험 예측 모델 성능</div>
+      </div>
+      <div style="background:var(--card); border:1px solid var(--orange); border-radius:12px; padding:14px 24px; text-align:center; min-width:140px;">
+        <div style="font-size:28px; font-weight:800; color:var(--orange);">즉시</div>
+        <div style="font-size:12px; color:var(--sub); margin-top:4px;">시연 가능한 웹 데모</div>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid var(--border); padding-top:24px;">
+      <p style="font-size:22px; font-weight:700; color:var(--blue2); margin-bottom:8px;">감사합니다</p>
+      <p style="font-size:14px; color:var(--dim);">CareLink팀 · 이종재 · 010-3293-0639 · leeyonsei78@gmail.com</p>
+      <p style="font-size:13px; color:var(--dim); margin-top:6px;">2026 가명정보 활용 경진대회 · 아이디어 부문</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<!-- ── 네비게이션 버튼 ── -->
+<div id="nav">
+  <button onclick="go(-1)">◀ 이전</button>
+  <span id="slide-counter">1 / 16</span>
+  <button onclick="go(1)">다음 ▶</button>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total  = slides.length;
+let cur = 0;
+
+function show(n) {
+  slides[cur].classList.remove('active');
+  cur = (n + total) % total;
+  slides[cur].classList.add('active');
+  document.getElementById('slide-counter').textContent = `${cur+1} / ${total}`;
+  document.getElementById('progress').style.width = `${(cur+1)/total*100}%`;
+}
+function go(d) { show(cur + d); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') go(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp') go(-1);
+  if (e.key === 'Home') show(0);
+  if (e.key === 'End')  show(total - 1);
+});
+
+// 터치 스와이프
+let ts = 0;
+document.addEventListener('touchstart', e => ts = e.touches[0].clientX);
+document.addEventListener('touchend',   e => {
+  const dx = e.changedTouches[0].clientX - ts;
+  if (Math.abs(dx) > 60) go(dx < 0 ? 1 : -1);
+});
+
+show(0);
+</script>
+</body>
+</html>
