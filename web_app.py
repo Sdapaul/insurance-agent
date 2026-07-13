@@ -1731,11 +1731,16 @@ HTML = r"""<!DOCTYPE html>
           <label>소득/보험료 분위 <span style="font-weight:400;font-size:11px;color:#64748b">— 납부 가능 보험료 범위 자동 산정</span></label>
           <select id="hr-bfc-tier">
             <option value="">선택 안함</option>
-            <option value="1">1분위 — 하위 20% (월 0~3만원)</option>
-            <option value="2">2분위 — 하위 40% (월 3~7만원)</option>
-            <option value="3">3분위 — 중위 (월 7~12만원)</option>
-            <option value="4">4분위 — 상위 40% (월 12~20만원)</option>
-            <option value="5">5분위 — 상위 20% (월 20만원+)</option>
+            <option value="1">1분위 — 하위 10% (월 0~2만원)</option>
+            <option value="2">2분위 — 10~20% (월 2~4만원)</option>
+            <option value="3">3분위 — 20~30% (월 4~7만원)</option>
+            <option value="4">4분위 — 30~40% (월 7~10만원)</option>
+            <option value="5">5분위 — 40~50% (월 10~13만원)</option>
+            <option value="6">6분위 — 50~60% (월 13~17만원)</option>
+            <option value="7">7분위 — 60~70% (월 17~22만원)</option>
+            <option value="8">8분위 — 70~80% (월 22~30만원)</option>
+            <option value="9">9분위 — 80~90% (월 30~45만원)</option>
+            <option value="10">10분위 — 상위 10% (월 45만원+)</option>
           </select>
         </div>
       </div>
@@ -2738,14 +2743,14 @@ function hrRenderResult(data) {
   const bfcCard = document.getElementById('hr-bfc-card');
   if (bfc) {
     bfcCard.style.display = 'block';
-    const tierPct = Math.round(bfc.tier / 5 * 100);
+    const tierPct = Math.round(bfc.tier / 10 * 100);
     document.getElementById('hr-bfc-body').innerHTML = `
       <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:4px">
         ${bfc.label} <span style="font-weight:400;font-size:12px;color:#64748b">(${bfc.desc})</span>
       </div>
       <div class="bfc-tier-bar" style="width:${tierPct}%;background:${bfc.color}"></div>
       <div class="bfc-tier-row">
-        <span>1분위</span><span>2분위</span><span>3분위</span><span>4분위</span><span>5분위</span>
+        <span>1분위</span><span>3분위</span><span>5분위</span><span>7분위</span><span>10분위</span>
       </div>
       <div style="margin-top:10px;padding:10px;background:#f0fdf4;border-radius:8px;font-size:12.5px;color:#065f46">
         💡 <strong>추천 보험료 범위:</strong>

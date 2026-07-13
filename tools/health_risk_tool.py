@@ -95,7 +95,7 @@ def assess_health_risk(
         ast/alt/ggt: 간 수치
         smoke: 1=비흡연, 2=과거흡연, 3=현재흡연
         drink: 0=비음주, 1=음주
-        bfc_tier: BFC 보험료 분위 1~5 (없으면 None) — 납부 가능 보험료 범위 + 암 위험 통합에 활용
+        bfc_tier: BFC 보험료 분위 1~10 (BFC.CALC_CTRB_VTILE_FD, 없으면 None) — 납부 가능 보험료 범위 + 암 위험 통합에 활용
         include_products: True면 보험다모아 실제 상품도 함께 조회
     """
     sex = 1 if str(gender).startswith("남") else 2
@@ -185,7 +185,7 @@ def assess_health_risk(
 
             # BFC 분위 기반 보험료 상한 계산 (DEATH/BFC 연계)
             budget_max_won = None
-            if bfc_tier and 1 <= bfc_tier <= 5:
+            if bfc_tier and 1 <= bfc_tier <= 10:
                 try:
                     from data.innovation_zone_ref import BFC_TIERS
                     budget_max_won = BFC_TIERS[bfc_tier]["max_10k"] * 10000

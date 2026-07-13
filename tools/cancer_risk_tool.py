@@ -39,7 +39,7 @@ def assess_cancer_risk(
         age: 나이 (20~80)
         gender: '남' or '여'
         flags: 임상 플래그 리스트 (assess_health_risk 결과에서 전달)
-        bfc_tier: BFC 보험료 분위 (1~5, 없으면 None)
+        bfc_tier: BFC 보험료 분위 (1~10, BFC.CALC_CTRB_VTILE_FD, 없으면 None)
 
     Returns:
         JSON 문자열 — cancer_risk, bfc_info 포함
@@ -97,7 +97,7 @@ def assess_cancer_risk(
 
     # ── BFC 분위 정보 ─────────────────────────────────────────────────
     bfc_info = None
-    if bfc_tier and 1 <= bfc_tier <= 5:
+    if bfc_tier and 1 <= bfc_tier <= 10:
         t = BFC_TIERS[bfc_tier]
         bfc_info = {
             "tier":           bfc_tier,
