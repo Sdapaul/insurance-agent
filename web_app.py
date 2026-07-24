@@ -632,8 +632,110 @@ HTML = r"""<!DOCTYPE html>
   }
   .tab-btn:hover { color: white; }
   .tab-btn.active { color: white; border-bottom-color: #60a5fa; }
+  .tab-btn.demo-tab { border-bottom-color: #f59e0b; }
+  .tab-btn.demo-tab.active { border-bottom-color: #f59e0b; color: #fef3c7; }
   .tab-panel { display: none; flex: 1; overflow: hidden; flex-direction: column; }
   .tab-panel.active { display: flex; }
+
+  /* ── Demo Tab ── */
+  .demo-panel {
+    flex: 1; overflow-y: auto; padding: 20px; background: #0f172a;
+  }
+  .demo-header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #0f2040 100%);
+    border: 1px solid #334155; border-radius: 14px;
+    padding: 22px 24px; margin-bottom: 20px; text-align: center;
+  }
+  .demo-title {
+    font-size: 18px; font-weight: 800; color: #f8fafc; margin-bottom: 8px;
+    letter-spacing: -0.3px;
+  }
+  .demo-subtitle {
+    font-size: 12.5px; color: #94a3b8; line-height: 1.7;
+  }
+  .demo-subtitle strong { color: #60a5fa; }
+  .demo-section-title {
+    font-size: 13px; font-weight: 700; color: #f59e0b;
+    padding: 10px 14px; margin-bottom: 12px;
+    background: rgba(245,158,11,0.08); border-left: 3px solid #f59e0b;
+    border-radius: 6px;
+  }
+  .demo-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 12px; margin-bottom: 20px;
+  }
+  .demo-card {
+    background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+    padding: 16px; cursor: pointer; transition: all 0.2s;
+  }
+  .demo-card:hover {
+    border-color: #60a5fa; background: #1e3a5f;
+    transform: translateY(-2px); box-shadow: 0 4px 16px rgba(96,165,250,0.15);
+  }
+  .demo-card-num {
+    font-size: 11px; font-weight: 700; color: #f59e0b;
+    margin-bottom: 6px; letter-spacing: 0.5px;
+  }
+  .demo-card-title {
+    font-size: 14px; font-weight: 700; color: #f1f5f9; margin-bottom: 6px;
+  }
+  .demo-card-persona {
+    font-size: 12px; color: #60a5fa; margin-bottom: 8px; font-weight: 600;
+  }
+  .demo-card-desc {
+    font-size: 12px; color: #94a3b8; line-height: 1.6; margin-bottom: 8px;
+  }
+  .demo-card-data {
+    font-size: 10.5px; color: #475569; background: rgba(71,85,105,0.3);
+    border-radius: 6px; padding: 5px 8px; margin-bottom: 8px;
+  }
+  .demo-card-before-after {
+    font-size: 11.5px; color: #cbd5e1; line-height: 1.6;
+  }
+  .before-tag {
+    display: inline-block; background: #7f1d1d; color: #fca5a5;
+    border-radius: 4px; padding: 1px 6px; font-size: 10px; font-weight: 700;
+    margin-right: 4px;
+  }
+  .after-tag {
+    display: inline-block; background: #14532d; color: #86efac;
+    border-radius: 4px; padding: 1px 6px; font-size: 10px; font-weight: 700;
+    margin: 0 4px;
+  }
+  .demo-result-title {
+    font-size: 13px; font-weight: 700; color: #60a5fa;
+    padding: 12px 16px; border-bottom: 1px solid #334155;
+    background: #1e293b; border-radius: 10px 10px 0 0;
+  }
+  #demo-chat {
+    background: #1e293b; border-radius: 0 0 10px 10px;
+    padding: 16px; min-height: 120px;
+  }
+  #demo-chat .msg { margin-bottom: 14px; }
+  #demo-chat .bubble {
+    background: #0f172a; border: 1px solid #334155; border-radius: 10px;
+    padding: 14px 16px; font-size: 13px; color: #e2e8f0; line-height: 1.7;
+  }
+  #demo-chat .bubble table {
+    width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px;
+  }
+  #demo-chat .bubble th {
+    background: #1e3a5f; color: #93c5fd; padding: 6px 10px;
+    border: 1px solid #334155; text-align: left;
+  }
+  #demo-chat .bubble td {
+    padding: 6px 10px; border: 1px solid #334155; color: #cbd5e1;
+  }
+  #demo-chat .bubble tr:nth-child(even) td { background: #172032; }
+  #demo-chat .bubble code {
+    background: #0f172a; border: 1px solid #334155;
+    border-radius: 4px; padding: 1px 5px; font-size: 12px; color: #a5b4fc;
+  }
+  #demo-chat .bubble strong { color: #60a5fa; }
+  #demo-chat .tool-indicator {
+    font-size: 11px; color: #f59e0b; padding: 6px 10px;
+    background: rgba(245,158,11,0.08); border-radius: 6px; margin-bottom: 6px;
+  }
 
   /* ── Credit Portfolio Panel ── */
   .credit-panel {
@@ -1190,6 +1292,7 @@ HTML = r"""<!DOCTYPE html>
   <button class="tab-btn active" onclick="switchTab('chat')">💬 보험 상담</button>
   <button class="tab-btn" onclick="switchTab('credit')">💳 신용점수 포트폴리오</button>
   <button class="tab-btn" onclick="switchTab('health')">🏥 건강위험 포트폴리오</button>
+  <button class="tab-btn demo-tab" onclick="switchTab('demo')">🏆 대회 데모</button>
 </div>
 
 <!-- Tab: 보험 상담 -->
@@ -1828,6 +1931,165 @@ HTML = r"""<!DOCTYPE html>
   </div>
 </div>
 
+<!-- Tab: 대회 데모 ─────────────────────────────────────────── -->
+<div class="tab-panel" id="tab-demo">
+  <div class="demo-panel">
+
+    <div class="demo-header">
+      <div class="demo-title">개인정보 이노베이션 존 × 보험·금융 혁신 데모</div>
+      <div class="demo-subtitle">
+        국립암센터 RGST·DEATH·G1E + 광주TP CDW/DICOM + BFC 보험료분위 + CB 신용DB<br>
+        3대 데이터 결합 기반 <strong>10가지 혁신 시나리오</strong> 실시간 시연
+      </div>
+    </div>
+
+    <!-- 보험 영역 -->
+    <div class="demo-section-title">보험 영역 — 정밀 언더라이팅 &amp; 요율 합리화</div>
+    <div class="demo-grid">
+
+      <div class="demo-card" onclick="demoSend(1)">
+        <div class="demo-card-num">시나리오 1</div>
+        <div class="demo-card-title">암 완치자 인수 심사</div>
+        <div class="demo-card-persona">박민준 · 45세 남성 · 위암 2기 완치 3년</div>
+        <div class="demo-card-desc">RGST 암등록 DB 재발률 → 조건부 표준 체 전환 + 보험료 할인</div>
+        <div class="demo-card-data">RGST(261만건) · DEATH · G1E</div>
+        <div class="demo-card-before-after">
+          <span class="before-tag">Before</span> 일률 거절
+          <span class="after-tag">After</span> 정밀 심사 → 조건부 승인
+        </div>
+      </div>
+
+      <div class="demo-card" onclick="demoSend(2)">
+        <div class="demo-card-num">시나리오 2</div>
+        <div class="demo-card-title">AI 저위험군 보험료 할인</div>
+        <div class="demo-card-persona">이지현 · 38세 여성 · 5년 연속 검진 정상</div>
+        <div class="demo-card-desc">G1E 연속 검진 + DICOM 영상 정밀 분류 → 최대 30% 보험료 할인</div>
+        <div class="demo-card-data">G1E(1657만건) · 광주TP DICOM · cdw_psmn_vtls</div>
+        <div class="demo-card-before-after">
+          <span class="before-tag">Before</span> 나이 기준 일률 보험료
+          <span class="after-tag">After</span> 건강 점수 기반 30% 할인
+        </div>
+      </div>
+
+      <div class="demo-card" onclick="demoSend(3)">
+        <div class="demo-card-num">시나리오 3</div>
+        <div class="demo-card-title">미세 영상 소견자 노-할증</div>
+        <div class="demo-card-persona">김태영 · 52세 남성 · 폐 소결절 6mm</div>
+        <div class="demo-card-desc">광주TP DICOM AI 판독 → 임상 무의미 소견 구분 → 부당 할증 없음</div>
+        <div class="demo-card-data">광주TP JPG/DICOM · T400(상병) · RGST</div>
+        <div class="demo-card-before-after">
+          <span class="before-tag">Before</span> 소견 이유로 보험료 30% 할증
+          <span class="after-tag">After</span> AI 판독 → 노-할증 표준 체
+        </div>
+      </div>
+
+      <div class="demo-card" onclick="demoSend(4)">
+        <div class="demo-card-num">시나리오 4</div>
+        <div class="demo-card-title">동적 보험료 캐시백</div>
+        <div class="demo-card-persona">최수민 · 41세 여성 · 1년간 건강 점수 25% 개선</div>
+        <div class="demo-card-desc">cdw_lflg 라이프로그 개선도 → 연간 보험료 캐시백 최대 15%</div>
+        <div class="demo-card-data">cdw_lflg_l03_mq_rslt(라이프로그) · cdw_psmn_vtls · G1E</div>
+        <div class="demo-card-before-after">
+          <span class="before-tag">Before</span> 고정 보험료
+          <span class="after-tag">After</span> 건강 개선 → 캐시백 지급
+        </div>
+      </div>
+
+      <div class="demo-card" onclick="demoSend(5)">
+        <div class="demo-card-num">시나리오 5</div>
+        <div class="demo-card-title">맞춤형 유병자 요율</div>
+        <div class="demo-card-persona">정재호 · 57세 남성 · 당뇨 · 치료 반응 우수</div>
+        <div class="demo-card-desc">T200~T530 상병 + G1E 치료 반응 → 개인 맞춤 보험료 (일률 할증 -30%)</div>
+        <div class="demo-card-data">T200~T530(상병) · G1E · BFC(보험료분위)</div>
+        <div class="demo-card-before-after">
+          <span class="before-tag">Before</span> 유병자 일률 30% 할증
+          <span class="after-tag">After</span> 치료 반응 우수 → 맞춤 요율 -20%
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 금융 영역 -->
+    <div class="demo-section-title">금융 영역 — 포용 금융 &amp; 대안 신용평가</div>
+    <div class="demo-grid">
+
+      <div class="demo-card" onclick="demoSend(6)">
+        <div class="demo-card-num">시나리오 6</div>
+        <div class="demo-card-title">씬파일러 Health-Credit 신용평가</div>
+        <div class="demo-card-persona">이수진 · 29세 여성 · 금융 이력 부족 · 신용점수 680점</div>
+        <div class="demo-card-desc">G1E 검진 성실도 + 바이탈 안정도 → 신용 +85점 → 1금융권 금리 1.8%p 인하</div>
+        <div class="demo-card-data">G1E · cdw_psmn_vtls · BFC · CB 신용DB</div>
+        <div class="demo-card-before-after">
+          <span class="before-tag">Before</span> 씬파일러 → 고금리 대출
+          <span class="after-tag">After</span> Health-Credit → 1금융권 진입
+        </div>
+      </div>
+
+      <div class="demo-card" onclick="demoSend(7)">
+        <div class="demo-card-num">시나리오 7</div>
+        <div class="demo-card-title">소상공인 건강 지속가능성 대출</div>
+        <div class="demo-card-persona">오현석 · 48세 남성 · 8년 자영업 · 당뇨 치료 우수</div>
+        <div class="demo-card-desc">CDW 임상 + RGST 영속성 예측 → 대출 한도 3,000만원 증액 + 금리 0.8%p 우대</div>
+        <div class="demo-card-data">광주TP CDW · RGST · 카드사/CB 매출 DB</div>
+        <div class="demo-card-before-after">
+          <span class="before-tag">Before</span> 담보·매출 기준만 → 한도 부족
+          <span class="after-tag">After</span> 건강 지속가능성 → 한도 증액
+        </div>
+      </div>
+
+      <div class="demo-card" onclick="demoSend(8)">
+        <div class="demo-card-num">시나리오 8</div>
+        <div class="demo-card-title">유병자·고령층 렌탈 금융 승인</div>
+        <div class="demo-card-persona">윤명숙 · 68세 여성 · 위암 1기 완치 5년</div>
+        <div class="demo-card-desc">cdw_ptn_hli + DEATH 단기 위험 분석 → 병력 차별 없이 렌탈 승인</div>
+        <div class="demo-card-data">광주TP cdw_ptn_hli · DEATH · RGST</div>
+        <div class="demo-card-before-after">
+          <span class="before-tag">Before</span> 병력 이유 → 렌탈 거절
+          <span class="after-tag">After</span> 단기 위험 낮음 → 정상 승인
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 위험 관리 영역 -->
+    <div class="demo-section-title">위험 관리 영역 — 사전 케어 &amp; 부실률 차단</div>
+    <div class="demo-grid">
+
+      <div class="demo-card" onclick="demoSend(9)">
+        <div class="demo-card-num">시나리오 9</div>
+        <div class="demo-card-title">미시 징후 사전 케어 → 암 중증화 차단</div>
+        <div class="demo-card-persona">박성호 · 52세 남성 · 위 미란 소견 · 2년 내 진행 위험 42%</div>
+        <div class="demo-card-desc">DICOM + T400 AI 조기 감지 → 내시경 절제술 → 고액 보험금 8,000만원 선제 차단</div>
+        <div class="demo-card-data">광주TP DICOM/JPG · T400 · 보험사 지급 DB</div>
+        <div class="demo-card-before-after">
+          <span class="before-tag">Before</span> 방치 → 암 3기 진행 → 보험금 지급
+          <span class="after-tag">After</span> 사전 시술 → 완치 → 8,000만원 절감
+        </div>
+      </div>
+
+      <div class="demo-card" onclick="demoSend(10)">
+        <div class="demo-card-num">시나리오 10</div>
+        <div class="demo-card-title">중증 질환 전환 예측 → 부실률 차단</div>
+        <div class="demo-card-persona">한동철 · 55세 남성 · 대출 2억 · SOFA 2.0 · 중증 위험 38%</div>
+        <div class="demo-card-desc">CDW SOFA + RGST → 상환 불능 위험 조기 식별 → 상환 보험 연계 → 부실 7,600만원 차단</div>
+        <div class="demo-card-data">cdw_bacm_sofa_isp(SOFA) · RGST · DEATH · 금융사 대출 DB</div>
+        <div class="demo-card-before-after">
+          <span class="before-tag">Before</span> 건강 정보 없음 → 부실 리스크 미포착
+          <span class="after-tag">After</span> SOFA 예측 → 상환 보험 연계 → 부실 차단
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 데모 채팅 결과 -->
+    <div id="demo-chat-area" style="display:none">
+      <div class="demo-result-title">시나리오 분석 결과</div>
+      <div id="demo-chat"></div>
+    </div>
+
+  </div>
+</div>
+
 <script>
 const SESSION_ID = crypto.randomUUID();
 let isLoading = false;
@@ -1908,6 +2170,16 @@ const TOOL_LABELS = {
   fetch_webpage:                   '📄 페이지 읽는 중...',
   get_credit_score:                '💳 신용점수 조회 중...',
   _news_search:                    '📰 관련 뉴스 검색 중...',
+  assess_cancer_survivor:          '🔬 암 완치자 인수 심사 중... [시나리오 1]',
+  assess_low_risk_discount:        '📉 AI 저위험군 할인 분석 중... [시나리오 2]',
+  assess_pacs_no_extra:            '🩻 영상 소견 노-할증 분석 중... [시나리오 3]',
+  assess_dynamic_discount:         '💚 동적 보험료 캐시백 계산 중... [시나리오 4]',
+  assess_chronic_disease_rate:     '💊 맞춤형 유병자 요율 산출 중... [시나리오 5]',
+  assess_health_credit:            '💳 Health-Credit 신용평가 중... [시나리오 6]',
+  assess_sme_health_loan:          '🏪 소상공인 건강 대출 우대 분석 중... [시나리오 7]',
+  assess_rental_approval:          '🛒 렌탈/할부 금융 승인 분석 중... [시나리오 8]',
+  assess_early_care:               '🏥 사전 케어 중증화 차단 분석 중... [시나리오 9]',
+  assess_default_prevention:       '🛡️ 부실률 차단 위험 예측 중... [시나리오 10]',
 };
 
 function scrollToBottom() {
@@ -2969,6 +3241,124 @@ async function hrGetAiRec() {
     btn.disabled = false;
     btn.textContent = '🤖 AI 맞춤 추천 다시 받기';
   }
+}
+
+// ── Demo Tab: 시나리오 버튼 클릭 → 채팅으로 전송 ────────────
+const DEMO_QUERIES = {
+  1: `[대회 시나리오 1 — 암 완치자 인수 심사]
+
+박민준(45세 남성)은 위암 2기로 3년 전 완치(수술+항암 치료)했으며 최근 건강검진 결과가 정상입니다.
+
+다음 두 단계로 분석해 주세요.
+
+① assess_cancer_survivor 도구로 이노베이션 존 RGST 데이터 기반 정밀 인수 심사를 실행하고 조건부 승인 여부와 보험료 할인율을 산출해 주세요.
+
+② 심사 결과를 바탕으로 박민준 씨에게 실제로 가입 가능한 보험 상품을 search_insmarket_products로 조회하여 추천해 주세요. 암보험(질병보험)과 실손의료보험 각각 상위 3개 상품을 보험사명·상품명·월 보험료 기준으로 비교표로 제시해 주세요. 완치자 가입 가능 여부도 표시해 주세요.`,
+
+  2: `[대회 시나리오 2 — AI 저위험군 보험료 할인]
+
+이지현(38세 여성)은 5년 연속 건강검진 정상, BMI·혈압·혈당 정상, 비흡연, DICOM 영상 정상입니다.
+
+다음 두 단계로 분석해 주세요.
+
+① assess_low_risk_discount 도구로 AI 저위험군 할인율을 산출해 주세요.
+
+② 이지현 씨에게 적합한 보험 상품을 search_insmarket_products로 조회하여 추천해 주세요. 실손의료보험·암보험·치아보험 각 상위 2~3개 상품을 보험사명·상품명·표준 월 보험료·할인 적용 후 예상 보험료 기준으로 비교표로 제시해 주세요.`,
+
+  3: `[대회 시나리오 3 — 미세 영상 소견자 노-할증]
+
+김태영(52세 남성)은 폐CT에서 6mm 소결절 소견이 발견됐으나 2년째 경과 관찰 중 변화 없음.
+
+다음 두 단계로 분석해 주세요.
+
+① assess_pacs_no_extra 도구로 광주TP DICOM AI 판독 결과 기반 노-할증 인수 여부를 판단해 주세요.
+
+② 김태영 씨가 가입할 수 있는 보험 상품을 search_insmarket_products로 조회하여 추천해 주세요. 50대 남성 기준 실손의료보험·암보험 상위 3개 상품을 보험사명·상품명·월 보험료로 비교표를 제시하고, 소결절 소견자 가입 시 주의사항도 안내해 주세요.`,
+
+  4: `[대회 시나리오 4 — 동적 보험료 캐시백]
+
+최수민(41세 여성)은 라이프로그 기반 건강 점수가 1년간 25% 개선됐습니다. 현재 월 보험료 8만원.
+
+다음 두 단계로 분석해 주세요.
+
+① assess_dynamic_discount 도구로 동적 캐시백 금액을 산출해 주세요. (점수 개선 25%, 월보험료 80000원, 1년)
+
+② 최수민 씨에게 적합한 보험 포트폴리오를 search_insmarket_products로 조회하여 추천해 주세요. 40대 여성 기준 실손의료보험·암보험·치아보험 상위 상품을 보험사명·상품명·월 보험료로 비교표를 제시하고, 캐시백 프로그램 연동 시 실질 비용도 함께 계산해 주세요.`,
+
+  5: `[대회 시나리오 5 — 맞춤형 유병자 요율]
+
+정재호(57세 남성)는 당뇨 진단을 받았지만 HbA1c 6.8%로 치료 반응이 우수합니다.
+
+다음 두 단계로 분석해 주세요.
+
+① assess_chronic_disease_rate 도구로 T200~T530 상병 + G1E 치료 반응 기반 맞춤형 유병자 요율을 산출해 주세요. (당뇨, 치료반응 우수, HbA1c 6.8)
+
+② 정재호 씨가 가입 가능한 유병자 보험 상품을 search_insmarket_products로 조회하여 추천해 주세요. 50대 남성 기준 유병자 실손보험·당뇨합병증 특화 상품·간병보험 상위 3개 상품을 보험사명·상품명·월 보험료로 비교표를 제시해 주세요.`,
+
+  6: `[대회 시나리오 6 — 씬파일러 Health-Credit 대안 신용평가]
+
+이수진(29세 여성)은 금융 거래 이력이 부족한 씬파일러로 신용점수가 680점입니다. 4년 연속 건강검진 정상, 바이탈 안정도 상, BFC 분위 6. 전세자금 2억 대출 희망.
+
+다음 두 단계로 분석해 주세요.
+
+① assess_health_credit 도구로 G1E + 바이탈 안정도 + BFC 기반 Health-Credit 가산점과 금리 인하 혜택을 산출해 주세요. (연속검진 4년, 바이탈 안정도 상, 현재신용점수 680, 전세자금 2억)
+
+② 이수진 씨에게 적합한 보험 상품도 search_insmarket_products로 조회하여 추천해 주세요. 30대 여성 기준 실손의료보험·암보험 상위 상품을 보험사명·상품명·월 보험료로 비교표를 제시하고, 건강 관리 지속 시 추가 혜택도 안내해 주세요.`,
+
+  7: `[대회 시나리오 7 — 소상공인 건강 지속가능성 대출 우대]
+
+오현석(48세 남성)은 8년째 소상공인 운영, 월 매출 800만원, 당뇨 치료 반응 우수. 3,000만원 사업자 대출 희망.
+
+다음 두 단계로 분석해 주세요.
+
+① assess_sme_health_loan 도구로 CDW 임상 수치 기반 건강 지속가능성 점수와 대출 한도 증액·금리 우대를 산출해 주세요.
+
+② 오현석 씨에게 적합한 보험 상품도 search_insmarket_products로 조회하여 추천해 주세요. 40대 남성 기준 실손의료보험·당뇨 유병자 보험·간병보험 상위 상품을 보험사명·상품명·월 보험료로 비교표를 제시해 주세요. 대출 상환 보장 보험도 추천에 포함해 주세요.`,
+
+  8: `[대회 시나리오 8 — 유병자·고령층 렌탈/할부 금융 승인]
+
+윤명숙(68세 여성)은 위암 1기 완치 5년 후 현재 이상 없음. 냉장고 500만원 36개월 렌탈 신청.
+
+다음 두 단계로 분석해 주세요.
+
+① assess_rental_approval 도구로 cdw_ptn_hli + DEATH DB 기반 단기 건강 급변 위험을 분석하고 렌탈 승인 여부를 판단해 주세요. (위암 1기 완치, 단기 위험 낮음)
+
+② 윤명숙 씨에게 적합한 보험 상품도 search_insmarket_products로 조회하여 추천해 주세요. 60대 여성 기준 실손의료보험·간병·치매보험 상위 상품을 보험사명·상품명·월 보험료로 비교표를 제시하고, 암 완치자 가입 가능 여부도 함께 안내해 주세요.`,
+
+  9: `[대회 시나리오 9 — 미시 징후 사전 케어 암 중증화 차단]
+
+박성호(52세 남성)는 내시경에서 위 미란 소견 발견, 2년 내 암 진행 위험 42%, 보험금 8,000만원 기준.
+
+다음 두 단계로 분석해 주세요.
+
+① assess_early_care 도구로 광주TP DICOM + T400 DB 기반 조기 개입 시 중증화 차단 효과와 보험사 절감 효과를 분석해 주세요. (위 미란 소견, 위험 42%, 조기 개입 적용)
+
+② 박성호 씨에게 지금 당장 가입해야 할 보험 상품을 search_insmarket_products로 조회하여 추천해 주세요. 50대 남성 기준 암보험(질병보험)·실손의료보험·간병보험 상위 상품을 보험사명·상품명·월 보험료로 비교표를 제시하고, 조기 가입의 중요성도 강조해 주세요.`,
+
+  10: `[대회 시나리오 10 — 중증 질환 전환 예측 대출 부실률 차단]
+
+한동철(55세 남성)은 대출 잔액 2억원, CDW SOFA 점수 2.0, 2년 내 중증 질환 전환 위험 38%, 대출 상환 보험 미가입.
+
+다음 두 단계로 분석해 주세요.
+
+① assess_default_prevention 도구로 CDW SOFA + RGST 연계 부실 예상 손실과 상환 보험 연계 권고를 분석해 주세요.
+
+② 한동철 씨에게 반드시 필요한 보험 상품을 search_insmarket_products로 조회하여 추천해 주세요. 50대 남성 기준 암보험·간병보험·실손의료보험 상위 상품을 보험사명·상품명·월 보험료로 비교표를 제시하고, 대출 상환 보장 보험 가입이 왜 필수인지도 설명해 주세요.`,
+};
+
+async function demoSend(num) {
+  const query = DEMO_QUERIES[num];
+  if (!query) return;
+
+  // 데모 탭에서 채팅 탭으로 전환
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-chat').classList.add('active');
+  document.querySelector('.tab-btn:first-child').classList.add('active');
+
+  // 채팅으로 전송
+  document.getElementById('input').value = query;
+  sendMessage();
 }
 
 // 초기화

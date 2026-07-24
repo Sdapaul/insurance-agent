@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import json
+import re as _re
 import sys
 import os
 
@@ -29,6 +30,20 @@ from tools.excel_search_tool import search_insmarket_products
 from tools.credit_score_tool import get_credit_score
 from tools.health_risk_tool import assess_health_risk
 from tools.cancer_risk_tool import assess_cancer_risk
+from tools.cancer_survivor_tool import (
+    assess_cancer_survivor,
+    assess_low_risk_discount,
+    assess_pacs_no_extra,
+    assess_dynamic_discount,
+    assess_chronic_disease_rate,
+)
+from tools.health_credit_tool import (
+    assess_health_credit,
+    assess_sme_health_loan,
+    assess_rental_approval,
+    assess_early_care,
+    assess_default_prevention,
+)
 
 # ───────────────────────────────────────────
 # 도구 정의 (OpenAI 형식)
@@ -356,7 +371,301 @@ TOOLS = [
             },
         },
     },
+    # ── 대회 시나리오 1~5: 보험 정밀 언더라이팅 & 요율 합리화 ──────────
+    {
+        "type": "function",
+        "function": {
+            "name": "assess_cancer_survivor",
+            "description": (
+                "[대회 시나리오 1] 암 완치자 보험 인수 심사. "
+                "국립암센터 RGST(암등록) + 사망DB 재발률 데이터로 정밀 언더라이팅 후 "
+                "조건부 승인/표준 체 전환 여부와 최적 보험료 할인율을 산출합니다."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "age": {"type": "integer"},
+                    "gender": {"type": "string", "enum": ["남", "여"]},
+                    "cancer_type": {"type": "string", "description": "암종 (예: '위암', '유방암', '갑상선암', '폐암')"},
+                    "cancer_stage": {"type": "string", "enum": ["1기", "2기", "3기", "4기"]},
+                    "years_since_cure": {"type": "integer", "description": "완치 후 경과 연수"},
+                    "treatment_method": {"type": "string", "description": "치료 방법 (예: '수술', '방사선', '항암+수술')"},
+                    "recent_checkup_normal": {"type": "boolean", "description": "최근 건강검진 정상 여부"},
+                },
+                "required": ["age", "gender", "cancer_type", "cancer_stage", "years_since_cure"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "assess_low_risk_discount",
+            "description": (
+                "[대회 시나리오 2] AI 저위험군 할인. "
+                "G1E 연속 건강검진 + cdw_psmn_vtls(바이탈) + DICOM 영상 소견으로 "
+                "저위험군을 정밀 분류하여 보험료 할인율(최대 30%)을 산출합니다."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "age": {"type": "integer"},
+                    "gender": {"type": "string", "enum": ["남", "여"]},
+                    "consecutive_checkups": {"type": "integer", "description": "연속 건강검진 수검 횟수(년)"},
+                    "bmi_normal": {"type": "boolean", "description": "BMI 정상(18.5~24.9)"},
+                    "bp_normal": {"type": "boolean", "description": "혈압 정상"},
+                    "blood_sugar_normal": {"type": "boolean", "description": "혈당 정상"},
+                    "non_smoker": {"type": "boolean", "description": "비흡연 여부"},
+                    "pacs_finding": {"type": "string", "description": "DICOM 영상 소견 ('정상' / '경도 소견' / '이상')"},
+                },
+                "required": ["age", "gender"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "assess_pacs_no_extra",
+            "description": (
+                "[대회 시나리오 3] 미세 영상 소견자 노-할증. "
+                "광주TP DICOM/JPG AI 판독 결과로 임상적 무의미 소견을 구분하여 "
+                "부당 보험료 할증 없이 표준 체로 인수 가능한지 판단합니다."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "age": {"type": "integer"},
+                    "gender": {"type": "string", "enum": ["남", "여"]},
+                    "finding_type": {"type": "string", "description": "소견 유형 (예: '폐 소결절', '간 낭종', '갑상선 결절')"},
+                    "finding_size_mm": {"type": "number", "description": "소견 크기 (mm)"},
+                    "follow_up_years": {"type": "number", "description": "경과 관찰 기간 (년)"},
+                },
+                "required": ["age", "gender", "finding_type"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "assess_dynamic_discount",
+            "description": (
+                "[대회 시나리오 4] 동적 보험료 캐시백. "
+                "cdw_lflg(라이프로그) 기반 건강 개선 점수 향상도에 따라 "
+                "연간 보험료 캐시백(최대 15%) 지급액을 산출합니다."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "age": {"type": "integer"},
+                    "gender": {"type": "string", "enum": ["남", "여"]},
+                    "score_improvement_pct": {"type": "number", "description": "건강 점수 개선율 (%)"},
+                    "monthly_premium": {"type": "integer", "description": "현재 월 보험료 (원)"},
+                    "management_years": {"type": "integer", "description": "건강 관리 기간 (년)"},
+                },
+                "required": ["age", "gender", "score_improvement_pct", "monthly_premium"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "assess_chronic_disease_rate",
+            "description": (
+                "[대회 시나리오 5] 맞춤형 유병자 요율. "
+                "T200~T530 상병 + G1E 검진치료 반응 + BFC 분위로 "
+                "만성질환자별 정밀 보험료를 산출합니다 (기존 일률 할증 대비 최대 30% 인하)."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "age": {"type": "integer"},
+                    "gender": {"type": "string", "enum": ["남", "여"]},
+                    "disease": {"type": "string", "description": "질환명 (예: '당뇨', '고혈압', '고지혈증')"},
+                    "treatment_response": {"type": "string", "enum": ["우수", "양호", "보통", "불량"], "description": "치료 반응"},
+                    "hba1c_or_key_metric": {"type": "number", "description": "당화혈색소(당뇨) 또는 주요 임상 지표"},
+                },
+                "required": ["age", "gender", "disease"],
+            },
+        },
+    },
+    # ── 대회 시나리오 6~8: 금융 포용성 확대 ──────────────────────────
+    {
+        "type": "function",
+        "function": {
+            "name": "assess_health_credit",
+            "description": (
+                "[대회 시나리오 6] 씬파일러 Health-Credit 대안 신용평가. "
+                "G1E(건강검진 성실도) + cdw_psmn_vtls(바이탈 안정도) + BFC(소득분위)를 "
+                "신용점수 가산점으로 환산하여 금리 인하·보험료 할인 혜택을 산출합니다."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "age": {"type": "integer"},
+                    "gender": {"type": "string", "enum": ["남", "여"]},
+                    "consecutive_checkups": {"type": "integer", "description": "연속 건강검진 수검 횟수(년)"},
+                    "vital_stability": {"type": "string", "enum": ["상", "중", "하"], "description": "바이탈 수치 안정도"},
+                    "bfc_tier": {"type": "integer", "description": "BFC 보험료 분위 (1~10)"},
+                    "current_credit_score": {"type": "integer", "description": "현재 CB 신용점수"},
+                    "loan_purpose": {"type": "string", "description": "대출 목적"},
+                    "loan_amount_10k": {"type": "integer", "description": "대출 금액 (만원)"},
+                },
+                "required": ["age", "gender"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "assess_sme_health_loan",
+            "description": (
+                "[대회 시나리오 7] 소상공인 건강 지속가능성 연계 대출 우대. "
+                "CDW 임상 수치 + RGST 장기 질환 추적으로 사업 영속성 예측 → "
+                "대출 한도 최대 3,000만원 증액 및 금리 우대."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "age": {"type": "integer"},
+                    "gender": {"type": "string", "enum": ["남", "여"]},
+                    "business_years": {"type": "integer", "description": "사업 운영 기간(년)"},
+                    "chronic_disease": {"type": "string", "description": "만성질환 ('없음' / '당뇨' / '고혈압')"},
+                    "treatment_response": {"type": "string", "enum": ["우수", "양호"], "description": "치료 반응"},
+                    "monthly_revenue_10k": {"type": "integer", "description": "월 매출 (만원)"},
+                    "loan_amount_10k": {"type": "integer", "description": "희망 대출 금액 (만원)"},
+                },
+                "required": ["age", "gender"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "assess_rental_approval",
+            "description": (
+                "[대회 시나리오 8] 유병자·고령층 렌탈/할부 금융 승인. "
+                "광주TP cdw_ptn_hli(환자건강정보) + DEATH/RGST로 단기 급격 악화 위험을 "
+                "정밀 분석하여 병력·고령 차별 없는 공정한 금융 접근 제공."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "age": {"type": "integer"},
+                    "gender": {"type": "string", "enum": ["남", "여"]},
+                    "disease_history": {"type": "string", "description": "병력 요약"},
+                    "short_term_risk": {"type": "string", "enum": ["낮음", "중간", "높음"], "description": "단기 건강 급변 위험"},
+                    "rental_amount_10k": {"type": "integer", "description": "렌탈 금액 (만원)"},
+                    "rental_period_months": {"type": "integer", "description": "렌탈 기간 (개월)"},
+                },
+                "required": ["age", "gender"],
+            },
+        },
+    },
+    # ── 대회 시나리오 9~10: 위험 관리 ────────────────────────────────
+    {
+        "type": "function",
+        "function": {
+            "name": "assess_early_care",
+            "description": (
+                "[대회 시나리오 9] 미시 징후 사전 케어 암 중증화 차단. "
+                "광주TP DICOM/JPG + T400(상병) DB로 전조 징후 조기 감지 → "
+                "선제 시술 유도로 고액 보험금 지급을 차단하고 소비자 생명을 지킵니다."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "age": {"type": "integer"},
+                    "gender": {"type": "string", "enum": ["남", "여"]},
+                    "finding": {"type": "string", "description": "미시 소견 (예: '위 미란 소견', '폐 결절 의심')"},
+                    "progression_risk_pct": {"type": "number", "description": "2년 내 중증 진행 위험율 (%)"},
+                    "early_intervention": {"type": "boolean", "description": "조기 개입 여부"},
+                    "insurance_coverage_10k": {"type": "integer", "description": "중증 진단 시 보험금 (만원)"},
+                },
+                "required": ["age", "gender", "finding"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "assess_default_prevention",
+            "description": (
+                "[대회 시나리오 10] 중증 질환 전환 예측 대출 부실률 차단. "
+                "광주TP CDW SOFA/APACHE2 점수 + RGST 연계로 장기 상환 불능 위험을 "
+                "사전 예측하여 채권 부실률을 차단합니다."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "age": {"type": "integer"},
+                    "gender": {"type": "string", "enum": ["남", "여"]},
+                    "loan_amount_10k": {"type": "integer", "description": "대출 잔액 (만원)"},
+                    "sofa_score": {"type": "number", "description": "CDW SOFA 점수"},
+                    "severe_disease_risk_pct": {"type": "number", "description": "2년 내 중증 질환 전환 위험율 (%)"},
+                    "has_repayment_insurance": {"type": "boolean", "description": "대출 상환 보장 보험 가입 여부"},
+                },
+                "required": ["age", "gender"],
+            },
+        },
+    },
 ]
+
+# ───────────────────────────────────────────
+# 사전 라우팅 (Live Mode Pre-routing)
+# ───────────────────────────────────────────
+
+_PRE_ROUTE_KEYWORDS = [
+    ("cancer",   ["암보험", "암 보험", "암진단", "면역항암", "항암"]),
+    ("dental",   ["덴탈", "치과", "임플란트", "스케일링", "충치", "잇몸", "치아보험", "치아"]),
+    ("health",   ["실손", "실비", "의료비", "병원비", "의료보험"]),
+    ("life",     ["생명보험", "종신보험", "정기보험", "사망보험", "사망보장"]),
+    ("care",     ["간병", "치매", "노인장기"]),
+    ("accident", ["상해보험", "상해"]),
+]
+
+_INTENT_TO_INSMARKET: dict = {
+    "cancer":   {"insurance_type": "질병보험", "keyword": "암"},
+    "dental":   {"insurance_type": "치아보험"},
+    "health":   {"insurance_type": "실손의료보험"},
+    "life":     {"insurance_type": "종신보험"},
+    "care":     {"insurance_type": "간병·치매보험"},
+    "accident": {"insurance_type": "상해보험"},
+}
+
+
+def _classify_pre_intent(text: str) -> str:
+    for intent, keywords in _PRE_ROUTE_KEYWORDS:
+        if any(k in text for k in keywords):
+            return intent
+    return "general"
+
+
+def _extract_age_gender_params(text: str) -> dict:
+    params: dict = {}
+    m = _re.search(r"(\d{2,3})\s*세", text)
+    if m:
+        age = int(m.group(1))
+        if age < 35:
+            params["age_group"] = "30대"
+        elif age < 45:
+            params["age_group"] = "40대"
+        elif age < 55:
+            params["age_group"] = "50대"
+        else:
+            params["age_group"] = "60대"
+    else:
+        m = _re.search(r"(\d+)0\s*대", text)
+        if m:
+            label = f"{m.group(1)}0대"
+            if label in ("30대", "40대", "50대", "60대"):
+                params["age_group"] = label
+
+    if any(k in text for k in ["남성", "남자", "남 ", "아빠", "아버지", "남편"]):
+        params["gender"] = "남"
+    elif any(k in text for k in ["여성", "여자", "여 ", "엄마", "어머니", "아내"]):
+        params["gender"] = "여"
+
+    return params
+
 
 # ───────────────────────────────────────────
 # 도구 실행기
@@ -404,6 +713,39 @@ def execute_tool(tool_name: str, tool_input: dict, client: openai.OpenAI) -> str
 
     elif tool_name == "get_personalized_recommendation":
         return _run_recommendation_subagent(tool_input, client)
+
+    # ── 대회 시나리오 1~5: 보험 정밀 언더라이팅 ──────────────────────
+    elif tool_name == "assess_cancer_survivor":
+        return assess_cancer_survivor(**tool_input)
+
+    elif tool_name == "assess_low_risk_discount":
+        return assess_low_risk_discount(**tool_input)
+
+    elif tool_name == "assess_pacs_no_extra":
+        return assess_pacs_no_extra(**tool_input)
+
+    elif tool_name == "assess_dynamic_discount":
+        return assess_dynamic_discount(**tool_input)
+
+    elif tool_name == "assess_chronic_disease_rate":
+        return assess_chronic_disease_rate(**tool_input)
+
+    # ── 대회 시나리오 6~8: 금융 포용성 확대 ──────────────────────────
+    elif tool_name == "assess_health_credit":
+        return assess_health_credit(**tool_input)
+
+    elif tool_name == "assess_sme_health_loan":
+        return assess_sme_health_loan(**tool_input)
+
+    elif tool_name == "assess_rental_approval":
+        return assess_rental_approval(**tool_input)
+
+    # ── 대회 시나리오 9~10: 위험 관리 ────────────────────────────────
+    elif tool_name == "assess_early_care":
+        return assess_early_care(**tool_input)
+
+    elif tool_name == "assess_default_prevention":
+        return assess_default_prevention(**tool_input)
 
     else:
         return json.dumps({"error": f"알 수 없는 도구: {tool_name}"}, ensure_ascii=False)
@@ -1020,6 +1362,24 @@ class InsuranceChatbot:
             print(f"  [news] error: {e}", flush=True)
             return ""
 
+    def _pre_fetch_insmarket(self, user_message: str) -> str:
+        """의도 분류 → 보험다모아 데이터 선조회. LLM 호출 전에 실행하여 왕복 1회 절감."""
+        intent = _classify_pre_intent(user_message)
+        if intent not in _INTENT_TO_INSMARKET:
+            return ""
+        params = dict(_INTENT_TO_INSMARKET[intent])
+        params.update(_extract_age_gender_params(user_message))
+        params["top_n"] = 6
+        try:
+            result = search_insmarket_products(**params)
+            data = json.loads(result)
+            if not data.get("results"):
+                return ""
+            print(f"  [pre-route] intent={intent} → {data['total_found']}건 선조회", flush=True)
+            return result
+        except Exception:
+            return ""
+
     def chat(self, user_message: str) -> str:
         """
         사용자 메시지를 받아 최종 응답 텍스트 반환.
@@ -1027,12 +1387,28 @@ class InsuranceChatbot:
         """
         self.conversation_history.append({"role": "user", "content": user_message})
 
+        # 사전 라우팅: 의도 분류 → 보험다모아 데이터 선조회
+        pre_context = self._pre_fetch_insmarket(user_message)
+
         max_iterations = 10
         for _ in range(max_iterations):
+            messages = [{"role": "system", "content": _build_system_prompt()}]
+            if pre_context:
+                messages.append({
+                    "role": "system",
+                    "content": (
+                        "[사전 조회 — 보험다모아 공시자료]\n"
+                        f"{pre_context}\n\n"
+                        "위 데이터를 우선 참고하여 답변하세요. "
+                        "search_insmarket_products 재호출은 추가 필터가 필요한 경우에만 하세요."
+                    ),
+                })
+            messages += self.conversation_history
+
             response = self.client.chat.completions.create(
                 model="gpt-4o",
                 max_tokens=4096,
-                messages=[{"role": "system", "content": _build_system_prompt()}] + self.conversation_history,
+                messages=messages,
                 tools=TOOLS,
             )
 

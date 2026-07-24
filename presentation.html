@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>보험 상담 AI 에이전트 — 발표 자료</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+    background: #0f1623;
+    color: #e8eaf0;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ── 슬라이드 컨테이너 ── */
+  .deck { width: 100%; height: 100vh; position: relative; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 60px 80px;
+    opacity: 0;
+    transition: opacity .35s ease;
+  }
+  .slide.active { display: flex; opacity: 1; }
+
+  /* ── 배경 변형 ── */
+  .slide-title   { background: linear-gradient(135deg, #0a2540 0%, #163560 100%); align-items: center; text-align: center; }
+  .slide-section { background: linear-gradient(135deg, #0f1623 0%, #1a2540 100%); }
+  .slide-feature { background: linear-gradient(135deg, #0f1e30 0%, #162840 100%); }
+  .slide-end     { background: linear-gradient(135deg, #071320 0%, #0d2035 100%); align-items: center; text-align: center; }
+
+  /* ── 타이포그래피 ── */
+  h1 { font-size: 3rem; font-weight: 700; line-height: 1.2; color: #fff; }
+  h2 { font-size: 2rem; font-weight: 700; color: #5ba4f5; margin-bottom: 24px; }
+  h3 { font-size: 1.3rem; font-weight: 600; color: #a8c8ff; margin-bottom: 12px; }
+  p  { font-size: 1.05rem; line-height: 1.75; color: #c8d4e8; }
+
+  .subtitle { font-size: 1.3rem; color: #7eb3ff; margin-top: 16px; }
+  .badge    { display: inline-block; background: #1e4080; color: #7eb3ff; border: 1px solid #2d5faa; border-radius: 6px; padding: 4px 12px; font-size: .85rem; margin-bottom: 20px; }
+  .tag      { display: inline-block; background: #0d2a50; color: #60a0e8; border-radius: 4px; padding: 2px 9px; font-size: .8rem; margin: 3px 2px; }
+
+  /* ── 2열 레이아웃 ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; width: 100%; }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; width: 100%; }
+
+  /* ── 카드 ── */
+  .card {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+  .card-accent { border-left: 3px solid #5ba4f5; }
+  .card-green  { border-left: 3px solid #4caf82; }
+  .card-amber  { border-left: 3px solid #f5a623; }
+  .card-purple { border-left: 3px solid #9b7eea; }
+  .card-red    { border-left: 3px solid #e06060; }
+
+  /* ── 코드 블록 ── */
+  pre {
+    background: #0a1520;
+    border: 1px solid #1e3a5a;
+    border-radius: 8px;
+    padding: 18px 22px;
+    font-size: .82rem;
+    line-height: 1.65;
+    overflow-x: auto;
+    color: #c8deff;
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .kw  { color: #7eb3ff; }
+  .str { color: #82e0aa; }
+  .cmt { color: #5a7a9a; }
+  .fn  { color: #f0b060; }
+  .num { color: #c89cff; }
+
+  /* ── 흐름도 ── */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    margin: 16px 0;
+  }
+  .flow-box {
+    background: #112240;
+    border: 1px solid #2a4a80;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: .9rem;
+    text-align: center;
+    color: #a8c8ff;
+    min-width: 110px;
+  }
+  .flow-box.highlight { background: #1a3a70; border-color: #5ba4f5; color: #fff; }
+  .flow-box.new       { background: #1a3a28; border-color: #4caf82; color: #82e0aa; }
+  .arrow { color: #3a6090; font-size: 1.4rem; padding: 0 8px; }
+
+  /* ── 목록 ── */
+  ul.feature-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  ul.feature-list li { display: flex; align-items: flex-start; gap: 12px; font-size: 1rem; color: #c8d4e8; line-height: 1.6; }
+  ul.feature-list li::before { content: '▸'; color: #5ba4f5; flex-shrink: 0; margin-top: 2px; }
+
+  ul.tool-list { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  ul.tool-list li { background: #0d2040; border-radius: 6px; padding: 8px 14px; font-size: .85rem; color: #a0c0e8; }
+  ul.tool-list li span { color: #f0b060; font-family: monospace; }
+
+  /* ── 표 ── */
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  th { background: #112240; color: #7eb3ff; padding: 10px 14px; text-align: left; border-bottom: 2px solid #2a4a80; }
+  td { padding: 9px 14px; border-bottom: 1px solid #1a2e50; color: #c0d0e8; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(90,164,245,.06); }
+
+  /* ── 번호 뱃지 ── */
+  .num-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #1a3a70; color: #7eb3ff;
+    font-weight: 700; font-size: .9rem; flex-shrink: 0;
+  }
+
+  /* ── 네비게이션 ── */
+  nav {
+    position: fixed; bottom: 28px; right: 36px;
+    display: flex; gap: 10px; z-index: 100;
+  }
+  nav button {
+    background: #1a3360; border: 1px solid #2d5090; color: #a8c8ff;
+    padding: 8px 18px; border-radius: 8px; cursor: pointer;
+    font-size: .9rem; transition: background .2s;
+  }
+  nav button:hover { background: #264080; }
+
+  .slide-counter {
+    position: fixed; bottom: 34px; left: 50%; transform: translateX(-50%);
+    color: #3a5a80; font-size: .8rem; z-index: 100;
+  }
+
+  /* ── 진행바 ── */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: linear-gradient(90deg, #5ba4f5, #4caf82);
+    transition: width .3s ease; z-index: 200;
+  }
+
+  /* ── 섹션 제목 슬라이드 ── */
+  .section-number { font-size: 4rem; font-weight: 800; color: #1a3a70; line-height: 1; }
+  .section-title  { font-size: 2.8rem; font-weight: 700; color: #fff; margin-top: 8px; }
+  .section-desc   { font-size: 1.1rem; color: #7090b0; margin-top: 12px; }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+
+  <!-- ────────────────────────────────────────
+       슬라이드 1 : 타이틀
+       ──────────────────────────────────────── -->
+  <div class="slide slide-title active">
+    <div class="badge">AI Agent · LLM Application</div>
+    <h1>보험 상담 AI 에이전트</h1>
+    <p class="subtitle">Intent Classification · Prompt Routing · RAG · Tool Calling · Web UI</p>
+    <div style="margin-top:48px; display:flex; gap:16px; flex-wrap:wrap; justify-content:center;">
+      <span class="tag">GPT-4o</span>
+      <span class="tag">ChromaDB</span>
+      <span class="tag">sentence-transformers</span>
+      <span class="tag">보험다모아 공시자료</span>
+      <span class="tag">Flask SSE</span>
+      <span class="tag">DuckDuckGo Search</span>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       슬라이드 2 : 프로젝트 개요
+       ──────────────────────────────────────── -->
+  <div class="slide slide-section">
+    <h2>프로젝트 개요</h2>
+    <div class="two-col">
+      <div>
+        <h3>무엇을 만들었나?</h3>
+        <ul class="feature-list" style="margin-top:8px;">
+          <li>생명보험·실손·암·치아·간병·연금보험 전 영역을 다루는 AI 상담 챗봇</li>
+          <li>보험다모아 공식 공시 엑셀 데이터 기반 실제 보험료 조회</li>
+          <li>실시간 웹 검색으로 최신 뉴스·공시이율 반영</li>
+          <li>ChromaDB 벡터 RAG로 보험 지식베이스 시맨틱 검색</li>
+          <li>GPT-4o Tool Calling + 서브에이전트 포트폴리오 추천</li>
+          <li>Flask 웹 UI + SSE 실시간 스트리밍</li>
+        </ul>
+      </div>
+      <div>
+        <h3>기술 스택</h3>
+        <div style="margin-top:8px; display:flex; flex-direction:column; gap:10px;">
+          <div class="card card-accent">
+            <strong style="color:#5ba4f5;">LLM</strong>
+            <p style="margin-top:4px; font-size:.9rem;">GPT-4o (Orchestrator + Sub-agent)</p>
+          </div>
+          <div class="card card-green">
+            <strong style="color:#4caf82;">Vector DB</strong>
+            <p style="margin-top:4px; font-size:.9rem;">ChromaDB + jhgan/ko-sroberta-multitask</p>
+          </div>
+          <div class="card card-amber">
+            <strong style="color:#f5a623;">데이터</strong>
+            <p style="margin-top:4px; font-size:.9rem;">보험다모아 XLS · FSS API · DuckDuckGo</p>
+          </div>
+          <div class="card card-purple">
+            <strong style="color:#9b7eea;">UI</strong>
+            <p style="margin-top:4px; font-size:.9rem;">Flask + Server-Sent Events 스트리밍</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       슬라이드 3 : 전체 아키텍처
+       ──────────────────────────────────────── -->
+  <div class="slide slide-section">
+    <h2>전체 아키텍처</h2>
+    <div class="flow" style="margin-bottom:24px;">
+      <div class="flow-box highlight">사용자 입력</div>
+      <span class="arrow">→</span>
+      <div class="flow-box highlight">Intent<br>Classification</div>
+      <span class="arrow">→</span>
+      <div class="flow-box new">Pre-routing<br>(선조회)</div>
+      <span class="arrow">→</span>
+      <div class="flow-box highlight">GPT-4o<br>Orchestrator</div>
+      <span class="arrow">→</span>
+      <div class="flow-box">Tool Calling<br>루프</div>
+      <span class="arrow">→</span>
+      <div class="flow-box highlight">최종 응답</div>
+    </div>
+    <table>
+      <thead>
+        <tr><th>도구 / 데이터소스</th><th>역할</th><th>우선순위</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>search_insmarket_products</code></td><td>보험다모아 공시 엑셀 상품 검색</td><td style="color:#4caf82;">★ 1순위</td></tr>
+        <tr><td><code>search_web / fetch_webpage</code></td><td>DuckDuckGo 실시간 웹 검색 + 본문 크롤링</td><td>2순위</td></tr>
+        <tr><td><code>search_insurance_products</code></td><td>로컬 정적 DB 상품 검색</td><td>3순위</td></tr>
+        <tr><td><code>retrieve_insurance_knowledge</code></td><td>ChromaDB RAG 지식베이스 검색</td><td>Fallback</td></tr>
+        <tr><td><code>get_personalized_recommendation</code></td><td>GPT-4o 서브에이전트 포트폴리오 추천</td><td>종합 추천</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       슬라이드 4 : 섹션 — Intent Classification
+       ──────────────────────────────────────── -->
+  <div class="slide slide-section" style="align-items:center; text-align:center;">
+    <div class="section-number">01</div>
+    <div class="section-title">Intent Classification</div>
+    <div class="section-desc">사용자의 질문이 어떤 보험 유형에 관한 것인지 분류</div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       슬라이드 5 : Intent Classification 상세
+       ──────────────────────────────────────── -->
+  <div class="slide slide-feature">
+    <h2>Intent Classification</h2>
+    <div class="two-col">
+      <div>
+        <h3>역할과 위치</h3>
+        <ul class="feature-list" style="margin-top:8px;">
+          <li><strong>Mock Mode</strong>: <code>web_app.py:detect_intent()</code> — 키워드 매칭으로 의도 분류, 로컬 도구로 빠르게 응답</li>
+          <li><strong>Live Mode</strong>: GPT-4o가 시스템 프롬프트의 지침을 따라 자체 판단</li>
+          <li><strong>Pre-routing</strong>: <code>orchestrator.py:_classify_pre_intent()</code> — LLM 호출 전 선분류하여 데이터 선조회</li>
+        </ul>
+        <div style="margin-top:16px;">
+          <h3>분류 클래스</h3>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">
+            <span class="tag">cancer (암보험)</span>
+            <span class="tag">dental (치과)</span>
+            <span class="tag">health (실손)</span>
+            <span class="tag">life (생명)</span>
+            <span class="tag">care (간병/치매)</span>
+            <span class="tag">accident (상해)</span>
+            <span class="tag">recommend (추천)</span>
+            <span class="tag">premium (보험료)</span>
+            <span class="tag">general</span>
+          </div>
+        </div>
+      </div>
+      <div>
+<pre><span class="cmt"># web_app.py — Mock Mode 의도 분류</span>
+<span class="kw">def</span> <span class="fn">detect_intent</span>(text, ctx):
+    <span class="kw">if</span> <span class="str">'비교'</span> <span class="kw">in</span> text <span class="kw">and</span> ctx.last_products:
+        <span class="kw">return</span> <span class="str">'compare'</span>
+    <span class="kw">if</span> any(k <span class="kw">in</span> text <span class="kw">for</span> k <span class="kw">in</span>
+           [<span class="str">'암보험'</span>, <span class="str">'면역항암'</span>, <span class="str">'항암'</span>]):
+        <span class="kw">return</span> <span class="str">'cancer'</span>
+    <span class="kw">if</span> any(k <span class="kw">in</span> text <span class="kw">for</span> k <span class="kw">in</span>
+           [<span class="str">'덴탈'</span>, <span class="str">'임플란트'</span>, <span class="str">'치아'</span>]):
+        <span class="kw">return</span> <span class="str">'dental'</span>
+    <span class="kw">if</span> any(k <span class="kw">in</span> text <span class="kw">for</span> k <span class="kw">in</span>
+           [<span class="str">'실손'</span>, <span class="str">'실비'</span>, <span class="str">'의료보험'</span>]):
+        <span class="kw">return</span> <span class="str">'health'</span>
+    ...
+    <span class="kw">return</span> <span class="str">'knowledge'</span>
+
+<span class="cmt"># orchestrator.py — Live Mode 선분류</span>
+_PRE_ROUTE_KEYWORDS = [
+    (<span class="str">"cancer"</span>,  [<span class="str">"암보험"</span>, <span class="str">"면역항암"</span>]),
+    (<span class="str">"dental"</span>,  [<span class="str">"임플란트"</span>, <span class="str">"치아"</span>]),
+    (<span class="str">"health"</span>,  [<span class="str">"실손"</span>, <span class="str">"의료보험"</span>]),
+    (<span class="str">"life"</span>,    [<span class="str">"종신보험"</span>, <span class="str">"정기보험"</span>]),
+    (<span class="str">"care"</span>,    [<span class="str">"간병"</span>, <span class="str">"치매"</span>]),
+]</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       슬라이드 6 : 섹션 — Prompt Routing
+       ──────────────────────────────────────── -->
+  <div class="slide slide-section" style="align-items:center; text-align:center;">
+    <div class="section-number">02</div>
+    <div class="section-title">Prompt Routing</div>
+    <div class="section-desc">분류된 의도에 따라 적절한 도구·데이터소스로 라우팅</div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       슬라이드 7 : Prompt Routing 상세
+       ──────────────────────────────────────── -->
+  <div class="slide slide-feature">
+    <h2>Prompt Routing</h2>
+    <div class="two-col">
+      <div>
+        <h3>2단계 라우팅 구조</h3>
+        <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+          <div class="card card-accent">
+            <strong style="color:#5ba4f5;">① 시스템 프롬프트 지침 (Live Mode)</strong>
+            <p style="margin-top:6px; font-size:.88rem;">
+              <code>orchestrator.py:SYSTEM_PROMPT</code> 내<br>
+              "도구 활용 전략" 섹션 → GPT-4o가 스스로 도구 선택<br>
+              연금보험 → <code>search_web</code> 우선<br>
+              공시 상품 → <code>search_insmarket</code> 1순위
+            </p>
+          </div>
+          <div class="card card-green">
+            <strong style="color:#4caf82;">② execute_tool() 디스패처</strong>
+            <p style="margin-top:6px; font-size:.88rem;">
+              <code>orchestrator.py:365–409</code><br>
+              GPT-4o가 결정한 도구명을 받아 실제 Python 함수로 라우팅
+            </p>
+          </div>
+          <div class="card card-amber">
+            <strong style="color:#f5a623;">③ Mock Mode 라우터</strong>
+            <p style="margin-top:6px; font-size:.88rem;">
+              <code>web_app.py:mock_response()</code><br>
+              <code>detect_intent()</code> 결과에 따라 로컬 함수 직접 호출
+            </p>
+          </div>
+        </div>
+      </div>
+      <div>
+<pre><span class="cmt"># orchestrator.py — execute_tool() 라우터</span>
+<span class="kw">def</span> <span class="fn">execute_tool</span>(name, inp, client):
+    <span class="kw">if</span> name == <span class="str">"search_insmarket_products"</span>:
+        <span class="kw">return</span> <span class="fn">search_insmarket_products</span>(**inp)
+
+    <span class="kw">elif</span> name == <span class="str">"search_web"</span>:
+        <span class="kw">return</span> <span class="fn">search_web</span>(**inp)
+
+    <span class="kw">elif</span> name == <span class="str">"retrieve_insurance_knowledge"</span>:
+        <span class="kw">return</span> <span class="fn">retrieve_insurance_knowledge</span>(**inp)
+
+    <span class="kw">elif</span> name == <span class="str">"get_personalized_recommendation"</span>:
+        <span class="kw">return</span> <span class="fn">_run_recommendation_subagent</span>(inp, client)
+    ...
+
+<span class="cmt"># 시스템 프롬프트 라우팅 지침 (일부)</span>
+<span class="str">"""
+Step 1 — search_insmarket_products (항상 먼저)
+Step 2 — search_web (항상 실행, 최신 정보 보완)
+Step 3 — 두 결과 종합하여 구조화 답변
+Step 4 — retrieve_insurance_knowledge (배경 지식)
+"""</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       슬라이드 8 : 섹션 — RAG
+       ──────────────────────────────────────── -->
+  <div class="slide slide-section" style="align-items:center; text-align:center;">
+    <div class="section-number">03</div>
+    <div class="section-title">RAG 기반 문서 검색</div>
+    <div class="section-desc">ChromaDB + 한국어 임베딩 모델로 보험 지식베이스 시맨틱 검색</div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       슬라이드 9 : RAG 상세
+       ──────────────────────────────────────── -->
+  <div class="slide slide-feature">
+    <h2>RAG 기반 문서 검색</h2>
+    <div class="two-col">
+      <div>
+        <h3>구성 요소</h3>
+        <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+          <div class="card card-accent">
+            <strong style="color:#5ba4f5;">rag/embeddings.py</strong>
+            <p style="margin-top:4px; font-size:.88rem;"><code>jhgan/ko-sroberta-multitask</code> (443MB)<br>한국어 특화 sentence-transformers</p>
+          </div>
+          <div class="card card-green">
+            <strong style="color:#4caf82;">rag/vectorstore.py</strong>
+            <p style="margin-top:4px; font-size:.88rem;">ChromaDB PersistentClient · 코사인 유사도<br>싱글톤 패턴 · 최초 실행 시 자동 인덱싱</p>
+          </div>
+          <div class="card card-purple">
+            <strong style="color:#9b7eea;">tools/rag_tools.py</strong>
+            <p style="margin-top:4px; font-size:.88rem;"><code>retrieve_insurance_knowledge()</code><br>벡터검색 실패 시 키워드 검색 자동 fallback</p>
+          </div>
+        </div>
+        <div style="margin-top:14px;">
+          <div class="flow">
+            <div class="flow-box">질문</div>
+            <span class="arrow">→</span>
+            <div class="flow-box">임베딩</div>
+            <span class="arrow">→</span>
+            <div class="flow-box highlight">ChromaDB<br>코사인 유사도</div>
+            <span class="arrow">→</span>
+            <div class="flow-box">Top-K 문서</div>
+          </div>
+        </div>
+      </div>
+      <div>
+<pre><span class="cmt"># rag/vectorstore.py — 시맨틱 검색</span>
+<span class="kw">def</span> <span class="fn">search</span>(self, query, top_k=<span class="num">3</span>):
+    query_emb = self._embedder.<span class="fn">embed_single</span>(query)
+
+    results = self._collection.<span class="fn">query</span>(
+        query_embeddings=[query_emb],
+        n_results=top_k,
+        include=[<span class="str">"metadatas"</span>, <span class="str">"distances"</span>],
+    )
+    <span class="cmt"># cosine distance → 유사도 점수 변환</span>
+    similarity = <span class="num">1.0</span> - dist / <span class="num">2.0</span>
+    <span class="kw">return</span> docs
+
+<span class="cmt"># tools/rag_tools.py — 자동 fallback</span>
+<span class="kw">def</span> <span class="fn">retrieve_insurance_knowledge</span>(query, top_k=<span class="num">2</span>):
+    vs = <span class="fn">_get_vectorstore</span>()
+
+    <span class="kw">if</span> vs <span class="kw">is not</span> None:  <span class="cmt"># 벡터 검색</span>
+        results = vs.<span class="fn">search</span>(query, top_k=top_k)
+        <span class="kw">if</span> results:
+            <span class="kw">return</span> <span class="fn">format</span>(results, method=<span class="str">"vector"</span>)
+
+    <span class="cmt"># Fallback: 키워드 검색</span>
+    <span class="kw">from</span> data.knowledge <span class="kw">import</span> search_knowledge
+    <span class="kw">return</span> <span class="fn">search_knowledge</span>(query, top_k)</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       슬라이드 10 : 섹션 — Tool Calling
+       ──────────────────────────────────────── -->
+  <div class="slide slide-section" style="align-items:center; text-align:center;">
+    <div class="section-number">04</div>
+    <div class="section-title">Tool Calling</div>
+    <div class="section-desc">GPT-4o가 11개 도구를 자율적으로 선택·실행하는 ReAct 루프</div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       슬라이드 11 : Tool Calling 도구 목록
+       ──────────────────────────────────────── -->
+  <div class="slide slide-feature">
+    <h2>Tool Calling — 11개 도구</h2>
+    <ul class="tool-list" style="margin-bottom:20px;">
+      <li><span>search_insmarket_products</span> — 보험다모아 공시 엑셀 검색</li>
+      <li><span>search_web</span> — DuckDuckGo 실시간 웹 검색</li>
+      <li><span>fetch_webpage</span> — URL 본문 크롤링</li>
+      <li><span>retrieve_insurance_knowledge</span> — ChromaDB RAG 검색</li>
+      <li><span>search_insurance_products</span> — 로컬 정적 DB 검색</li>
+      <li><span>compare_insurance_products</span> — 상품 비교</li>
+      <li><span>get_premium_estimate</span> — 보험료 견적</li>
+      <li><span>fetch_fss_realtime_products</span> — 금융감독원 API</li>
+      <li><span>get_credit_score</span> — NICE/KCB 신용점수 조회</li>
+      <li><span>assess_health_risk</span> — 건강검진 기반 위험 평가</li>
+      <li><span>get_personalized_recommendation</span> — GPT-4o 서브에이전트</li>
+    </ul>
+    <div class="flow">
+      <div class="flow-box">사용자 질문</div>
+      <span class="arrow">→</span>
+      <div class="flow-box highlight">GPT-4o<br>도구 선택</div>
+      <span class="arrow">→</span>
+      <div class="flow-box">execute_tool()<br>실행</div>
+      <span class="arrow">→</span>
+      <div class="flow-box highlight">결과 → GPT-4o<br>재판단</div>
+      <span class="arrow">→</span>
+      <div class="flow-box">반복 (최대 10회)</div>
+      <span class="arrow">→</span>
+      <div class="flow-box highlight">최종 답변</div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       슬라이드 12 : Tool Calling 코드
+       ──────────────────────────────────────── -->
+  <div class="slide slide-feature">
+    <h2>Tool Calling — 루프 구조</h2>
+    <div class="two-col">
+      <div>
+        <h3>도구 정의 (OpenAI 형식)</h3>
+<pre><span class="cmt"># orchestrator.py:37–359</span>
+TOOLS = [
+  {
+    <span class="str">"type"</span>: <span class="str">"function"</span>,
+    <span class="str">"function"</span>: {
+      <span class="str">"name"</span>: <span class="str">"search_insmarket_products"</span>,
+      <span class="str">"description"</span>: <span class="str">"보험다모아 공시 엑셀..."</span>,
+      <span class="str">"parameters"</span>: {
+        <span class="str">"type"</span>: <span class="str">"object"</span>,
+        <span class="str">"properties"</span>: {
+          <span class="str">"insurance_type"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>, ...},
+          <span class="str">"age_group"</span>:      {<span class="str">"type"</span>: <span class="str">"string"</span>, ...},
+          <span class="str">"gender"</span>:         {<span class="str">"type"</span>: <span class="str">"string"</span>, ...},
+        }
+      }
+    }
+  },
+  ... <span class="cmt"># 11개 도구</span>
+]</pre>
+      </div>
+      <div>
+        <h3>실행 루프 (chat 메서드)</h3>
+<pre><span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(<span class="num">10</span>):  <span class="cmt"># 최대 10회 반복</span>
+    response = client.chat.completions.<span class="fn">create</span>(
+        model=<span class="str">"gpt-4o"</span>,
+        messages=messages,
+        tools=TOOLS,
+    )
+    finish = response.choices[<span class="num">0</span>].finish_reason
+
+    <span class="kw">if</span> finish == <span class="str">"stop"</span>:
+        <span class="kw">return</span> final_text  <span class="cmt"># 답변 완성</span>
+
+    <span class="kw">elif</span> finish == <span class="str">"tool_calls"</span>:
+        <span class="kw">for</span> tc <span class="kw">in</span> tool_calls:
+            result = <span class="fn">execute_tool</span>(
+                tc.function.name,
+                <span class="fn">json.loads</span>(tc.function.arguments),
+                client,
+            )
+            <span class="cmt"># 결과를 히스토리에 추가 → 재판단</span>
+            history.<span class="fn">append</span>({<span class="str">"role"</span>: <span class="str">"tool"</span>, ...})</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       슬라이드 13 : 섹션 — UI
+       ──────────────────────────────────────── -->
+  <div class="slide slide-section" style="align-items:center; text-align:center;">
+    <div class="section-number">05</div>
+    <div class="section-title">UI 구성</div>
+    <div class="section-desc">Flask 웹 서버 + SSE 스트리밍 + Live/Mock 이중 모드</div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       슬라이드 14 : UI 상세
+       ──────────────────────────────────────── -->
+  <div class="slide slide-feature">
+    <h2>UI 구성</h2>
+    <div class="two-col">
+      <div>
+        <h3>Flask 웹 애플리케이션 (<code>web_app.py</code>)</h3>
+        <ul class="feature-list" style="margin-top:8px;">
+          <li><strong>Live Mode</strong>: GPT-4o 오케스트레이터 + 전체 Tool Calling + SSE 스트리밍</li>
+          <li><strong>Mock Mode</strong>: 로컬 도구만 사용, API 크레딧 없어도 동작</li>
+          <li><strong>Auto Mode</strong>: 크레딧 확인 후 자동 전환</li>
+          <li>SSE <code>/api/chat/stream</code> 엔드포인트로 토큰 단위 실시간 출력</li>
+          <li><code>render_template_string()</code>으로 HTML 인라인 렌더링</li>
+        </ul>
+        <div style="margin-top:16px;">
+          <h3>CLI 인터페이스 (<code>main.py</code>)</h3>
+          <ul class="feature-list">
+            <li><code>/reset</code> 대화 초기화 · <code>/rebuild</code> 벡터DB 재구축</li>
+            <li><code>/refresh</code> 보험다모아 실시간 데이터 갱신</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <h3>SSE 스트리밍 이벤트 타입</h3>
+<pre><span class="cmt"># stream_chat() 이벤트 흐름</span>
+yield {<span class="str">"type"</span>: <span class="str">"tool_start"</span>,
+       <span class="str">"tool"</span>: <span class="str">"search_insmarket_products"</span>}
+
+yield {<span class="str">"type"</span>: <span class="str">"tool_done"</span>,
+       <span class="str">"tool"</span>: <span class="str">"search_insmarket_products"</span>}
+
+yield {<span class="str">"type"</span>: <span class="str">"token"</span>,
+       <span class="str">"text"</span>: <span class="str">"치아보험 중 임플란트..."</span>}
+
+yield {<span class="str">"type"</span>: <span class="str">"done"</span>,
+       <span class="str">"full_text"</span>: <span class="str">"(전체 응답)"</span>}
+
+yield {<span class="str">"type"</span>: <span class="str">"error"</span>,
+       <span class="str">"message"</span>: <span class="str">"..."</span>}</pre>
+        <div style="margin-top:14px;" class="card card-purple">
+          <p style="font-size:.88rem;">뉴스 섹션은 Python 레벨에서 <strong>DuckDuckGo ddgs.news()</strong>로 실제 URL만 검증 후 삽입<br>→ GPT-4o 환각 URL 방지</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       슬라이드 15 : Pre-routing 개선
+       ──────────────────────────────────────── -->
+  <div class="slide slide-feature">
+    <h2>개선 포인트 — Live Mode Pre-routing</h2>
+    <div class="two-col">
+      <div>
+        <h3>기존 흐름 (Before)</h3>
+        <div class="flow" style="flex-direction:column; gap:6px; align-items:flex-start;">
+          <div class="flow-box" style="width:100%;">사용자 입력</div>
+          <div style="color:#3a6090; padding-left:20px;">↓ LLM 1회차</div>
+          <div class="flow-box" style="width:100%;">GPT-4o → "search_insmarket 호출 필요"</div>
+          <div style="color:#3a6090; padding-left:20px;">↓ 도구 실행</div>
+          <div class="flow-box" style="width:100%;">보험다모아 조회</div>
+          <div style="color:#3a6090; padding-left:20px;">↓ LLM 2회차</div>
+          <div class="flow-box" style="width:100%;">GPT-4o → 최종 답변</div>
+        </div>
+        <p style="margin-top:12px; font-size:.88rem; color:#7090b0;">LLM 왕복 2회 + 도구 결정 지연</p>
+      </div>
+      <div>
+        <h3>개선 흐름 (After)</h3>
+        <div class="flow" style="flex-direction:column; gap:6px; align-items:flex-start;">
+          <div class="flow-box" style="width:100%;">사용자 입력</div>
+          <div style="color:#4caf82; padding-left:20px;">↓ _classify_pre_intent() — 즉시 분류</div>
+          <div class="flow-box new" style="width:100%;">보험다모아 선조회 (나이·성별 파라미터 추출)</div>
+          <div style="color:#4caf82; padding-left:20px;">↓ System 메시지로 데이터 주입</div>
+          <div class="flow-box highlight" style="width:100%;">GPT-4o → 데이터 보고 바로 답변</div>
+        </div>
+        <p style="margin-top:12px; font-size:.88rem; color:#4caf82;">LLM 왕복 1회 단축 · 누락 방지</p>
+        <div style="margin-top:12px;" class="card card-green">
+<pre style="font-size:.78rem; margin-top:4px;">[사전 조회 — 보험다모아 공시자료]
+{results: [...], total_found: 6}
+
+위 데이터를 우선 참고하여 답변하세요.
+search_insmarket 재호출은 추가 필터가
+필요한 경우에만 하세요.</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       슬라이드 16 : 전체 데이터 흐름 요약
+       ──────────────────────────────────────── -->
+  <div class="slide slide-feature">
+    <h2>전체 데이터 흐름 요약</h2>
+    <table>
+      <thead>
+        <tr><th>#</th><th>단계</th><th>구현 위치</th><th>기능</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="num-badge">1</span></td>
+          <td>Intent Classification</td>
+          <td><code>_classify_pre_intent()</code><br><code>detect_intent()</code></td>
+          <td>사용자 질문에서 보험 유형·연령·성별 추출</td>
+        </tr>
+        <tr>
+          <td><span class="num-badge">2</span></td>
+          <td>Pre-routing</td>
+          <td><code>_pre_fetch_insmarket()</code></td>
+          <td>LLM 호출 전 보험다모아 데이터 선조회 → 시스템 메시지 주입</td>
+        </tr>
+        <tr>
+          <td><span class="num-badge">3</span></td>
+          <td>Prompt Routing</td>
+          <td><code>SYSTEM_PROMPT</code><br><code>execute_tool()</code></td>
+          <td>GPT-4o가 도구 선택 → 디스패처가 Python 함수로 실행</td>
+        </tr>
+        <tr>
+          <td><span class="num-badge">4</span></td>
+          <td>Tool Calling 루프</td>
+          <td><code>chat()</code> / <code>stream_chat()</code></td>
+          <td>도구 결과를 히스토리에 추가하며 최대 10회 반복</td>
+        </tr>
+        <tr>
+          <td><span class="num-badge">5</span></td>
+          <td>RAG 검색</td>
+          <td><code>retrieve_insurance_knowledge()</code></td>
+          <td>ChromaDB 시맨틱 검색 → 보험 지식 fallback 제공</td>
+        </tr>
+        <tr>
+          <td><span class="num-badge">6</span></td>
+          <td>UI 렌더링</td>
+          <td><code>web_app.py</code></td>
+          <td>SSE 스트리밍으로 토큰 단위 실시간 출력</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ────────────────────────────────────────
+       슬라이드 17 : 마무리
+       ──────────────────────────────────────── -->
+  <div class="slide slide-end">
+    <h2 style="color:#5ba4f5; font-size:1.6rem; margin-bottom:16px;">핵심 설계 원칙</h2>
+    <div class="three-col" style="margin-bottom:40px;">
+      <div class="card card-accent" style="text-align:center;">
+        <div style="font-size:2rem; margin-bottom:8px;">🎯</div>
+        <strong style="color:#5ba4f5;">신뢰성</strong>
+        <p style="font-size:.88rem; margin-top:6px;">보험다모아 공식 공시자료 1순위<br>출처·신뢰도 표 필수 첨부</p>
+      </div>
+      <div class="card card-green" style="text-align:center;">
+        <div style="font-size:2rem; margin-bottom:8px;">⚡</div>
+        <strong style="color:#4caf82;">속도</strong>
+        <p style="font-size:.88rem; margin-top:6px;">Pre-routing으로 LLM 왕복 1회 절감<br>SSE 스트리밍으로 즉각 응답감</p>
+      </div>
+      <div class="card card-purple" style="text-align:center;">
+        <div style="font-size:2rem; margin-bottom:8px;">🔄</div>
+        <strong style="color:#9b7eea;">유연성</strong>
+        <p style="font-size:.88rem; margin-top:6px;">Live / Mock 이중 모드<br>Vector → Keyword 자동 fallback</p>
+      </div>
+    </div>
+    <h1 style="font-size:2rem;">Q &amp; A</h1>
+    <p class="subtitle" style="margin-top:8px;">감사합니다</p>
+  </div>
+
+</div><!-- /deck -->
+
+<div class="slide-counter" id="counter">1 / 17</div>
+<nav>
+  <button onclick="go(-1)">← 이전</button>
+  <button onclick="go(1)">다음 →</button>
+</nav>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total  = slides.length;
+  let cur = 0;
+
+  function show(n) {
+    slides[cur].classList.remove('active');
+    cur = (n + total) % total;
+    slides[cur].classList.add('active');
+    document.getElementById('counter').textContent = `${cur + 1} / ${total}`;
+    document.getElementById('progress').style.width = `${((cur + 1) / total) * 100}%`;
+  }
+
+  function go(dir) { show(cur + dir); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') go(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                     go(-1);
+  });
+
+  // 초기 진행바
+  document.getElementById('progress').style.width = `${(1 / total) * 100}%`;
+</script>
+</body>
+</html>
