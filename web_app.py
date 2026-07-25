@@ -1267,6 +1267,170 @@ HTML = r"""<!DOCTYPE html>
   .ai-rec-body blockquote { border-left: 3px solid #7c3aed; padding-left: 12px; color: #475569; margin: 8px 0; }
   .ai-rec-body strong { color: #5b21b6; }
   .ai-rec-body p { margin: 6px 0; }
+
+  /* ── DIOBIO Wellness Tab ── */
+  .tab-btn.diobio-tab { border-bottom-color: #10b981; }
+  .tab-btn.diobio-tab.active { border-bottom-color: #34d399; color: #d1fae5; }
+  .diobio-panel { flex: 1; overflow-y: auto; background: #f0fdf4; }
+
+  /* Landing */
+  .db-landing {
+    min-height: 100%; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 48px 24px; text-align: center;
+    background: linear-gradient(160deg,#ecfdf5 0%,#d1fae5 55%,#a7f3d0 100%);
+  }
+  .db-logo { font-size: 52px; margin-bottom: 12px; }
+  .db-brand { font-size: 30px; font-weight: 900; color: #064e3b; letter-spacing: -1px; margin-bottom: 10px; }
+  .db-tagline { font-size: 14.5px; color: #065f46; line-height: 1.8; max-width: 340px; margin: 0 auto 32px; }
+  .db-tagline em { font-style: normal; color: #047857; font-weight: 700; }
+  .db-cta-main {
+    background: linear-gradient(135deg,#10b981,#059669); color: white;
+    border: none; border-radius: 50px; padding: 16px 38px;
+    font-size: 16px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 4px 20px rgba(16,185,129,.4); transition: all .2s;
+    letter-spacing: -.3px;
+  }
+  .db-cta-main:hover { transform: translateY(-2px); box-shadow: 0 6px 26px rgba(16,185,129,.5); }
+  .db-features { display: flex; gap: 14px; margin-top: 36px; flex-wrap: wrap; justify-content: center; }
+  .db-feat {
+    background: white; border-radius: 14px; padding: 14px 18px;
+    text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    min-width: 90px; font-size: 12px; color: #065f46;
+  }
+  .db-feat i { font-size: 22px; display: block; margin-bottom: 6px; font-style: normal; }
+
+  /* Survey */
+  .db-survey { padding: 20px 20px 32px; max-width: 620px; margin: 0 auto; }
+  .db-progress { margin-bottom: 22px; }
+  .db-step-meta { font-size: 11px; color: #6b7280; margin-bottom: 8px; display: flex; justify-content: space-between; }
+  .db-pbar { height: 6px; background: #d1fae5; border-radius: 10px; overflow: hidden; }
+  .db-pbar-fill { height: 100%; background: linear-gradient(90deg,#10b981,#059669); border-radius: 10px; transition: width .4s; }
+  .db-step-title { font-size: 19px; font-weight: 800; color: #064e3b; margin-bottom: 6px; letter-spacing: -.5px; line-height: 1.3; }
+  .db-step-sub { font-size: 12.5px; color: #6b7280; margin-bottom: 20px; }
+
+  /* Option Cards */
+  .db-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .db-opts.col1 { grid-template-columns: 1fr; }
+  .db-opts.col3 { grid-template-columns: 1fr 1fr 1fr; }
+  .db-opt {
+    background: white; border: 2px solid #d1fae5; border-radius: 12px;
+    padding: 14px 12px; cursor: pointer; transition: all .15s;
+    text-align: center; font-size: 13px; color: #374151; font-weight: 500;
+  }
+  .db-opt:hover { border-color: #10b981; background: #f0fdf4; }
+  .db-opt.sel { border-color: #10b981; background: #ecfdf5; color: #065f46; font-weight: 700; }
+  .db-opt-ic { font-size: 22px; display: block; margin-bottom: 6px; }
+
+  /* Lifestyle Qs */
+  .db-q { background: white; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+  .db-q-lbl { font-size: 13.5px; font-weight: 600; color: #1f2937; margin-bottom: 10px; }
+  .db-q-row { display: flex; gap: 6px; }
+  .db-q-o {
+    flex: 1; background: #f9fafb; border: 1.5px solid #e5e7eb; border-radius: 8px;
+    padding: 9px 6px; text-align: center; font-size: 11.5px; color: #6b7280;
+    cursor: pointer; transition: all .15s; font-weight: 500;
+  }
+  .db-q-o:hover { border-color: #10b981; color: #065f46; background: #f0fdf4; }
+  .db-q-o.sel { border-color: #10b981; background: #ecfdf5; color: #065f46; font-weight: 700; }
+
+  /* Safety Check */
+  .db-safety-note { background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 12px 14px; font-size: 12px; color: #92400e; margin-bottom: 14px; line-height: 1.6; }
+  .db-chk-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 14px; background: white; border-radius: 10px;
+    margin-bottom: 8px; cursor: pointer; border: 1.5px solid #e5e7eb; transition: border-color .15s;
+  }
+  .db-chk-item.on { border-color: #ef4444; background: #fef2f2; }
+  .db-chk-item input { width: 16px; height: 16px; margin-top: 1px; accent-color: #ef4444; flex-shrink: 0; }
+  .db-chk-text { font-size: 13px; color: #374151; }
+
+  /* Navigation */
+  .db-nav { display: flex; gap: 10px; margin-top: 8px; }
+  .db-btn-p {
+    background: white; border: 2px solid #d1d5db; color: #6b7280;
+    border-radius: 50px; padding: 12px 22px; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all .15s; white-space: nowrap;
+  }
+  .db-btn-p:hover { border-color: #9ca3af; color: #374151; }
+  .db-btn-n {
+    flex: 1; background: linear-gradient(135deg,#10b981,#059669);
+    color: white; border: none; border-radius: 50px;
+    padding: 13px 20px; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all .2s; box-shadow: 0 2px 10px rgba(16,185,129,.3);
+  }
+  .db-btn-n:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(16,185,129,.4); }
+
+  /* Result */
+  .db-result { padding: 20px 20px 40px; max-width: 620px; margin: 0 auto; }
+  .db-res-hero {
+    text-align: center; padding: 28px 20px;
+    background: linear-gradient(135deg,#ecfdf5,#d1fae5);
+    border-radius: 18px; margin-bottom: 18px;
+  }
+  .db-res-icon { font-size: 54px; margin-bottom: 10px; }
+  .db-res-type { font-size: 11.5px; font-weight: 700; color: #10b981; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
+  .db-res-name { font-size: 20px; font-weight: 900; color: #064e3b; letter-spacing: -.5px; margin-bottom: 12px; line-height: 1.3; }
+  .db-res-desc { font-size: 13px; color: #374151; line-height: 1.75; max-width: 400px; margin: 0 auto; }
+  .db-med-alert { background: #fff7ed; border: 1.5px solid #fb923c; border-radius: 12px; padding: 14px 16px; margin-bottom: 16px; font-size: 13px; color: #92400e; line-height: 1.7; }
+  .db-sol-hd { font-size: 11px; font-weight: 700; color: #10b981; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+  .db-sol-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .db-sol-card { background: white; border-radius: 12px; padding: 14px; box-shadow: 0 1px 6px rgba(0,0,0,.06); }
+  .db-sol-card-h { font-size: 12px; font-weight: 700; color: #374151; margin-bottom: 6px; }
+  .db-sol-card-b { font-size: 12px; color: #6b7280; line-height: 1.65; }
+  .db-ctas { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+  .db-btn-kakao { background: #FEE500; color: #191600; border: none; border-radius: 12px; padding: 15px; font-size: 14px; font-weight: 700; cursor: pointer; text-align: center; }
+  .db-btn-kakao:hover { opacity: .9; }
+  .db-btn-green { background: linear-gradient(135deg,#10b981,#059669); color: white; border: none; border-radius: 12px; padding: 15px; font-size: 14px; font-weight: 700; cursor: pointer; text-align: center; }
+  .db-btn-green:hover { opacity: .9; }
+  .db-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .db-btn-out { background: white; border: 2px solid #d1fae5; color: #065f46; border-radius: 12px; padding: 12px; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; }
+  .db-btn-out:hover { background: #ecfdf5; }
+  .db-privacy { font-size: 11px; color: #9ca3af; line-height: 1.65; background: #f9fafb; border-radius: 10px; padding: 12px 14px; margin-top: 6px; }
+  .db-restart { background: transparent; border: 1.5px solid #d1d5db; color: #9ca3af; border-radius: 10px; padding: 12px; font-size: 13px; cursor: pointer; width: 100%; margin-top: 10px; }
+  .db-restart:hover { border-color: #9ca3af; color: #6b7280; }
+
+  /* DIOBIO Modals */
+  .db-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:2000; align-items:center; justify-content:center; padding:16px; }
+  .db-overlay.open { display:flex; }
+  .db-modal { background:white; border-radius:20px; width:100%; max-width:480px; max-height:88vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.3); }
+  .db-modal-hd { display:flex; align-items:center; justify-content:space-between; padding:18px 20px 14px; border-bottom:1px solid #f0fdf4; position:sticky; top:0; background:white; z-index:1; }
+  .db-modal-title { font-size:16px; font-weight:800; color:#064e3b; }
+  .db-modal-close { background:#f3f4f6; border:none; font-size:14px; cursor:pointer; color:#6b7280; padding:6px 10px; border-radius:8px; font-weight:700; }
+  .db-modal-body { padding:20px; }
+  .db-form-group { margin-bottom:14px; }
+  .db-form-label { font-size:12.5px; font-weight:700; color:#374151; margin-bottom:6px; display:block; }
+  .db-form-input { width:100%; padding:11px 14px; border:1.5px solid #d1fae5; border-radius:10px; font-size:14px; box-sizing:border-box; outline:none; font-family:inherit; }
+  .db-form-input:focus { border-color:#10b981; }
+  .db-form-select { width:100%; padding:11px 14px; border:1.5px solid #d1fae5; border-radius:10px; font-size:14px; background:white; box-sizing:border-box; font-family:inherit; }
+  .db-form-select:focus { border-color:#10b981; outline:none; }
+  .db-submit-btn { width:100%; background:linear-gradient(135deg,#10b981,#059669); color:white; border:none; border-radius:12px; padding:14px; font-size:15px; font-weight:700; cursor:pointer; margin-top:4px; }
+  .db-submit-btn:hover { opacity:.9; }
+  .db-food-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .db-food-card { background:#f0fdf4; border:1.5px solid #d1fae5; border-radius:14px; padding:14px; }
+  .db-food-card-name { font-size:13px; font-weight:700; color:#065f46; margin-bottom:4px; }
+  .db-food-card-desc { font-size:11.5px; color:#6b7280; line-height:1.55; margin-bottom:8px; }
+  .db-food-tags { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:10px; }
+  .db-food-tag { background:#d1fae5; color:#065f46; font-size:10px; font-weight:600; padding:3px 8px; border-radius:20px; }
+  .db-food-add { width:100%; background:white; border:1.5px solid #10b981; color:#065f46; border-radius:8px; padding:8px; font-size:12px; font-weight:600; cursor:pointer; }
+  .db-food-add:hover { background:#ecfdf5; }
+  .db-glp1-banner { background:linear-gradient(135deg,#eff6ff,#dbeafe); border:1.5px solid #93c5fd; border-radius:14px; padding:16px; margin-bottom:16px; }
+  .db-glp1-title { font-size:14px; font-weight:800; color:#1d4ed8; margin-bottom:8px; }
+  .db-glp1-body { font-size:12.5px; color:#1e40af; line-height:1.7; }
+  .db-glp1-cta { display:inline-block; margin-top:10px; background:#1d4ed8; color:white; border:none; border-radius:8px; padding:10px 16px; font-size:12.5px; font-weight:700; cursor:pointer; }
+  .db-landing-cards { display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; max-width:360px; margin-top:28px; }
+  .db-landing-card { background:white; border-radius:14px; padding:14px 12px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,.07); }
+  .db-landing-card-ic { font-size:26px; margin-bottom:6px; }
+  .db-landing-card-nm { font-size:12.5px; font-weight:700; color:#065f46; margin-bottom:3px; }
+  .db-landing-card-ds { font-size:11px; color:#9ca3af; line-height:1.5; }
+  .db-new-badge { display:inline-block; background:#ef4444; color:white; font-size:9.5px; font-weight:700; padding:2px 6px; border-radius:20px; vertical-align:middle; margin-left:4px; letter-spacing:.3px; }
+
+  @media(max-width:480px) {
+    .db-opts { grid-template-columns: 1fr 1fr; }
+    .db-opts.col3 { grid-template-columns: 1fr 1fr; }
+    .db-sol-grid { grid-template-columns: 1fr; }
+    .db-btn-row { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -1293,6 +1457,7 @@ HTML = r"""<!DOCTYPE html>
   <button class="tab-btn" onclick="switchTab('credit')">💳 신용점수 포트폴리오</button>
   <button class="tab-btn" onclick="switchTab('health')">🏥 건강위험 포트폴리오</button>
   <button class="tab-btn demo-tab" onclick="switchTab('demo')">🏆 대회 데모</button>
+  <button class="tab-btn diobio-tab" onclick="switchTab('diobio')">🌿 DIOBIO 웰니스</button>
 </div>
 
 <!-- Tab: 보험 상담 -->
@@ -2135,6 +2300,315 @@ HTML = r"""<!DOCTYPE html>
       <div id="demo-chat"></div>
     </div>
 
+  </div>
+</div>
+
+<!-- ── DIOBIO 웰니스 탭 ── -->
+<div class="tab-panel" id="tab-diobio">
+  <div class="diobio-panel">
+
+    <!-- Landing -->
+    <div id="db-landing" class="db-landing">
+      <div class="db-logo">🌿</div>
+      <div class="db-brand">DIOBIO</div>
+      <div class="db-tagline">
+        <em>영양제부터 시작하지 않습니다.</em><br>
+        생활습관·음식·운동을 먼저 보고<br>
+        필요한 경우 영양제와 의료를 연결합니다.
+      </div>
+      <button class="db-cta-main" onclick="dbStart()">3분 건강 밸런스 체크하기 →</button>
+      <div class="db-landing-cards">
+        <div class="db-landing-card">
+          <div class="db-landing-card-ic">🤖</div>
+          <div class="db-landing-card-nm">AI 건강 분석</div>
+          <div class="db-landing-card-ds">6가지 밸런스 유형<br>맞춤 솔루션 제시</div>
+        </div>
+        <div class="db-landing-card">
+          <div class="db-landing-card-ic">💉</div>
+          <div class="db-landing-card-nm">GLP-1 원격 상담 <span class="db-new-badge">NEW</span></div>
+          <div class="db-landing-card-ds">비만·대사 관리<br>AI 원격 의료 연결</div>
+        </div>
+        <div class="db-landing-card">
+          <div class="db-landing-card-ic">🔬</div>
+          <div class="db-landing-card-nm">검사 키트</div>
+          <div class="db-landing-card-ds">모발 미네랄·영양<br>리포트 제공</div>
+        </div>
+        <div class="db-landing-card">
+          <div class="db-landing-card-ic">🛍️</div>
+          <div class="db-landing-card-nm">DIOFARM 식품</div>
+          <div class="db-landing-card-ds">올리브오일·단백질<br>발효식품 구독</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Survey -->
+    <div id="db-survey" class="db-survey" style="display:none">
+      <!-- Progress -->
+      <div class="db-progress">
+        <div class="db-step-meta">
+          <span id="db-step-lbl">Step 1 / 6</span>
+          <span id="db-step-pct">0%</span>
+        </div>
+        <div class="db-pbar"><div class="db-pbar-fill" id="db-pbar-fill" style="width:0%"></div></div>
+      </div>
+
+      <!-- Step 1: 대상 -->
+      <div id="db-s1">
+        <div class="db-step-title">누구를 위한 체크인가요?</div>
+        <div class="db-step-sub">맞춤 솔루션을 위해 대상을 알려주세요</div>
+        <div class="db-opts">
+          <div class="db-opt" data-g="target" data-v="female" onclick="dbPick(this)"><span class="db-opt-ic">👩</span>여성</div>
+          <div class="db-opt" data-g="target" data-v="male" onclick="dbPick(this)"><span class="db-opt-ic">👨</span>남성</div>
+          <div class="db-opt" data-g="target" data-v="child" onclick="dbPick(this)"><span class="db-opt-ic">👦</span>자녀</div>
+          <div class="db-opt" data-g="target" data-v="parents" onclick="dbPick(this)"><span class="db-opt-ic">👴</span>부모님</div>
+          <div class="db-opt" data-g="target" data-v="family" onclick="dbPick(this)"><span class="db-opt-ic">👨‍👩‍👧</span>가족 전체</div>
+          <div class="db-opt" data-g="target" data-v="unknown" onclick="dbPick(this)"><span class="db-opt-ic">🤔</span>잘 모르겠음</div>
+        </div>
+      </div>
+
+      <!-- Step 2: 기본 정보 -->
+      <div id="db-s2" style="display:none">
+        <div class="db-step-title">기본 정보를 알려주세요</div>
+        <div class="db-step-sub">연령대와 생활 패턴을 선택해 주세요</div>
+        <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:10px">연령대</div>
+        <div class="db-opts col3" style="margin-bottom:20px">
+          <div class="db-opt" data-g="age" data-v="10s" onclick="dbPick(this)"><span class="db-opt-ic">🎒</span>10대</div>
+          <div class="db-opt" data-g="age" data-v="20s" onclick="dbPick(this)"><span class="db-opt-ic">🌱</span>20대</div>
+          <div class="db-opt" data-g="age" data-v="30s" onclick="dbPick(this)"><span class="db-opt-ic">💼</span>30대</div>
+          <div class="db-opt" data-g="age" data-v="40s" onclick="dbPick(this)"><span class="db-opt-ic">🏃</span>40대</div>
+          <div class="db-opt" data-g="age" data-v="50s" onclick="dbPick(this)"><span class="db-opt-ic">🧘</span>50대</div>
+          <div class="db-opt" data-g="age" data-v="60s" onclick="dbPick(this)"><span class="db-opt-ic">🌿</span>60대+</div>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:10px">생활 패턴</div>
+        <div class="db-opts">
+          <div class="db-opt" data-g="pattern" data-v="office" onclick="dbPick(this)"><span class="db-opt-ic">🏢</span>직장인</div>
+          <div class="db-opt" data-g="pattern" data-v="selfemployed" onclick="dbPick(this)"><span class="db-opt-ic">🏪</span>자영업</div>
+          <div class="db-opt" data-g="pattern" data-v="parent" onclick="dbPick(this)"><span class="db-opt-ic">👶</span>학부모</div>
+          <div class="db-opt" data-g="pattern" data-v="student" onclick="dbPick(this)"><span class="db-opt-ic">📚</span>학생</div>
+          <div class="db-opt" data-g="pattern" data-v="abroad" onclick="dbPick(this)"><span class="db-opt-ic">✈️</span>해외 거주</div>
+          <div class="db-opt" data-g="pattern" data-v="other" onclick="dbPick(this)"><span class="db-opt-ic">🙂</span>기타</div>
+        </div>
+      </div>
+
+      <!-- Step 3: 건강 고민 (멀티 최대 3) -->
+      <div id="db-s3" style="display:none">
+        <div class="db-step-title">지금 가장 신경 쓰이는<br>건강 고민은 무엇인가요?</div>
+        <div class="db-step-sub">최대 3가지까지 선택할 수 있어요</div>
+        <div class="db-opts col1" id="db-concern-opts">
+          <div class="db-opt" data-v="tired" onclick="dbMulti(this,3)"><span class="db-opt-ic">😴</span>자도 자도 피곤해요</div>
+          <div class="db-opt" data-v="skin" onclick="dbMulti(this,3)"><span class="db-opt-ic">✨</span>피부가 푸석하고 칙칙해요</div>
+          <div class="db-opt" data-v="gut" onclick="dbMulti(this,3)"><span class="db-opt-ic">🤰</span>속이 더부룩하고 장이 예민해요</div>
+          <div class="db-opt" data-v="hair" onclick="dbMulti(this,3)"><span class="db-opt-ic">💇</span>머리카락이 가늘어지고 빠지는 것 같아요</div>
+          <div class="db-opt" data-v="sleep" onclick="dbMulti(this,3)"><span class="db-opt-ic">🌙</span>잠을 자도 개운하지 않아요</div>
+          <div class="db-opt" data-v="weight" onclick="dbMulti(this,3)"><span class="db-opt-ic">⚖️</span>살이 잘 안 빠지고 자주 붓는 것 같아요</div>
+          <div class="db-opt" data-v="age40" onclick="dbMulti(this,3)"><span class="db-opt-ic">🔋</span>40대 이후 몸이 예전 같지 않아요</div>
+          <div class="db-opt" data-v="men" onclick="dbMulti(this,3)"><span class="db-opt-ic">💪</span>남성 활력과 체력이 걱정돼요</div>
+          <div class="db-opt" data-v="kidcare" onclick="dbMulti(this,3)"><span class="db-opt-ic">🧒</span>아이의 편식·피로·집중력이 걱정돼요</div>
+          <div class="db-opt" data-v="burnout" onclick="dbMulti(this,3)"><span class="db-opt-ic">🔥</span>스트레스와 번아웃이 심해요</div>
+          <div class="db-opt" data-v="unknown" onclick="dbMulti(this,3)"><span class="db-opt-ic">❓</span>어떤 영양제를 먹어야 할지 모르겠어요</div>
+        </div>
+      </div>
+
+      <!-- Step 4: 생활습관 -->
+      <div id="db-s4" style="display:none">
+        <div class="db-step-title">생활습관을 체크해 드릴게요</div>
+        <div class="db-step-sub">솔직하게 답할수록 정확한 유형이 나와요</div>
+        <div class="db-q">
+          <div class="db-q-lbl">🍳 아침 식사를 얼마나 자주 하나요?</div>
+          <div class="db-q-row">
+            <div class="db-q-o" data-q="breakfast" data-v="often" onclick="dbQ(this)">거의 매일</div>
+            <div class="db-q-o" data-q="breakfast" data-v="sometimes" onclick="dbQ(this)">가끔</div>
+            <div class="db-q-o" data-q="breakfast" data-v="rarely" onclick="dbQ(this)">거의 안 함</div>
+          </div>
+        </div>
+        <div class="db-q">
+          <div class="db-q-lbl">🥩 단백질 식품을 충분히 먹나요?</div>
+          <div class="db-q-row">
+            <div class="db-q-o" data-q="protein" data-v="often" onclick="dbQ(this)">충분히</div>
+            <div class="db-q-o" data-q="protein" data-v="sometimes" onclick="dbQ(this)">가끔</div>
+            <div class="db-q-o" data-q="protein" data-v="rarely" onclick="dbQ(this)">거의 안 먹음</div>
+          </div>
+        </div>
+        <div class="db-q">
+          <div class="db-q-lbl">🥦 채소·과일을 자주 먹나요?</div>
+          <div class="db-q-row">
+            <div class="db-q-o" data-q="veg" data-v="often" onclick="dbQ(this)">자주</div>
+            <div class="db-q-o" data-q="veg" data-v="sometimes" onclick="dbQ(this)">가끔</div>
+            <div class="db-q-o" data-q="veg" data-v="rarely" onclick="dbQ(this)">거의 안 먹음</div>
+          </div>
+        </div>
+        <div class="db-q">
+          <div class="db-q-lbl">🍔 외식·배달 음식은 얼마나 자주 먹나요?</div>
+          <div class="db-q-row">
+            <div class="db-q-o" data-q="dining" data-v="rarely" onclick="dbQ(this)">주 2회 이하</div>
+            <div class="db-q-o" data-q="dining" data-v="sometimes" onclick="dbQ(this)">주 3~4회</div>
+            <div class="db-q-o" data-q="dining" data-v="often" onclick="dbQ(this)">거의 매일</div>
+          </div>
+        </div>
+        <div class="db-q">
+          <div class="db-q-lbl">🍩 단 음식·간식을 자주 먹나요?</div>
+          <div class="db-q-row">
+            <div class="db-q-o" data-q="sugar" data-v="rarely" onclick="dbQ(this)">거의 안 먹음</div>
+            <div class="db-q-o" data-q="sugar" data-v="sometimes" onclick="dbQ(this)">가끔</div>
+            <div class="db-q-o" data-q="sugar" data-v="often" onclick="dbQ(this)">자주</div>
+          </div>
+        </div>
+        <div class="db-q">
+          <div class="db-q-lbl">😴 평균 수면 시간은 어느 정도인가요?</div>
+          <div class="db-q-row">
+            <div class="db-q-o" data-q="sleep" data-v="good" onclick="dbQ(this)">7시간 이상</div>
+            <div class="db-q-o" data-q="sleep" data-v="less6" onclick="dbQ(this)">5~6시간</div>
+            <div class="db-q-o" data-q="sleep" data-v="less5" onclick="dbQ(this)">5시간 미만</div>
+          </div>
+        </div>
+        <div class="db-q">
+          <div class="db-q-lbl">🏋️ 운동은 주 몇 회 하나요?</div>
+          <div class="db-q-row">
+            <div class="db-q-o" data-q="exercise" data-v="often" onclick="dbQ(this)">주 3회 이상</div>
+            <div class="db-q-o" data-q="exercise" data-v="sometimes" onclick="dbQ(this)">주 1~2회</div>
+            <div class="db-q-o" data-q="exercise" data-v="rarely" onclick="dbQ(this)">거의 안 함</div>
+          </div>
+        </div>
+        <div class="db-q">
+          <div class="db-q-lbl">🚶 하루 평균 걷는 시간은?</div>
+          <div class="db-q-row">
+            <div class="db-q-o" data-q="walk" data-v="good" onclick="dbQ(this)">30분 이상</div>
+            <div class="db-q-o" data-q="walk" data-v="mid" onclick="dbQ(this)">10~30분</div>
+            <div class="db-q-o" data-q="walk" data-v="rarely" onclick="dbQ(this)">10분 미만</div>
+          </div>
+        </div>
+        <div class="db-q">
+          <div class="db-q-lbl">😰 최근 스트레스 수준은?</div>
+          <div class="db-q-row">
+            <div class="db-q-o" data-q="stress" data-v="low" onclick="dbQ(this)">낮음</div>
+            <div class="db-q-o" data-q="stress" data-v="mid" onclick="dbQ(this)">보통</div>
+            <div class="db-q-o" data-q="stress" data-v="high" onclick="dbQ(this)">높음</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5: 현재 영양제 -->
+      <div id="db-s5" style="display:none">
+        <div class="db-step-title">현재 복용 중인 영양제가 있나요?</div>
+        <div class="db-step-sub">정확한 추천을 위해 알려주세요</div>
+        <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:10px">복용 여부</div>
+        <div class="db-opts" style="margin-bottom:20px">
+          <div class="db-opt" data-g="supp_yn" data-v="yes" onclick="dbPick(this);dbToggleSupp(true)"><span class="db-opt-ic">✅</span>먹고 있어요</div>
+          <div class="db-opt" data-g="supp_yn" data-v="no" onclick="dbPick(this);dbToggleSupp(false)"><span class="db-opt-ic">❌</span>안 먹고 있어요</div>
+        </div>
+        <div id="db-supp-detail" style="display:none">
+          <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:10px">몇 가지 복용 중인가요?</div>
+          <div class="db-opts col3" style="margin-bottom:20px">
+            <div class="db-opt" data-g="supp_cnt" data-v="1-2" onclick="dbPick(this)"><span class="db-opt-ic">1️⃣</span>1~2가지</div>
+            <div class="db-opt" data-g="supp_cnt" data-v="3-5" onclick="dbPick(this)"><span class="db-opt-ic">3️⃣</span>3~5가지</div>
+            <div class="db-opt" data-g="supp_cnt" data-v="6+" onclick="dbPick(this)"><span class="db-opt-ic">➕</span>6가지 이상</div>
+          </div>
+          <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:10px">불편했던 경험이 있나요?</div>
+          <div class="db-opts">
+            <div class="db-opt" data-g="supp_dis" data-v="no" onclick="dbPick(this)"><span class="db-opt-ic">👍</span>없어요</div>
+            <div class="db-opt" data-g="supp_dis" data-v="yes" onclick="dbPick(this)"><span class="db-opt-ic">😟</span>있어요</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 6: 안전 확인 -->
+      <div id="db-s6" style="display:none">
+        <div class="db-step-title">안전 확인 질문</div>
+        <div class="db-step-sub">해당 항목을 모두 체크해 주세요</div>
+        <div class="db-safety-note">
+          ⚠️ 아래 항목은 병원 상담이 먼저 필요할 수 있는지 확인하기 위한 질문입니다.
+          해당되는 항목이 있다면 체크해 주세요.
+        </div>
+        <div id="db-safety-list">
+          <label class="db-chk-item" onclick="dbChkToggle(this)">
+            <input type="checkbox" value="medication"><span class="db-chk-text">현재 처방약을 복용 중이에요</span>
+          </label>
+          <label class="db-chk-item" onclick="dbChkToggle(this)">
+            <input type="checkbox" value="pregnant"><span class="db-chk-text">임신 중이거나 수유 중이에요</span>
+          </label>
+          <label class="db-chk-item" onclick="dbChkToggle(this)">
+            <input type="checkbox" value="allergy"><span class="db-chk-text">특정 성분 알레르기가 있어요</span>
+          </label>
+          <label class="db-chk-item" onclick="dbChkToggle(this)">
+            <input type="checkbox" value="abnormal"><span class="db-chk-text">최근 건강검진에서 이상 소견을 받았어요</span>
+          </label>
+          <label class="db-chk-item" onclick="dbChkToggle(this)">
+            <input type="checkbox" value="severe"><span class="db-chk-text">갑작스러운 심한 탈모·극심한 피로·지속 통증이 있어요</span>
+          </label>
+          <label class="db-chk-item" onclick="dbChkToggle(this)">
+            <input type="checkbox" value="gut_severe"><span class="db-chk-text">혈변·심한 복통·지속 설사 또는 변비가 있어요</span>
+          </label>
+          <label class="db-chk-item" onclick="dbChkToggle(this)">
+            <input type="checkbox" value="sleep_severe"><span class="db-chk-text">수면 문제가 일상생활에 큰 지장을 주고 있어요</span>
+          </label>
+        </div>
+        <div style="margin-top:14px;padding:12px;background:white;border-radius:10px;font-size:11.5px;color:#6b7280;line-height:1.7">
+          해당 없으면 체크하지 않고 "결과 보기"를 눌러주세요.
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="db-nav">
+        <button class="db-btn-p" id="db-btn-prev" onclick="dbPrev()" style="display:none">← 이전</button>
+        <button class="db-btn-n" id="db-btn-next" onclick="dbNext()">다음 →</button>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div id="db-result" class="db-result" style="display:none">
+      <div id="db-result-body"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- DIOBIO 모달: 검사 키트 신청 -->
+<div class="db-overlay" id="db-modal-kit" onclick="dbOverlayClose(event,'db-modal-kit')">
+  <div class="db-modal">
+    <div class="db-modal-hd">
+      <span class="db-modal-title">🔬 검사 키트 신청</span>
+      <button class="db-modal-close" onclick="dbCloseModal('db-modal-kit')">✕ 닫기</button>
+    </div>
+    <div class="db-modal-body">
+      <div class="db-form-group">
+        <label class="db-form-label">검사 종류 선택</label>
+        <select class="db-form-select" id="db-kit-type">
+          <option value="">선택해 주세요</option>
+          <option value="mineral">모발 미네랄 검사 (49,000원)</option>
+          <option value="nutrition">개인 영양 리포트 (39,000원)</option>
+          <option value="premium">프리미엄 종합 리포트 (89,000원)</option>
+        </select>
+      </div>
+      <div class="db-form-group">
+        <label class="db-form-label">이름</label>
+        <input class="db-form-input" id="db-kit-name" type="text" placeholder="이름을 입력해 주세요">
+      </div>
+      <div class="db-form-group">
+        <label class="db-form-label">연락처</label>
+        <input class="db-form-input" id="db-kit-phone" type="tel" placeholder="010-0000-0000">
+      </div>
+      <div class="db-form-group">
+        <label class="db-form-label">배송 주소</label>
+        <input class="db-form-input" id="db-kit-addr" type="text" placeholder="주소를 입력해 주세요">
+      </div>
+      <button class="db-submit-btn" onclick="dbSubmitKit()">신청하기</button>
+      <div style="font-size:11px;color:#9ca3af;margin-top:12px;line-height:1.6">
+        검사 키트는 신청 후 2~3 영업일 내 발송됩니다.<br>결과 리포트는 카카오 또는 이메일로 안내드립니다.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DIOBIO 모달: 추천 식품 -->
+<div class="db-overlay" id="db-modal-food" onclick="dbOverlayClose(event,'db-modal-food')">
+  <div class="db-modal">
+    <div class="db-modal-hd">
+      <span class="db-modal-title">🛍️ DIOFARM 추천 식품</span>
+      <button class="db-modal-close" onclick="dbCloseModal('db-modal-food')">✕ 닫기</button>
+    </div>
+    <div class="db-modal-body">
+      <div id="db-food-content"></div>
+    </div>
   </div>
 </div>
 
@@ -3454,6 +3928,324 @@ async function demoSend(num) {
 }
 
 // 초기화
+// ══════════════════════════════════════════════════════════
+// DIOBIO 웰니스 체크 — 설문 & 결과 로직
+// ══════════════════════════════════════════════════════════
+const DB = {
+  step: 1,
+  answers: { target: null, age: null, pattern: null, concerns: [], lifestyle: {}, supp: {}, safety: [] }
+};
+
+const DB_RESULTS = {
+  energy: {
+    icon: '⚡', type: 'Energy Low Balance Type', name: '에너지 회복이 필요한 유형',
+    desc: '피로, 활력 저하, 회복력 감소가 함께 나타나는 유형입니다. 만성 피로의 원인은 영양 불균형, 수면 부족, 생활습관 복합 요인인 경우가 많습니다.',
+    food: '달걀·닭가슴살·콩류(단백질), 견과류, 올리브오일, 현미·잡곡, 녹색 채소',
+    exercise: '주 2~3회 30분 걷기부터 시작 · 가벼운 스트레칭 · 과도한 운동은 오히려 피로 악화',
+    supp: '비타민 B군 · 철분(여성) · 마그네슘 · 코큐텐(CoQ10) · 비타민D',
+    hospital: '갑상선 기능 저하, 빈혈 의심 시 내분비내과 상담 권장',
+    travel: '자연 속 산림 치유형 리트릿 · 온천 휴양 · 조용한 힐링 숙소'
+  },
+  skin_gut: {
+    icon: '🌸', type: 'Skin-Gut Balance Type', name: '피부·장건강 관리가 필요한 유형',
+    desc: '피부 트러블과 소화·장 건강이 함께 고민인 유형입니다. 피부와 장은 긴밀히 연결된 "장-피부 축"으로, 장내 환경 개선이 피부에도 긍정적인 영향을 줍니다.',
+    food: '김치·요거트(발효식품), 등 푸른 생선(오메가3), 다채로운 채소, 충분한 수분 섭취',
+    exercise: '가벼운 유산소(속보·자전거) · 요가·필라테스 · 규칙적 배변 리듬 형성',
+    supp: '프로바이오틱스 · 오메가3 · 비타민C · 아연 · 콜라겐(선택)',
+    hospital: '만성 소화불량, 피부 트러블 지속 시 소화기내과·피부과 상담 권장',
+    travel: '해양 치유형(해변·바다 공기) · 해독 온천 · 건강 식단 중심 리트릿'
+  },
+  hair: {
+    icon: '💫', type: 'Hair Nutrition Balance Type', name: '모발·영양 상태 점검이 필요한 유형',
+    desc: '모발 건강은 체내 영양 상태의 직접적인 신호입니다. 단백질·철분·아연·비오틴 부족이 원인인 경우가 많으며, 조기 관리가 중요합니다.',
+    food: '달걀·닭가슴살·두부(단백질), 검은콩·검은깨, 견과류, 해조류(요오드), 굴(아연)',
+    exercise: '두피 혈류 개선 마사지(매일 3~5분) · 스트레칭 · 과도한 다이어트 금지',
+    supp: '바이오틴(비타민B7) · 아연 · 철분 · 비타민D · 모발 전용 멀티미네랄',
+    hospital: '갑작스러운 심한 탈모·원형탈모 시 피부과(탈모 클리닉) 조기 상담 권장',
+    travel: '해독·디톡스 리트릿 · 산림 공기 휴양 · 스트레스 해소 중심 여행'
+  },
+  sleep_stress: {
+    icon: '🌙', type: 'Sleep-Stress Balance Type', name: '수면·스트레스 루틴 관리가 필요한 유형',
+    desc: '수면의 질 저하와 만성 스트레스가 복합적으로 나타나는 유형입니다. 코르티솔 과부하와 멜라토닌 리듬 교란이 주요 원인이며, 루틴 개선이 핵심입니다.',
+    food: '바나나·체리(트립토판·멜라토닌), 두부·연어, 캐모마일차·라벤더차, 마그네슘 풍부 식품',
+    exercise: '저녁 30분 가벼운 산책 · 수면 전 요가·명상(5~10분) · 취침 2시간 전 격렬 운동 금지',
+    supp: '마그네슘 · L-테아닌 · GABA · 비타민B군 · 아슈와간다(적응원 허브)',
+    hospital: '수면 문제가 3개월 이상 지속되면 신경과·정신건강의학과 상담 권장',
+    travel: '숲 명상 리트릿 · 한적한 산속 힐링 · 디지털 디톡스 숙소'
+  },
+  metabolic: {
+    icon: '🔥', type: 'Metabolic Balance Type', name: '대사·체중 밸런스 개선이 필요한 유형',
+    desc: '체중 조절 어려움, 부종, 식습관 불균형이 함께 나타나는 유형입니다. 대사 건강은 식단·운동·수면이 세트로 작동하며, 한 가지만으로는 효과가 제한적입니다.',
+    food: '저당·고섬유 식단, 충분한 단백질, 저칼로리 채소, 발효식품, 설탕·가공식품 줄이기',
+    exercise: '근력 운동 + 유산소 병행(주 3~4회) · 공복 후 식전 간단 걷기 · 일상 활동량 늘리기',
+    supp: '식이섬유(차전자피) · 크롬 · 비타민D · 오메가3 · 마그네슘',
+    hospital: '대사증후군 의심, 갑상선 이상, 다낭성 난소증후군 시 내분비내과 상담',
+    travel: '디톡스 리트릿 · 단식·해독 프로그램 · 활동 중심 에코 리트릿'
+  },
+  total: {
+    icon: '🌈', type: 'Total Balance Type', name: '복합적 건강 밸런스 관리가 필요한 유형',
+    desc: '여러 건강 고민이 복합적으로 나타나는 유형입니다. 특정 영양제 하나보다는 전반적인 생활습관 점검과 기초 건강관리부터 시작하는 것이 가장 효과적입니다.',
+    food: '균형 잡힌 식단 전반 개선 · 가공식품·배달 음식 줄이기 · 규칙적 식사 리듬',
+    exercise: '일상 활동량 증가(하루 30분 걷기)부터 시작 · 과도한 목표 설정 금지',
+    supp: '종합 멀티비타민·미네랄부터 시작 · 프로바이오틱스 · 오메가3 · 비타민D',
+    hospital: '3년 이상 종합건강검진을 받지 않았다면 종합검진 우선 권장',
+    travel: '회복 중심 웰니스 패키지 · 자연 치유 리트릿 · 번아웃 회복 프로그램'
+  }
+};
+
+function dbStart() {
+  document.getElementById('db-landing').style.display = 'none';
+  document.getElementById('db-survey').style.display = 'block';
+  dbGoTo(1);
+}
+
+function dbGoTo(n) {
+  for (let i = 1; i <= 6; i++) {
+    const el = document.getElementById('db-s' + i);
+    if (el) el.style.display = (i === n ? 'block' : 'none');
+  }
+  DB.step = n;
+  const pct = Math.round((n - 1) / 6 * 100);
+  document.getElementById('db-pbar-fill').style.width = pct + '%';
+  document.getElementById('db-step-lbl').textContent = 'Step ' + n + ' / 6';
+  document.getElementById('db-step-pct').textContent = pct + '%';
+  document.getElementById('db-btn-prev').style.display = n > 1 ? 'block' : 'none';
+  document.getElementById('db-btn-next').textContent = n === 6 ? '✅ 결과 보기' : '다음 →';
+  document.querySelector('.diobio-panel').scrollTop = 0;
+}
+
+function dbPick(el) {
+  const g = el.dataset.g;
+  document.querySelectorAll('.db-opt[data-g="' + g + '"]').forEach(e => e.classList.remove('sel'));
+  el.classList.add('sel');
+  DB.answers[g] = el.dataset.v;
+}
+
+function dbMulti(el, max) {
+  if (el.classList.contains('sel')) {
+    el.classList.remove('sel');
+    DB.answers.concerns = DB.answers.concerns.filter(v => v !== el.dataset.v);
+  } else {
+    if (DB.answers.concerns.length >= max) {
+      el.style.animation = 'none';
+      el.offsetHeight;
+      el.style.animation = '';
+      return;
+    }
+    el.classList.add('sel');
+    DB.answers.concerns.push(el.dataset.v);
+  }
+}
+
+function dbQ(el) {
+  const q = el.dataset.q;
+  document.querySelectorAll('.db-q-o[data-q="' + q + '"]').forEach(e => e.classList.remove('sel'));
+  el.classList.add('sel');
+  DB.answers.lifestyle[q] = el.dataset.v;
+}
+
+function dbToggleSupp(show) {
+  document.getElementById('db-supp-detail').style.display = show ? 'block' : 'none';
+}
+
+function dbChkToggle(lbl) {
+  const cb = lbl.querySelector('input[type=checkbox]');
+  const checked = cb.checked;
+  lbl.classList.toggle('on', checked);
+  const v = cb.value;
+  if (checked) { if (!DB.answers.safety.includes(v)) DB.answers.safety.push(v); }
+  else { DB.answers.safety = DB.answers.safety.filter(x => x !== v); }
+}
+
+function dbNext() {
+  const s = DB.step;
+  if (s === 1 && !DB.answers.target) { alert('대상을 선택해 주세요.'); return; }
+  if (s === 2 && (!DB.answers.age || !DB.answers.pattern)) { alert('연령대와 생활 패턴을 모두 선택해 주세요.'); return; }
+  if (s === 3 && DB.answers.concerns.length === 0) { alert('건강 고민을 최소 1가지 선택해 주세요.'); return; }
+  if (s === 6) { dbShowResult(); return; }
+  dbGoTo(s + 1);
+}
+
+function dbPrev() { if (DB.step > 1) dbGoTo(DB.step - 1); }
+
+function dbCalcType() {
+  const sc = { energy: 0, skin_gut: 0, hair: 0, sleep_stress: 0, metabolic: 0 };
+  const map = { tired:'energy', skin:'skin_gut', gut:'skin_gut', hair:'hair', sleep:'sleep_stress',
+                weight:'metabolic', age40:'energy', men:'energy', kidcare:'energy',
+                burnout:'sleep_stress', unknown: null };
+  DB.answers.concerns.forEach(c => {
+    const t = map[c];
+    if (t) sc[t] += 3; else Object.keys(sc).forEach(k => sc[k] += 1);
+  });
+  const ls = DB.answers.lifestyle;
+  if (ls.breakfast === 'rarely')    { sc.metabolic += 1; sc.energy += 1; }
+  if (ls.protein === 'rarely')      { sc.hair += 1; sc.energy += 1; }
+  if (ls.veg === 'rarely')          { sc.skin_gut += 1; sc.metabolic += 1; }
+  if (ls.dining === 'often')        { sc.metabolic += 1; sc.skin_gut += 1; }
+  if (ls.sugar === 'often')         { sc.metabolic += 1; sc.skin_gut += 1; }
+  if (ls.sleep === 'less5' || ls.sleep === 'less6') { sc.sleep_stress += 2; sc.energy += 1; }
+  if (ls.exercise === 'rarely')     { sc.metabolic += 1; sc.energy += 1; }
+  if (ls.walk === 'rarely')         { sc.metabolic += 1; }
+  if (ls.stress === 'high')         { sc.sleep_stress += 2; sc.energy += 1; }
+  if (['40s','50s','60s'].includes(DB.answers.age)) sc.energy += 1;
+  if (DB.answers.age === '60s')     sc.metabolic += 1;
+
+  const entries = Object.entries(sc).sort((a,b) => b[1]-a[1]);
+  const top = entries[0][1];
+  const topN = entries.filter(e => e[1] === top).length;
+  const activeN = Object.values(sc).filter(v => v >= 3).length;
+  if (topN >= 3 || activeN >= 3 || DB.answers.concerns.length >= 3) return 'total';
+  return entries[0][0];
+}
+
+function dbShowResult() {
+  document.getElementById('db-survey').style.display = 'none';
+  const r = document.getElementById('db-result');
+  r.style.display = 'block';
+  r.scrollTop = 0;
+  document.querySelector('.diobio-panel').scrollTop = 0;
+
+  const type = dbCalcType();
+  DB.currentType = type;
+  const d = DB_RESULTS[type];
+  const medFlag = DB.answers.safety.length >= 2;
+
+  const medHtml = medFlag ? `<div class="db-med-alert">⚠️ <strong>병원 상담을 먼저 권장드려요</strong><br>안전 확인 질문에서 의료 전문가 상담이 필요한 항목이 확인됐습니다. 영양제나 식품 솔루션보다 먼저 담당 의사와 상의해 주세요.</div>` : '';
+
+  const glp1Html = type === 'metabolic' ? `
+    <div class="db-glp1-banner">
+      <div class="db-glp1-title">💉 GLP-1 기반 AI 원격 의료 상담</div>
+      <div class="db-glp1-body">
+        대사·비만 유형으로 확인됐습니다. GLP-1 비만 치료제(세마글루타이드·리라글루타이드)는
+        식욕 억제·혈당 조절에 효과가 입증된 최신 옵션입니다.<br>
+        DIOBIO는 AI 기반 원격 의료 플랫폼과 연계하여 전문의 상담 없이도 비대면으로
+        처방 검토 및 모니터링을 받을 수 있도록 연결해 드립니다.
+      </div>
+      <button class="db-glp1-cta" onclick="dbOpenKakao()">AI 원격 상담 신청하기 →</button>
+    </div>` : '';
+
+  document.getElementById('db-result-body').innerHTML = `
+    <div class="db-res-hero">
+      <div class="db-res-icon">${d.icon}</div>
+      <div class="db-res-type">${d.type}</div>
+      <div class="db-res-name">당신은 <br>${d.name}입니다</div>
+      <div class="db-res-desc">${d.desc}</div>
+    </div>
+    ${medHtml}
+    ${glp1Html}
+    <div class="db-sol-hd">맞춤 솔루션</div>
+    <div class="db-sol-grid">
+      <div class="db-sol-card"><div class="db-sol-card-h">🥗 식품 솔루션</div><div class="db-sol-card-b">${d.food}</div></div>
+      <div class="db-sol-card"><div class="db-sol-card-h">🏃 운동 솔루션</div><div class="db-sol-card-b">${d.exercise}</div></div>
+      <div class="db-sol-card"><div class="db-sol-card-h">💊 영양제 솔루션</div><div class="db-sol-card-b">${d.supp}</div></div>
+      <div class="db-sol-card"><div class="db-sol-card-h">🏥 병원 상담</div><div class="db-sol-card-b">${d.hospital}</div></div>
+    </div>
+    <div class="db-sol-card" style="margin-bottom:20px"><div class="db-sol-card-h">✈️ 웰니스 여행</div><div class="db-sol-card-b">${d.travel}</div></div>
+    <div class="db-ctas">
+      <button class="db-btn-kakao" onclick="dbOpenKakao()">💬 카카오 상담하기</button>
+      <button class="db-btn-green" onclick="dbOpenKakao()">🌿 DIOBIO 구독 신청하기</button>
+      <div class="db-btn-row">
+        <button class="db-btn-out" onclick="dbOpenModal('db-modal-kit')">🔬 검사 키트 신청</button>
+        <button class="db-btn-out" onclick="dbOpenFood(DB.currentType)">🛍️ 추천 식품 보기</button>
+      </div>
+      <button class="db-btn-out" onclick="dbOpenKakao()">✈️ 웰니스 여행 보기</button>
+    </div>
+    <div class="db-privacy" style="margin-top:20px">
+      DIOBIO Balance Check 결과 안내와 상담을 위해 이름, 연락처, 설문 답변을 수집합니다.
+      본 서비스는 질병의 진단이나 치료를 목적으로 하지 않으며, 건강한 생활습관과 영양 균형
+      관리를 위한 참고 정보를 제공합니다. 특정 증상이나 질환이 의심되는 경우 전문 의료기관
+      상담이 권장됩니다.
+    </div>
+    <button class="db-restart" onclick="dbRestart()">🔄 처음부터 다시 하기</button>
+  `;
+}
+
+// ── DIOBIO Modal helpers ──────────────────────────────────────
+function dbOpenModal(id) { document.getElementById(id).classList.add('open'); }
+function dbCloseModal(id) { document.getElementById(id).classList.remove('open'); }
+function dbOverlayClose(e, id) { if (e.target === e.currentTarget) dbCloseModal(id); }
+
+function dbOpenKakao() {
+  window.open('https://open.kakao.com/o/sDIOBIO', '_blank');
+}
+
+function dbSubmitKit() {
+  const type  = document.getElementById('db-kit-type').value;
+  const name  = document.getElementById('db-kit-name').value.trim();
+  const phone = document.getElementById('db-kit-phone').value.trim();
+  const addr  = document.getElementById('db-kit-addr').value.trim();
+  if (!type || !name || !phone) { alert('검사 종류, 이름, 연락처를 입력해 주세요.'); return; }
+  const label = { mineral:'모발 미네랄 검사', nutrition:'개인 영양 리포트', premium:'프리미엄 종합 리포트' }[type];
+  alert('신청이 완료됐습니다!\\n\\n' + name + '님의 [' + label + '] 키트를\\n' + (addr || '입력한 주소') + '로 2~3 영업일 내 발송해 드립니다.\\n카카오 또는 문자로 발송 안내드립니다.');
+  dbCloseModal('db-modal-kit');
+}
+
+const DB_FOODS = {
+  energy: [
+    { icon:'🫒', name:'엑스트라버진 올리브오일', desc:'에너지 대사에 필수인 건강 지방, 항산화 폴리페놀 풍부', tags:['에너지 대사','항산화','심혈관'] },
+    { icon:'🥜', name:'오메가3 견과류 믹스', desc:'호두·아몬드·캐슈넛 혼합, 활력 회복에 도움되는 불포화지방', tags:['피로 회복','뇌 건강','항염'] },
+    { icon:'🥚', name:'방목란 단백질 팩(12구)', desc:'완전 단백질·비타민B12·철분 함유, 에너지 생성 지원', tags:['단백질','철분','B12'] },
+    { icon:'🌾', name:'멀티그레인 오트밀', desc:'복합탄수화물로 혈당 안정, 지속적인 에너지 공급', tags:['저GI','식이섬유','포만감'] },
+  ],
+  skin_gut: [
+    { icon:'🥗', name:'유기농 발효 건강식품 세트', desc:'김치·된장·청국장 발효 농축 분말, 장내 유익균 증식 도움', tags:['프로바이오틱스','장건강','면역'] },
+    { icon:'🫒', name:'엑스트라버진 올리브오일', desc:'폴리페놀 함유, 피부 항산화 및 장 점막 보호', tags:['피부','항산화','항염'] },
+    { icon:'🐟', name:'DIOFARM 오메가3 오일', desc:'정제 어유 오메가3, EPA+DHA 풍부, 피부 장벽 강화', tags:['피부 장벽','오메가3','항염'] },
+    { icon:'🍵', name:'콤부차 발효 음료 키트', desc:'홍차버섯 발효 DIY 키트, 장내 환경 개선', tags:['발효','프로바이오틱스','디톡스'] },
+  ],
+  hair: [
+    { icon:'🖤', name:'검은콩·검은깨 파우더', desc:'안토시아닌·이소플라본 풍부, 모발 색소·강도 유지에 도움', tags:['모발 강화','안토시아닌','단백질'] },
+    { icon:'🥜', name:'아마씨·호두 믹스', desc:'오메가3·아연·비타민E 복합, 두피 혈류 개선', tags:['두피 건강','아연','오메가3'] },
+    { icon:'🌊', name:'해조류 믹스(미역·다시마·톳)', desc:'요오드·칼슘·철분 풍부, 갑상선 기능 및 모발 성장 지원', tags:['요오드','칼슘','모발 성장'] },
+    { icon:'🦪', name:'굴 농축 분말', desc:'아연 최고 함유 식품, 케라틴 합성 지원', tags:['아연','케라틴','단백질'] },
+  ],
+  sleep_stress: [
+    { icon:'🍌', name:'건바나나 & 체리 믹스', desc:'트립토판·멜라토닌 전구체 함유, 자연스러운 수면 유도', tags:['수면','멜라토닌','트립토판'] },
+    { icon:'🌸', name:'캐모마일·라벤더 허브티 세트', desc:'GABA 활성화 도움, 취침 전 긴장 완화', tags:['릴렉스','GABA','카페인프리'] },
+    { icon:'🍫', name:'다크초콜릿(85%+)', desc:'마그네슘 풍부, 세로토닌 전구체 함유, 항산화', tags:['마그네슘','세로토닌','항산화'] },
+    { icon:'🫘', name:'두부·템페 단백질 세트', desc:'완전 단백질 + 이소플라본, 스트레스 호르몬 완화 도움', tags:['단백질','이소플라본','호르몬'] },
+  ],
+  metabolic: [
+    { icon:'🫒', name:'엑스트라버진 올리브오일', desc:'인슐린 감수성 개선, GLP-1 분비 촉진에 도움되는 건강 지방', tags:['대사','인슐린','GLP-1'] },
+    { icon:'🌾', name:'차전자피(실리움허스크)', desc:'수용성 식이섬유, 혈당 스파이크 억제, 포만감 증가', tags:['혈당 조절','식이섬유','다이어트'] },
+    { icon:'🥦', name:'브로콜리·컬리플라워 분말', desc:'설포라판 함유, 대사 효소 활성화, 디톡스 지원', tags:['설포라판','디톡스','항산화'] },
+    { icon:'🫙', name:'애플사이다 비니거', desc:'혈당 조절, 인슐린 감수성, 지방 분해 효소 활성화', tags:['혈당','인슐린','지방 대사'] },
+  ],
+  total: [
+    { icon:'🎁', name:'DIOBIO 웰니스 스타터 패키지', desc:'올리브오일+견과류+발효식품+허브티 4종 구성, 균형 잡힌 시작', tags:['균형','입문','패키지'] },
+    { icon:'🥜', name:'오메가3 견과류 믹스', desc:'뇌 건강·심혈관·항염 복합 효과, 매일 한 줌 시작', tags:['뇌 건강','항염','일상'] },
+    { icon:'🌾', name:'통곡물 오트밀 프리미엄', desc:'하루를 시작하는 기초 영양, 식이섬유+단백질+복합탄수화물', tags:['기초 영양','아침','식이섬유'] },
+    { icon:'🫙', name:'유기농 발효 건강식품 세트', desc:'전반적인 장내 환경 개선, 면역·소화·피부 복합 지원', tags:['면역','소화','피부'] },
+  ],
+};
+
+function dbOpenFood(type) {
+  const foods = DB_FOODS[type] || DB_FOODS.total;
+  const cards = foods.map(f => `
+    <div class="db-food-card">
+      <div style="font-size:30px;text-align:center;margin-bottom:8px">${f.icon}</div>
+      <div class="db-food-card-name">${f.name}</div>
+      <div class="db-food-card-desc">${f.desc}</div>
+      <div class="db-food-tags">${f.tags.map(t => '<span class="db-food-tag">' + t + '</span>').join('')}</div>
+      <button class="db-food-add" onclick="alert('장바구니에 담겼습니다! 카카오 상담을 통해 주문해 주세요.')">🛒 장바구니 담기</button>
+    </div>`).join('');
+  document.getElementById('db-food-content').innerHTML = '<div class="db-food-grid">' + cards + '</div>';
+  dbOpenModal('db-modal-food');
+}
+// ─────────────────────────────────────────────────────────────
+
+function dbRestart() {
+  DB.step = 1;
+  DB.answers = { target:null, age:null, pattern:null, concerns:[], lifestyle:{}, supp:{}, safety:[] };
+  document.querySelectorAll('.db-opt.sel').forEach(e => e.classList.remove('sel'));
+  document.querySelectorAll('.db-q-o.sel').forEach(e => e.classList.remove('sel'));
+  document.querySelectorAll('.db-chk-item.on').forEach(e => { e.classList.remove('on'); e.querySelector('input').checked = false; });
+  document.getElementById('db-supp-detail').style.display = 'none';
+  document.getElementById('db-result').style.display = 'none';
+  document.getElementById('db-landing').style.display = 'flex';
+  document.querySelector('.diobio-panel').scrollTop = 0;
+}
+
 checkMode();
 addMessage('bot',
   '안녕하세요! **보험 상담 AI 어시스턴트**입니다. 🛡️\n\n' +
