@@ -2076,11 +2076,11 @@ HTML = r"""<!DOCTYPE html>
       <!-- AI 맞춤 추천 -->
       <div class="ai-rec-card">
         <div class="ai-rec-card-title">
-          <span style="font-size:20px">🤖</span>
+          <span style="font-size:20px">🧠</span>
           <span>AI 맞춤 보험 추천 (GPT-4o)</span>
         </div>
         <button class="ai-rec-btn" id="hr-ai-btn" onclick="hrGetAiRec()">
-          🤖 AI 맞춤 추천 받기
+          ✨ AI 맞춤 추천 받기
         </button>
         <div class="ai-rec-body" id="hr-ai-body" style="display:none"></div>
       </div>
@@ -2319,7 +2319,7 @@ HTML = r"""<!DOCTYPE html>
       <button class="db-cta-main" onclick="dbStart()">3분 건강 밸런스 체크하기 →</button>
       <div class="db-landing-cards">
         <div class="db-landing-card">
-          <div class="db-landing-card-ic">🤖</div>
+          <div class="db-landing-card-ic">💡</div>
           <div class="db-landing-card-nm">AI 건강 분석</div>
           <div class="db-landing-card-ds">6가지 밸런스 유형<br>맞춤 솔루션 제시</div>
         </div>
@@ -2686,7 +2686,7 @@ const TOOL_LABELS = {
   get_premium_estimate:            '💰 보험료 계산 중...',
   retrieve_insurance_knowledge:    '📚 지식 베이스 검색 중...',
   fetch_fss_realtime_products:     '🏛️ FSS 실시간 조회 중...',
-  get_personalized_recommendation: '🤖 맞춤 추천 생성 중...',
+  get_personalized_recommendation: '⚡ 맞춤 추천 생성 중...',
   search_insmarket_products:       '📊 보험다모아 공시 조회 중...',
   search_web:                      '🌐 웹 검색 중...',
   fetch_webpage:                   '📄 페이지 읽는 중...',
@@ -3765,7 +3765,7 @@ async function hrGetAiRec() {
     body.style.display = 'block';
   } finally {
     btn.disabled = false;
-    btn.textContent = '🤖 AI 맞춤 추천 다시 받기';
+    btn.textContent = '🔮 AI 맞춤 추천 다시 받기';
   }
 }
 
@@ -4865,7 +4865,7 @@ def api_health_risk_ai():
                 "| 2순위 | 질병보험 | 한화생명 | 당뇨·대사 위험 대비 진단금 | 3~5만원 |\n"
                 "| 3순위 | 암보험 | 교보생명 | 대사증후군 → 암 위험 상관관계 | 2~4만원 |"
             )
-        mock = f"""## 🤖 AI 맞춤 보험 추천 (Mock 모드)
+        mock = f"""## 📊 AI 맞춤 보험 추천 (Mock 모드)
 
 > ⚠️ Mock 모드: OpenAI API 키 설정 후 Live 모드에서 정확한 추천을 받을 수 있습니다.
 
