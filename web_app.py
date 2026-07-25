@@ -3459,7 +3459,10 @@ function hrRenderResult(data) {
       continue;
     }
     const results = (td && td.results) || [];
-    const total   = (td && td.total_found) || results.length;
+    // 실제 보험료 있는 상품만 표시 (없으면 섹션 전체 숨김)
+    if (!results.length) continue;
+
+    const total = results.length;
     html += `<div class="product-type-sec">
       <div class="product-type-hdr" onclick="hrToggleProducts(this)">
         <span>${type} <span style="font-weight:400;color:#64748b;font-size:11px">— ${total}개 조회됨</span></span>
@@ -3467,29 +3470,25 @@ function hrRenderResult(data) {
       </div>
       <div class="product-cards-body">`;
 
-    if (!results.length) {
-      html += '<p style="color:#94a3b8;font-size:12px;margin:4px 0">해당 조건의 상품이 없습니다.</p>';
-    } else {
-      for (const p of results.slice(0, 3)) {
-        const co  = p.company      || '-';
-        const nm  = p.product_name || '-';
-        const pr  = p.premium      || '보험료 정보 없음';
-        const ag  = (p.file_context && p.file_context.age_group) || p.age_range || '';
-        const ge  = (p.file_context && p.file_context.gender) || '';
-        const covStr = (p.coverages || []).slice(0, 2).join(' · ');
-        const url  = INSURER_URLS[co] || DAMOAH_URL;
-        const lCls = INSURER_URLS[co] ? 'ins-link-btn' : 'ins-link-btn ins-link-damoah';
-        const lTxt = INSURER_URLS[co] ? '가입하기 →' : '비교하기 →';
-        html += `<div class="hr-product-card">
-          <div class="hr-prod-name">${nm}</div>
-          <div class="hr-prod-co">${co}${ag ? ' · ' + ag : ''}${ge ? ' · ' + ge : ''}</div>
-          <div class="hr-prod-row"><span>월 보험료</span><span class="hr-prod-premium">${pr}</span></div>
-          ${covStr ? `<div style="font-size:11.5px;color:#64748b;margin-top:5px">${covStr}</div>` : ''}
-          <div style="margin-top:8px">
-            <a href="${url}" target="_blank" rel="noopener noreferrer" class="${lCls}">${lTxt}</a>
-          </div>
-        </div>`;
-      }
+    for (const p of results.slice(0, 3)) {
+      const co  = p.company      || '-';
+      const nm  = p.product_name || p.notes || '-';
+      const pr  = p.premium;
+      const ag  = (p.file_context && p.file_context.age_group) || p.age_range || '';
+      const ge  = (p.file_context && p.file_context.gender) || '';
+      const covStr = (p.coverages || []).slice(0, 2).join(' · ');
+      const url  = INSURER_URLS[co] || DAMOAH_URL;
+      const lCls = INSURER_URLS[co] ? 'ins-link-btn' : 'ins-link-btn ins-link-damoah';
+      const lTxt = INSURER_URLS[co] ? '가입하기 →' : '비교하기 →';
+      html += `<div class="hr-product-card">
+        <div class="hr-prod-name">${nm}</div>
+        <div class="hr-prod-co">${co}${ag ? ' · ' + ag : ''}${ge ? ' · ' + ge : ''}</div>
+        <div class="hr-prod-row"><span>월 보험료</span><span class="hr-prod-premium">${pr}</span></div>
+        ${covStr ? `<div style="font-size:11.5px;color:#64748b;margin-top:5px">${covStr}</div>` : ''}
+        <div style="margin-top:8px">
+          <a href="${url}" target="_blank" rel="noopener noreferrer" class="${lCls}">${lTxt}</a>
+        </div>
+      </div>`;
     }
     html += '</div></div>';
   }

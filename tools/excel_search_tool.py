@@ -118,7 +118,7 @@ def search_insmarket_products(
     # 결과 포맷
     results = []
     for p in filtered[:top_n]:
-        # 보험료 표기
+        # 보험료 표기 — 없으면 이 상품 제외
         if p.get("premium_monthly"):
             prem_str = f"{p['premium_monthly']:,}원/월"
         elif p.get("premium_male") or p.get("premium_female"):
@@ -129,14 +129,21 @@ def search_insmarket_products(
                 parts.append(f"여 {p['premium_female']:,}원")
             prem_str = " / ".join(parts) + "/월"
         else:
-            prem_str = "보험료 정보 없음"
+            continue  # 실제 보험료 없는 상품은 결과에서 제외
 
-        # 주요 보장 요약 (상위 4개)
-        covs = [f"{c[0]}: {c[1]}" for c in p.get("coverages", [])[:4] if c[0]]
+        # 상품명: 없으면 첫 번째 보장항목 이름에서 추출
+        product_name = p.get("product_name", "").strip()
+        coverages_raw = p.get("coverages", [])
+        if not product_name and coverages_raw:
+            product_name = coverages_raw[0][0]
+            coverages_raw = coverages_raw[1:]  # 상품명으로 쓴 항목은 보장 목록에서 제외
+
+        # 주요 보장 요약 (상위 3개)
+        covs = [f"{c[0]}: {c[1]}" for c in coverages_raw[:3] if c[0]]
 
         results.append({
             "company": p["company"],
-            "product_name": p["product_name"],
+            "product_name": product_name,
             "insurance_type": p["insurance_type"],
             "premium": prem_str,
             "age_range": p.get("age_range", ""),

@@ -275,8 +275,6 @@ def assess_health_risk(
                 except Exception as e:
                     products[t] = {"error": str(e)}
 
-            # 보험료 정보 없는 상품은 GPT-4o로 추정
-            _fill_missing_premiums(products, age=age, gender=("남" if sex == 1 else "여"))
             result["insmarket_products"] = products
         except Exception as e:
             result["insmarket_products"] = {"error": f"상품 조회 실패: {e}"}
