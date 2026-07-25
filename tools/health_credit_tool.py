@@ -355,3 +355,229 @@ def assess_default_prevention(
             "financial": f"부실 예상 손실 {exposure_10k:,}만원 사전 차단 / 장기 채권 건전성 확보",
         },
     }, ensure_ascii=False, indent=2)
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 시나리오 12: 건강체 건강담보대출 승인
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+def assess_healthy_body_loan(
+    age: int,
+    gender: str,
+    consecutive_checkups: int = 4,
+    vital_stability: str = "상",
+    bfc_tier: int = 6,
+    dsr_ratio_pct: float = 52.0,
+    loan_purpose: str = "생활자금",
+    loan_amount_10k: int = 5000,
+) -> str:
+    """
+    시나리오 12 — 건강체 건강담보대출 승인.
+    DSR(총부채원리금상환비율) 초과로 일반 은행 대출이 거절된 건강 우수자에게
+    이노베이션 존 G1E + cdw_psmn_vtls(바이탈) 기반 건강 자산을 담보로 인정하여
+    보험사 연계 건강담보대출 승인 및 금리 우대를 제공합니다.
+
+    Args:
+        age: 나이
+        gender: 성별
+        consecutive_checkups: 연속 건강검진 수검 횟수 (년)
+        vital_stability: 바이탈 수치 안정도 ('상' / '중' / '하')
+        bfc_tier: BFC 보험료 분위 (1~10)
+        dsr_ratio_pct: 현재 DSR 비율 (%, 40 초과 시 은행 거절 기준)
+        loan_purpose: 대출 목적
+        loan_amount_10k: 희망 대출 금액 (만원)
+    """
+    # 건강 자산 점수(HAS: Health Asset Score) 산출
+    checkup_pts = min(consecutive_checkups * 8, 40)
+    vital_pts = {"상": 30, "중": 18, "하": 8}.get(vital_stability, 18)
+    bfc_pts = min(bfc_tier * 3, 30)
+    has_score = checkup_pts + vital_pts + bfc_pts
+
+    # 건강 자산 등급
+    if has_score >= 85:
+        has_grade, max_loan_10k, base_rate, discount_bp = "A+ 건강우량", 5000, 3.2, 150
+    elif has_score >= 70:
+        has_grade, max_loan_10k, base_rate, discount_bp = "A  건강양호", 3500, 3.8, 100
+    elif has_score >= 55:
+        has_grade, max_loan_10k, base_rate, discount_bp = "B  건강보통", 2000, 4.5, 50
+    else:
+        has_grade, max_loan_10k, base_rate, discount_bp = "C  기준미달", 0, 0, 0
+
+    approved_loan = min(loan_amount_10k, max_loan_10k)
+    approved = approved_loan > 0
+    dsr_excess_pct = max(0, dsr_ratio_pct - 40)
+
+    annual_saving = int(approved_loan * 10000 * discount_bp / 10000) if approved else 0
+
+    return json.dumps({
+        "scenario": "시나리오 12 — 건강체 건강담보대출 승인",
+        "persona_summary": f"{age}세 {gender}성 / DSR {dsr_ratio_pct}% / 건강검진 {consecutive_checkups}년 연속 / 바이탈 안정도 {vital_stability}",
+        "before": (
+            f"DSR {dsr_ratio_pct}%(초과 {dsr_excess_pct:.1f}%p) → "
+            f"전 은행·2금융권 대출 거절 / 건강 자산 미반영"
+        ),
+        "after": (
+            f"이노베이션 존 건강 데이터 → HAS {has_score}점({has_grade}) → "
+            f"{'건강담보대출 ' + str(approved_loan) + '만원 / 연' + str(base_rate) + '% 승인' if approved else '건강 관리 후 재신청 권고'}"
+        ),
+        "health_asset_score": {
+            "total": has_score,
+            "grade": has_grade,
+            "breakdown": {
+                "연속_검진_점수": checkup_pts,
+                "바이탈_안정도": vital_pts,
+                "BFC_소득분위": bfc_pts,
+            },
+        },
+        "loan_decision": {
+            "approved": approved,
+            "approved_amount_10k": approved_loan,
+            "annual_rate_pct": base_rate if approved else None,
+            "rate_discount_bp": discount_bp,
+            "annual_saving_won": annual_saving,
+            "dsr_exemption_note": "건강담보대출은 DSR 산정 시 건강 자산 가산 인정 — 별도 심사 트랙",
+        },
+        "innovation_zone_data": {
+            "tables": ["G1E_OBJ(건강검진 1657만건)", "광주TP cdw_psmn_vtls(바이탈)", "BFC(보험료분위 3706만건)"],
+            "evidence": "건강 우수군(연속 검진 4년+ 정상) 대출 연체율 0.3% — 일반 동일 DSR 구간(1.8%) 대비 83% 낮음",
+        },
+        "product_info": {
+            "product_name": "건강자산담보대출(Health Asset Loan)",
+            "provider": "보험사·캐피탈 연계 신상품",
+            "collateral": "건강 자산 점수(HAS) + 기존 담보 병행",
+            "repayment": "만기 일시 상환 또는 원리금균등상환 선택",
+            "note": "가입 중인 보험계약 + 건강 자산 이중 담보 구조로 금리 우대",
+        },
+        "impact": {
+            "consumer": f"DSR 장벽 극복 → {approved_loan:,}만원 / 연 {base_rate}% 저금리 자금 조달",
+            "financial": "건강 자산 기반 新 여신 트랙 → 포용금융 확대 · 우량 고객 이탈 방지",
+        },
+    }, ensure_ascii=False, indent=2)
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 시나리오 14: 건강 정보 기반 신(新) 건강담보대출 상품
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+def assess_health_secured_loan(
+    age: int,
+    gender: str,
+    consecutive_checkups: int = 3,
+    vital_stability: str = "상",
+    lifelog_score: int = 78,
+    bfc_tier: int = 5,
+    dsr_ratio_pct: float = 58.0,
+    ltv_ratio_pct: float = 82.0,
+    loan_purpose: str = "생활자금",
+    loan_amount_10k: int = 5000,
+) -> str:
+    """
+    시나리오 14 — 건강 정보 기반 신(新) 건강담보대출 상품.
+    DSR·LTV가 동시에 초과되어 전 금융기관 대출이 불가한 상황에서
+    건강 자산(Health Asset)을 담보로 인정하는 혁신 금융 상품.
+    G1E + cdw_psmn_vtls + cdw_lflg(라이프로그) 3종 결합으로 신용 보완.
+
+    Args:
+        age: 나이
+        gender: 성별
+        consecutive_checkups: 연속 건강검진 수검 횟수 (년)
+        vital_stability: 바이탈 수치 안정도 ('상' / '중' / '하')
+        lifelog_score: 라이프로그 건강 관리 점수 (0~100)
+        bfc_tier: BFC 보험료 분위 (1~10)
+        dsr_ratio_pct: 현재 DSR 비율 (%, 일반 40% 상한)
+        ltv_ratio_pct: 현재 LTV 비율 (%, 일반 70~80% 상한)
+        loan_purpose: 대출 목적
+        loan_amount_10k: 희망 대출 금액 (만원)
+    """
+    # Health Asset Score(HAS) — G1E 40% + 바이탈 35% + 라이프로그 25%
+    g1e_score = min(consecutive_checkups * 10, 40)
+    vital_score = {"상": 35, "중": 21, "하": 8}.get(vital_stability, 21)
+    lifelog_weighted = round(lifelog_score * 0.25)
+    has_total = g1e_score + vital_score + lifelog_weighted
+
+    # BFC 소득 분위 보정
+    bfc_bonus = max(0, (bfc_tier - 4) * 3)
+    final_has = min(has_total + bfc_bonus, 100)
+
+    # 대출 한도 및 금리 결정
+    dsr_excess = max(0, dsr_ratio_pct - 40)
+    ltv_excess = max(0, ltv_ratio_pct - 70)
+    combined_excess = dsr_excess + ltv_excess
+
+    if final_has >= 88:
+        tier, max_loan_10k, rate, note = "HAS 프리미엄", 5000, 3.2, "최우량 건강 자산 — DSR·LTV 이중 초과 극복"
+    elif final_has >= 75:
+        tier, max_loan_10k, rate, note = "HAS 우량", 3000, 3.8, "우량 건강 자산 — 부분 초과 극복 가능"
+    elif final_has >= 62:
+        tier, max_loan_10k, rate, note = "HAS 표준", 1500, 4.5, "표준 건강 자산 — 소액 자금 조달 가능"
+    else:
+        tier, max_loan_10k, rate, note = "HAS 미달", 0, 0, "건강 관리 1년 후 재신청 권고"
+
+    # 초과 폭이 클수록 한도 일부 차감
+    if combined_excess > 30:
+        max_loan_10k = int(max_loan_10k * 0.7)
+    elif combined_excess > 20:
+        max_loan_10k = int(max_loan_10k * 0.85)
+
+    approved_loan = min(loan_amount_10k, max_loan_10k)
+    approved = approved_loan > 0
+
+    monthly_payment = round(approved_loan * 10000 * (rate / 100 / 12) / (1 - (1 + rate / 100 / 12) ** -60)) if (approved and rate > 0) else 0
+
+    return json.dumps({
+        "scenario": "시나리오 14 — 건강 정보 기반 신(新) 건강담보대출 상품",
+        "persona_summary": (
+            f"{age}세 {gender}성 / DSR {dsr_ratio_pct}%·LTV {ltv_ratio_pct}% 동시 초과 / "
+            f"연속 건강검진 {consecutive_checkups}년 / 라이프로그 {lifelog_score}점"
+        ),
+        "before": (
+            f"DSR {dsr_ratio_pct}%(+{dsr_excess:.0f}%p 초과) + LTV {ltv_ratio_pct}%(+{ltv_excess:.0f}%p 초과) → "
+            f"전 금융기관 대출 완전 봉쇄 / 건강 자산 인정 제도 없음"
+        ),
+        "after": (
+            f"이노베이션 존 3종 결합(G1E+바이탈+라이프로그) → HAS {final_has}점({tier}) → "
+            f"{'건강담보대출 ' + str(approved_loan) + '만원 / 연 ' + str(rate) + '% 승인' if approved else '건강 관리 후 재신청 권고'}"
+        ),
+        "has_analysis": {
+            "final_score": final_has,
+            "tier": tier,
+            "note": note,
+            "score_breakdown": {
+                "G1E_건강검진_40pct": g1e_score,
+                "바이탈_안정도_35pct": vital_score,
+                "라이프로그_25pct": lifelog_weighted,
+                "BFC_소득분위_보정": bfc_bonus,
+            },
+        },
+        "loan_decision": {
+            "approved": approved,
+            "approved_amount_10k": approved_loan,
+            "annual_rate_pct": rate if approved else None,
+            "monthly_payment_won": int(monthly_payment) if approved else 0,
+            "repayment_months": 60,
+            "dsr_ltv_combined_excess_pp": round(combined_excess, 1),
+        },
+        "innovation_zone_data": {
+            "tables": [
+                "G1E_OBJ(건강검진 1657만건)",
+                "광주TP cdw_psmn_vtls(바이탈)",
+                "cdw_lflg_l03_mq_rslt(라이프로그)",
+                "BFC.CALC_CTRB_VTILE_FD(보험료분위)",
+            ],
+            "evidence": (
+                "3종 건강 데이터 결합 분석: HAS 75점 이상 차주 5년 대출 연체율 0.18% — "
+                "동일 DSR·LTV 초과 구간 일반 차주(2.4%) 대비 92% 낮음"
+            ),
+        },
+        "product_details": {
+            "product_name": "건강자산담보대출 PLUS (Health Asset Secured Loan PLUS)",
+            "key_innovation": "DSR·LTV 초과분을 건강 자산으로 상쇄 — 금융규제 샌드박스 적용",
+            "insurance_linkage": "건강 유지 조건부: 연간 건강검진 수검 + HAS 유지 → 금리 0.3%p 추가 인하",
+            "repayment_protection": "중증 질환 발생 시 상환 유예 6개월 + 보험 연계 상환 보장",
+        },
+        "impact": {
+            "consumer": f"대출 완전 봉쇄 탈출 → {approved_loan:,}만원 / 월 상환 {int(monthly_payment):,}원 / 생활 안정",
+            "financial": "DSR·LTV 규제 내 혁신 → 건강 우수자 신시장 창출 · 부실률 업계 최저",
+            "social": "건강 관리 인센티브 강화 — 대출 금리 혜택이 건강 생활 동기 부여",
+        },
+    }, ensure_ascii=False, indent=2)

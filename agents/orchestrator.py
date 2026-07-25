@@ -36,6 +36,8 @@ from tools.cancer_survivor_tool import (
     assess_pacs_no_extra,
     assess_dynamic_discount,
     assess_chronic_disease_rate,
+    assess_healthy_body_discount,
+    assess_polyp_removal_eligibility,
 )
 from tools.health_credit_tool import (
     assess_health_credit,
@@ -43,6 +45,8 @@ from tools.health_credit_tool import (
     assess_rental_approval,
     assess_early_care,
     assess_default_prevention,
+    assess_healthy_body_loan,
+    assess_health_secured_loan,
 )
 
 # ───────────────────────────────────────────
@@ -560,6 +564,113 @@ TOOLS = [
             },
         },
     },
+    # ── 대회 시나리오 11·13: 건강체 & 용종 보험 언더라이팅 ──────────────
+    {
+        "type": "function",
+        "function": {
+            "name": "assess_healthy_body_discount",
+            "description": (
+                "[대회 시나리오 11] 건강체 특별약관 보험료 최대 할인. "
+                "G1E 연속 건강검진 + cdw_psmn_vtls(바이탈) + 생활습관 데이터로 "
+                "건강체 등급(1~4급)을 판정하여 최대 30% 보험료 할인 혜택을 산출합니다."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "age": {"type": "integer"},
+                    "gender": {"type": "string", "enum": ["남", "여"]},
+                    "consecutive_checkups": {"type": "integer", "description": "연속 정상 건강검진 횟수(년)"},
+                    "bmi_normal": {"type": "boolean", "description": "BMI 정상(18.5~24.9) 여부"},
+                    "bp_normal": {"type": "boolean", "description": "혈압 정상 여부"},
+                    "blood_sugar_normal": {"type": "boolean", "description": "공복혈당 정상 여부"},
+                    "non_smoker": {"type": "boolean", "description": "비흡연 여부"},
+                    "base_premium_10k": {"type": "integer", "description": "표준체 기준 월 보험료(만원)"},
+                },
+                "required": ["age", "gender"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "assess_polyp_removal_eligibility",
+            "description": (
+                "[대회 시나리오 13] 위 내시경 용종 절제술 후 보험 가입 가능 여부. "
+                "현행 기준(수술 이력 → 5년 거절)을 이노베이션 존 병리 DB + T400(상병) + "
+                "DICOM(추적 내시경)으로 정밀 재분류하여 즉시 가입 가능 여부를 판정합니다."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "age": {"type": "integer"},
+                    "gender": {"type": "string", "enum": ["남", "여"]},
+                    "polyp_type": {
+                        "type": "string",
+                        "enum": ["과증식성 용종", "관상선종(저등급)", "관상선종(고등급)", "융모관상선종"],
+                        "description": "용종 유형",
+                    },
+                    "years_since_removal": {"type": "number", "description": "절제 후 경과 기간(년)"},
+                    "pathology_benign": {"type": "boolean", "description": "병리 결과 양성(암세포 없음) 여부"},
+                    "followup_endoscopy_normal": {"type": "boolean", "description": "추적 내시경 정상 여부"},
+                    "polyp_size_mm": {"type": "integer", "description": "용종 크기(mm)"},
+                },
+                "required": ["age", "gender", "polyp_type"],
+            },
+        },
+    },
+    # ── 대회 시나리오 12·14: 건강 데이터 기반 대출 ────────────────────
+    {
+        "type": "function",
+        "function": {
+            "name": "assess_healthy_body_loan",
+            "description": (
+                "[대회 시나리오 12] 건강체 건강담보대출 승인. "
+                "DSR 초과로 일반 은행 거절 시 G1E + 바이탈 안정도로 "
+                "건강 자산 점수(HAS)를 산출하여 보험사 연계 건강담보대출 승인 및 금리 우대."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "age": {"type": "integer"},
+                    "gender": {"type": "string", "enum": ["남", "여"]},
+                    "consecutive_checkups": {"type": "integer", "description": "연속 건강검진 수검 횟수(년)"},
+                    "vital_stability": {"type": "string", "enum": ["상", "중", "하"], "description": "바이탈 안정도"},
+                    "bfc_tier": {"type": "integer", "description": "BFC 보험료 분위(1~10)"},
+                    "dsr_ratio_pct": {"type": "number", "description": "현재 DSR 비율(%)"},
+                    "loan_purpose": {"type": "string", "description": "대출 목적"},
+                    "loan_amount_10k": {"type": "integer", "description": "희망 대출 금액(만원)"},
+                },
+                "required": ["age", "gender"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "assess_health_secured_loan",
+            "description": (
+                "[대회 시나리오 14] 건강 정보 기반 신(新) 건강담보대출 상품. "
+                "DSR·LTV 동시 초과로 전 금융기관 대출 불가 시 "
+                "G1E + 바이탈 + 라이프로그 3종 결합(HAS) → 최대 5,000만원 / 연 3.2% 신상품."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "age": {"type": "integer"},
+                    "gender": {"type": "string", "enum": ["남", "여"]},
+                    "consecutive_checkups": {"type": "integer", "description": "연속 건강검진 수검 횟수(년)"},
+                    "vital_stability": {"type": "string", "enum": ["상", "중", "하"], "description": "바이탈 안정도"},
+                    "lifelog_score": {"type": "integer", "description": "라이프로그 건강 관리 점수(0~100)"},
+                    "bfc_tier": {"type": "integer", "description": "BFC 보험료 분위(1~10)"},
+                    "dsr_ratio_pct": {"type": "number", "description": "현재 DSR 비율(%)"},
+                    "ltv_ratio_pct": {"type": "number", "description": "현재 LTV 비율(%)"},
+                    "loan_purpose": {"type": "string", "description": "대출 목적"},
+                    "loan_amount_10k": {"type": "integer", "description": "희망 대출 금액(만원)"},
+                },
+                "required": ["age", "gender"],
+            },
+        },
+    },
     # ── 대회 시나리오 9~10: 위험 관리 ────────────────────────────────
     {
         "type": "function",
@@ -739,6 +850,20 @@ def execute_tool(tool_name: str, tool_input: dict, client: openai.OpenAI) -> str
 
     elif tool_name == "assess_rental_approval":
         return assess_rental_approval(**tool_input)
+
+    # ── 대회 시나리오 11·13: 건강체 & 용종 보험 언더라이팅 ──────────────
+    elif tool_name == "assess_healthy_body_discount":
+        return assess_healthy_body_discount(**tool_input)
+
+    elif tool_name == "assess_polyp_removal_eligibility":
+        return assess_polyp_removal_eligibility(**tool_input)
+
+    # ── 대회 시나리오 12·14: 건강 데이터 기반 대출 ────────────────────
+    elif tool_name == "assess_healthy_body_loan":
+        return assess_healthy_body_loan(**tool_input)
+
+    elif tool_name == "assess_health_secured_loan":
+        return assess_health_secured_loan(**tool_input)
 
     # ── 대회 시나리오 9~10: 위험 관리 ────────────────────────────────
     elif tool_name == "assess_early_care":
