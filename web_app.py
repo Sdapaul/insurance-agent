@@ -4594,15 +4594,23 @@ def _parse_health_regex(text: str) -> dict:
 
 def _extract_pdf_text(pdf_bytes: bytes) -> str:
     """PDF 바이트에서 텍스트 추출. pdfplumber → pypdf → PyPDF2 순 시도."""
-    import io
+    import io, subprocess, sys
     text = ""
     try:
         import pdfplumber
-        with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
-            pages = [p.extract_text() or "" for p in pdf.pages]
-        text = "\n".join(pages)
-        if text.strip():
-            return text
+    except ImportError:
+        subprocess.run([sys.executable, '-m', 'pip', 'install', '-q', 'pdfplumber'], check=False)
+        try:
+            import pdfplumber
+        except ImportError:
+            pdfplumber = None
+    try:
+        if pdfplumber is not None:
+            with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
+                pages = [p.extract_text() or "" for p in pdf.pages]
+            text = "\n".join(pages)
+            if text.strip():
+                return text
     except Exception:
         pass
     try:
@@ -4618,7 +4626,7 @@ def _extract_pdf_text(pdf_bytes: bytes) -> str:
         reader = PyPDF2.PdfReader(io.BytesIO(pdf_bytes))
         text = "\n".join(p.extract_text() or "" for p in reader.pages)
     except Exception as e:
-        raise RuntimeError(f"PDF 텍스트 추출 실패: {e}")
+        raise RuntimeError(f"PDF 텍스트 추출 실패: {e}\n(해결: pip install pdfplumber pypdf)")
     return text
 
 
