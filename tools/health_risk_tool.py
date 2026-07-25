@@ -23,6 +23,76 @@ with open(_PARAMS_PATH, encoding="utf-8") as _f:
     _M = json.load(_f)
 
 
+def _fill_missing_premiums(products_by_type: dict, age: int, gender: str) -> None:
+    """보험료 정보 없음 상품을 GPT-4o로 일괄 추정해 in-place 업데이트."""
+    import openai, os as _os
+
+    api_key = _os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        # .env 파일에서 직접 로드 시도
+        try:
+            from dotenv import load_dotenv
+            load_dotenv(_os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), ".env"))
+            api_key = _os.getenv("OPENAI_API_KEY")
+        except Exception:
+            pass
+    if not api_key:
+        return
+
+    # 보험료 없는 상품 수집
+    missing = []
+    for ins_type, data in products_by_type.items():
+        if not isinstance(data, dict) or "results" not in data:
+            continue
+        for idx, p in enumerate(data["results"]):
+            if p.get("premium") == "보험료 정보 없음":
+                missing.append({
+                    "key": f"{ins_type}||{idx}",
+                    "ins_type": ins_type,
+                    "idx": idx,
+                    "company": p.get("company", ""),
+                    "product_name": p.get("product_name", ""),
+                    "ins_type_label": ins_type,
+                    "coverages": p.get("coverages", [])[:2],
+                })
+
+    if not missing:
+        return
+
+    lines = []
+    for m in missing:
+        cov = " / ".join(m["coverages"]) if m["coverages"] else ""
+        lines.append(
+            f'- key={m["key"]!r}  {m["company"]} {m["product_name"]}'
+            f'  ({m["ins_type_label"]}){("  보장: " + cov) if cov else ""}'
+        )
+
+    prompt = (
+        f"아래 보험 상품들의 예상 월 보험료를 {age}세 {gender}성 기준(20년납 표준 조건)으로 추정하세요.\n"
+        "보험다모아 공시 수준의 현실적인 금액이어야 합니다.\n\n"
+        + "\n".join(lines)
+        + '\n\n반드시 JSON 객체로만 답하세요: {"key값": "금액원/월", ...}\n'
+        '예시: {"종신보험||0": "85,000원/월"}'
+    )
+
+    try:
+        client = openai.OpenAI(api_key=api_key)
+        resp = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"},
+            temperature=0.2,
+            max_tokens=400,
+        )
+        estimates: dict = json.loads(resp.choices[0].message.content)
+        for m in missing:
+            est = estimates.get(m["key"])
+            if est:
+                products_by_type[m["ins_type"]]["results"][m["idx"]]["premium"] = f"약 {est} (AI 추정)"
+    except Exception:
+        pass  # 추정 실패 시 기존 "보험료 정보 없음" 유지
+
+
 def _predict_risk(feat: dict) -> float:
     """표준화 → 로지스틱 → 시그모이드. 누락 피처는 학습 평균으로 대체(영향 0)."""
     z = _M["intercept"]
@@ -204,6 +274,9 @@ def assess_health_risk(
                     products[t] = json.loads(raw) if isinstance(raw, str) else raw
                 except Exception as e:
                     products[t] = {"error": str(e)}
+
+            # 보험료 정보 없는 상품은 GPT-4o로 추정
+            _fill_missing_premiums(products, age=age, gender=("남" if sex == 1 else "여"))
             result["insmarket_products"] = products
         except Exception as e:
             result["insmarket_products"] = {"error": f"상품 조회 실패: {e}"}
