@@ -401,6 +401,7 @@ HTML = r"""<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>보험 상담 AI</title>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; height: 100vh; display: flex; flex-direction: column; }
@@ -1431,6 +1432,52 @@ HTML = r"""<!DOCTYPE html>
     .db-sol-grid { grid-template-columns: 1fr; }
     .db-btn-row { grid-template-columns: 1fr; }
   }
+
+  /* 신용점수 개선 시뮬레이터 */
+  .score-sim-card { background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:18px; margin-bottom:14px; }
+  .score-sim-title { font-size:13.5px; font-weight:700; color:#1e293b; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+  .score-sim-scenario { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:12px; margin-bottom:8px; }
+  .score-sim-target { font-size:12px; font-weight:700; color:#3b82f6; margin-bottom:4px; }
+  .score-sim-gap { font-size:11px; color:#64748b; margin-bottom:6px; }
+  .score-sim-steps { list-style:none; padding:0; margin:0 0 6px; }
+  .score-sim-steps li { font-size:11.5px; color:#334155; padding:2px 0; display:flex; align-items:center; gap:4px; }
+  .score-sim-steps li::before { content:'→'; color:#3b82f6; font-weight:700; }
+  .score-sim-benefits { display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+  .score-sim-benefit { background:#dbeafe; color:#1d4ed8; font-size:10.5px; padding:2px 7px; border-radius:20px; }
+  .score-sim-achieved { background:#dcfce7; color:#15803d; font-size:10.5px; padding:2px 7px; border-radius:20px; }
+
+  /* 5축 레이더 차트 */
+  .radar-chart-card { background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:18px; margin-bottom:14px; }
+  .radar-chart-title { font-size:13.5px; font-weight:700; color:#1e293b; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+  #credit-radar-canvas { max-width:280px; margin:0 auto; display:block; }
+
+  /* 보험료 납입이력 가점 안내 */
+  .premium-hist-card { background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:1px solid #bbf7d0; border-radius:14px; padding:14px; margin-bottom:14px; }
+  .premium-hist-title { font-size:13px; font-weight:700; color:#166534; margin-bottom:8px; }
+  .premium-hist-row { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#15803d; padding:3px 0; border-bottom:1px dashed #bbf7d0; }
+  .premium-hist-row:last-child { border-bottom:none; }
+  .premium-hist-pts { font-weight:700; color:#16a34a; }
+
+  /* Health-Credit 가점 카드 (웰니스) */
+  .hr-hc-bonus-card { background:linear-gradient(135deg,#eff6ff,#dbeafe); border:1px solid #bfdbfe; border-radius:14px; padding:14px; margin-bottom:14px; }
+  .hr-hc-bonus-title { font-size:13px; font-weight:700; color:#1e40af; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+  .hr-hc-bonus-row { display:flex; justify-content:space-between; font-size:12px; padding:3px 0; color:#1d4ed8; }
+  .hr-hc-bonus-total { font-size:14px; font-weight:800; color:#1e3a8a; margin-top:8px; padding-top:8px; border-top:1px solid #bfdbfe; display:flex; justify-content:space-between; }
+  .hr-hc-bonus-note { font-size:10.5px; color:#3b82f6; margin-top:6px; }
+
+  /* 음식 상품 링크 버튼 */
+  .db-food-link { display:block; width:100%; text-align:center; padding:7px; background:#f0f9ff; border:1px solid #bae6fd; border-radius:8px; color:#0369a1; font-size:12px; font-weight:600; text-decoration:none; margin-top:6px; cursor:pointer; }
+  .db-food-link:hover { background:#e0f2fe; }
+
+  /* 웰니스 여행 카드 */
+  .db-travel-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .db-travel-card { background:#f0f9ff; border:1.5px solid #bae6fd; border-radius:14px; padding:14px; }
+  .db-travel-card-name { font-size:13px; font-weight:700; color:#0c4a6e; margin-bottom:4px; }
+  .db-travel-card-desc { font-size:11.5px; color:#6b7280; line-height:1.55; margin-bottom:8px; }
+  .db-travel-tags { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:10px; }
+  .db-travel-tag { background:#e0f2fe; color:#0369a1; font-size:10px; font-weight:600; padding:3px 8px; border-radius:20px; }
+  .db-travel-link { display:block; width:100%; text-align:center; padding:7px; background:white; border:1.5px solid #38bdf8; color:#0369a1; border-radius:8px; font-size:12px; font-weight:600; text-decoration:none; cursor:pointer; }
+  .db-travel-link:hover { background:#e0f2fe; }
 </style>
 </head>
 <body>
@@ -1727,6 +1774,25 @@ HTML = r"""<!DOCTYPE html>
       <!-- 종합 적합도 점수 카드 (JS로 채움) -->
       <div id="composite-score-card-area"></div>
       <div id="policy-loan-card-area"></div>
+      <!-- 5축 레이더 차트 -->
+      <div class="radar-chart-card" id="radar-chart-card" style="display:none">
+        <div class="radar-chart-title">
+          <span style="font-size:16px">📡</span>
+          <span>신용 다차원 평가 레이더</span>
+          <span class="inno-zone-badge" style="margin-left:auto">이노베이션 존</span>
+        </div>
+        <canvas id="credit-radar-canvas" width="280" height="280"></canvas>
+      </div>
+      <!-- 보험료 납입이력 신용 가점 안내 -->
+      <div class="premium-hist-card" id="premium-hist-card" style="display:none">
+        <div class="premium-hist-title">보험료 납입이력 신용 가점 안내</div>
+        <div id="premium-hist-body"></div>
+        <div style="font-size:10.5px;color:#15803d;margin-top:6px">
+          ※ 보험료 정기 납부 이력은 CB사 대안 신용 데이터로 활용되어 신용점수 가산점 부여 가능
+        </div>
+      </div>
+      <!-- 신용점수 개선 시뮬레이터 -->
+      <div id="score-sim-area"></div>
       <div class="credit-result-body" id="credit-result-body"></div>
     </div>
 
@@ -2073,6 +2139,16 @@ HTML = r"""<!DOCTYPE html>
         <div id="hr-bfc-body"></div>
       </div>
 
+      <!-- Health-Credit 가산점 자동 연산 -->
+      <div class="hr-hc-bonus-card" id="hr-hc-bonus-card" style="display:none">
+        <div class="hr-hc-bonus-title">
+          <span style="font-size:16px">💳</span>
+          <span>Health-Credit 신용 가산점 자동 연산</span>
+          <span class="inno-zone-badge" style="margin-left:auto">이노베이션 존 · G1E/BFC</span>
+        </div>
+        <div id="hr-hc-bonus-body"></div>
+      </div>
+
       <!-- AI 맞춤 추천 -->
       <div class="ai-rec-card">
         <div class="ai-rec-card-title">
@@ -2104,7 +2180,7 @@ HTML = r"""<!DOCTYPE html>
       <div class="demo-title">개인정보 이노베이션 존 × 보험·금융 혁신 데모</div>
       <div class="demo-subtitle">
         국립암센터 RGST·DEATH·G1E + 광주TP CDW/DICOM + BFC 보험료분위 + CB 신용DB<br>
-        3대 데이터 결합 기반 <strong>14가지 혁신 시나리오</strong> 실시간 시연
+        3대 데이터 결합 기반 <strong>16가지 혁신 시나리오</strong> 실시간 시연
       </div>
     </div>
 
@@ -2116,8 +2192,8 @@ HTML = r"""<!DOCTYPE html>
         <div class="demo-card-num">시나리오 1</div>
         <div class="demo-card-title">암 완치자 인수 심사</div>
         <div class="demo-card-persona">박*준 · 45세 남성 · 위암 2기 완치 3년</div>
-        <div class="demo-card-desc">RGST 암등록 DB 재발률 → 조건부 표준 체 전환 + 보험료 할인</div>
-        <div class="demo-card-data">RGST(261만건) · DEATH · G1E</div>
+        <div class="demo-card-desc">RGST(암등록 DB) 재발률 → 조건부 표준체 전환 + 보험료 할인</div>
+        <div class="demo-card-data">RGST(암등록 261만건) · DEATH(사망DB) · G1E(건강검진 DB)</div>
         <div class="demo-card-before-after">
           <span class="before-tag">Before</span> 일률 거절
           <span class="after-tag">After</span> 정밀 심사 → 조건부 승인
@@ -2128,8 +2204,8 @@ HTML = r"""<!DOCTYPE html>
         <div class="demo-card-num">시나리오 2</div>
         <div class="demo-card-title">AI 저위험군 보험료 할인</div>
         <div class="demo-card-persona">이*현 · 38세 여성 · 5년 연속 검진 정상</div>
-        <div class="demo-card-desc">G1E 연속 검진 + DICOM 영상 정밀 분류 → 최대 30% 보험료 할인</div>
-        <div class="demo-card-data">G1E(1657만건) · 광주TP DICOM · cdw_psmn_vtls</div>
+        <div class="demo-card-desc">G1E(건강검진 DB) 연속 검진 + DICOM(의료영상 포맷) 정밀 분류 → 최대 30% 보험료 할인</div>
+        <div class="demo-card-data">G1E(건강검진 1657만건) · DICOM(의료영상) · 바이탈(활력징후) DB</div>
         <div class="demo-card-before-after">
           <span class="before-tag">Before</span> 나이 기준 일률 보험료
           <span class="after-tag">After</span> 건강 점수 기반 30% 할인
@@ -2140,8 +2216,8 @@ HTML = r"""<!DOCTYPE html>
         <div class="demo-card-num">시나리오 3</div>
         <div class="demo-card-title">미세 영상 소견자 노-할증</div>
         <div class="demo-card-persona">김*영 · 52세 남성 · 폐 소결절 6mm</div>
-        <div class="demo-card-desc">광주TP DICOM AI 판독 → 임상 무의미 소견 구분 → 부당 할증 없음</div>
-        <div class="demo-card-data">광주TP JPG/DICOM · T400(상병) · RGST</div>
+        <div class="demo-card-desc">DICOM(의료영상) AI 판독 → 임상 무의미 소견 구분 → 부당 할증 없음</div>
+        <div class="demo-card-data">DICOM(의료영상 포맷) · T400(소화기계 상병코드) · RGST(암등록 DB)</div>
         <div class="demo-card-before-after">
           <span class="before-tag">Before</span> 소견 이유로 보험료 30% 할증
           <span class="after-tag">After</span> AI 판독 → 노-할증 표준 체
@@ -2152,8 +2228,8 @@ HTML = r"""<!DOCTYPE html>
         <div class="demo-card-num">시나리오 4</div>
         <div class="demo-card-title">동적 보험료 캐시백</div>
         <div class="demo-card-persona">최*민 · 41세 여성 · 1년간 건강 점수 25% 개선</div>
-        <div class="demo-card-desc">cdw_lflg 라이프로그 개선도 → 연간 보험료 캐시백 최대 15%</div>
-        <div class="demo-card-data">cdw_lflg_l03_mq_rslt(라이프로그) · cdw_psmn_vtls · G1E</div>
+        <div class="demo-card-desc">라이프로그(웨어러블 건강 활동 기록) 개선도 → 연간 보험료 캐시백 최대 15%</div>
+        <div class="demo-card-data">라이프로그(건강 활동 기록) · 바이탈(활력징후) DB · G1E(건강검진 DB)</div>
         <div class="demo-card-before-after">
           <span class="before-tag">Before</span> 고정 보험료
           <span class="after-tag">After</span> 건강 개선 → 캐시백 지급
@@ -2164,32 +2240,32 @@ HTML = r"""<!DOCTYPE html>
         <div class="demo-card-num">시나리오 5</div>
         <div class="demo-card-title">맞춤형 유병자 요율</div>
         <div class="demo-card-persona">정*호 · 57세 남성 · 당뇨 · 치료 반응 우수</div>
-        <div class="demo-card-desc">T200~T530 상병 + G1E 치료 반응 → 개인 맞춤 보험료 (일률 할증 -30%)</div>
-        <div class="demo-card-data">T200~T530(상병) · G1E · BFC(보험료분위)</div>
+        <div class="demo-card-desc">T200~T530(대사·내분비 질환 상병코드) + G1E(건강검진 DB) 치료 반응 → 개인 맞춤 보험료 (일률 할증 -30%)</div>
+        <div class="demo-card-data">T200~T530(상병코드) · G1E(건강검진 DB) · BFC(보험료분위: 소득지표)</div>
         <div class="demo-card-before-after">
           <span class="before-tag">Before</span> 유병자 일률 30% 할증
           <span class="after-tag">After</span> 치료 반응 우수 → 맞춤 요율 -20%
         </div>
       </div>
 
-      <div class="demo-card" onclick="demoSend(11)">
-        <div class="demo-card-num">시나리오 11</div>
+      <div class="demo-card" onclick="demoSend(6)">
+        <div class="demo-card-num">시나리오 6</div>
         <div class="demo-card-title">건강체 특별약관 최대 할인</div>
         <div class="demo-card-persona">강*원 · 43세 남성 · 5년 연속 건강체 · 비흡연 · BMI 21</div>
-        <div class="demo-card-desc">G1E 연속 검진 + 바이탈 전 항목 정상 → 건강체 1급 판정 → 보험료 최대 30% 할인</div>
-        <div class="demo-card-data">G1E(1657만건) · cdw_psmn_vtls · cdw_lflg · BFC</div>
+        <div class="demo-card-desc">G1E(건강검진 DB) 연속 검진 + 바이탈(활력징후) 전 항목 정상 → 건강체 1급 판정 → 보험료 최대 30% 할인</div>
+        <div class="demo-card-data">G1E(건강검진 1657만건) · 바이탈(활력징후) DB · 라이프로그 · BFC(보험료분위)</div>
         <div class="demo-card-before-after">
           <span class="before-tag">Before</span> 표준체 기준 월 12만원
           <span class="after-tag">After</span> 건강체 1급 특약 → 월 8.4만원 (-30%)
         </div>
       </div>
 
-      <div class="demo-card" onclick="demoSend(13)">
-        <div class="demo-card-num">시나리오 13</div>
+      <div class="demo-card" onclick="demoSend(7)">
+        <div class="demo-card-num">시나리오 7</div>
         <div class="demo-card-title">위 용종 절제 후 보험 가입 가능</div>
         <div class="demo-card-persona">홍*종 · 50세 남성 · 2년 전 위 선종 내시경 절제 · 추적 내시경 정상</div>
-        <div class="demo-card-desc">병리 DB(양성 선종) + 추적 내시경 정상 → 재발 위험 1.5% → 5년 제한 없이 표준체 승인</div>
-        <div class="demo-card-data">T400(상병) · 광주TP DICOM · 병리검사 DB · RGST</div>
+        <div class="demo-card-desc">병리 DB(양성 선종: 암세포 없음) + 추적 내시경 정상 → 재발 위험 1.5% → 5년 제한 없이 표준체 승인</div>
+        <div class="demo-card-data">T400(소화기계 상병코드) · DICOM(의료영상) · 병리 DB · RGST(암등록 DB)</div>
         <div class="demo-card-before-after">
           <span class="before-tag">Before</span> 수술 이력 → 5년 보험 가입 불가
           <span class="after-tag">After</span> 의료 데이터 분석 → 즉시 표준체 승인
@@ -2202,63 +2278,93 @@ HTML = r"""<!DOCTYPE html>
     <div class="demo-section-title">금융 영역 — 포용 금융 &amp; 대안 신용평가</div>
     <div class="demo-grid">
 
-      <div class="demo-card" onclick="demoSend(6)">
-        <div class="demo-card-num">시나리오 6</div>
+      <div class="demo-card" onclick="demoSend(8)">
+        <div class="demo-card-num">시나리오 8</div>
         <div class="demo-card-title">씬파일러 Health-Credit 신용평가</div>
         <div class="demo-card-persona">이*진 · 29세 여성 · 금융 이력 부족 · 신용점수 680점</div>
-        <div class="demo-card-desc">G1E 검진 성실도 + 바이탈 안정도 → 신용 +85점 → 1금융권 금리 1.8%p 인하</div>
-        <div class="demo-card-data">G1E · cdw_psmn_vtls · BFC · CB 신용DB</div>
+        <div class="demo-card-desc">G1E(건강검진 DB) 성실도 + 바이탈(활력징후) 안정도 → 신용 +85점 → 1금융권 금리 1.8%p 인하</div>
+        <div class="demo-card-data">G1E(건강검진 DB) · 바이탈(활력징후) DB · BFC(보험료분위) · CB(신용조회기관)</div>
         <div class="demo-card-before-after">
           <span class="before-tag">Before</span> 씬파일러 → 고금리 대출
           <span class="after-tag">After</span> Health-Credit → 1금융권 진입
         </div>
       </div>
 
-      <div class="demo-card" onclick="demoSend(7)">
-        <div class="demo-card-num">시나리오 7</div>
+      <div class="demo-card" onclick="demoSend(9)">
+        <div class="demo-card-num">시나리오 9</div>
         <div class="demo-card-title">소상공인 건강 지속가능성 대출</div>
         <div class="demo-card-persona">오*석 · 48세 남성 · 8년 자영업 · 당뇨 치료 우수</div>
-        <div class="demo-card-desc">CDW 임상 + RGST 영속성 예측 → 대출 한도 3,000만원 증액 + 금리 0.8%p 우대</div>
-        <div class="demo-card-data">광주TP CDW · RGST · 카드사/CB 매출 DB</div>
+        <div class="demo-card-desc">CDW(임상 데이터 웨어하우스) + RGST(암등록 DB) 영속성 예측 → 대출 한도 3,000만원 증액 + 금리 0.8%p 우대</div>
+        <div class="demo-card-data">CDW(임상 데이터 웨어하우스) · RGST(암등록 DB) · CB(신용조회기관) 매출 DB</div>
         <div class="demo-card-before-after">
           <span class="before-tag">Before</span> 담보·매출 기준만 → 한도 부족
           <span class="after-tag">After</span> 건강 지속가능성 → 한도 증액
         </div>
       </div>
 
-      <div class="demo-card" onclick="demoSend(8)">
-        <div class="demo-card-num">시나리오 8</div>
+      <div class="demo-card" onclick="demoSend(10)">
+        <div class="demo-card-num">시나리오 10</div>
         <div class="demo-card-title">유병자·고령층 렌탈 금융 승인</div>
         <div class="demo-card-persona">윤*숙 · 68세 여성 · 위암 1기 완치 5년</div>
-        <div class="demo-card-desc">cdw_ptn_hli + DEATH 단기 위험 분석 → 병력 차별 없이 렌탈 승인</div>
-        <div class="demo-card-data">광주TP cdw_ptn_hli · DEATH · RGST</div>
+        <div class="demo-card-desc">환자 건강지수(HLI) + DEATH(사망 DB) 단기 위험 분석 → 병력 차별 없이 렌탈 승인</div>
+        <div class="demo-card-data">환자 건강지수(HLI) DB · DEATH(사망 DB) · RGST(암등록 DB)</div>
         <div class="demo-card-before-after">
           <span class="before-tag">Before</span> 병력 이유 → 렌탈 거절
           <span class="after-tag">After</span> 단기 위험 낮음 → 정상 승인
         </div>
       </div>
 
-      <div class="demo-card" onclick="demoSend(12)">
-        <div class="demo-card-num">시나리오 12</div>
+      <div class="demo-card" onclick="demoSend(11)">
+        <div class="demo-card-num">시나리오 11</div>
         <div class="demo-card-title">건강체 건강담보대출 승인</div>
-        <div class="demo-card-persona">서*원 · 46세 여성 · 건강체 · DSR 52% 초과 → 은행 대출 거절</div>
-        <div class="demo-card-desc">G1E 4년 연속 정상 + 바이탈 안정도 상 → HAS 87점(A+) → 보험사 건강담보대출 승인</div>
-        <div class="demo-card-data">G1E · cdw_psmn_vtls · BFC · 보험사 담보대출 DB</div>
+        <div class="demo-card-persona">서*원 · 46세 여성 · 건강체 · DSR(총부채상환비율) 52% 초과 → 은행 대출 거절</div>
+        <div class="demo-card-desc">G1E(건강검진 DB) 4년 연속 정상 + 바이탈(활력징후) 안정도 상 → HAS(건강자산점수) 87점(A+) → 건강담보대출 승인</div>
+        <div class="demo-card-data">G1E(건강검진 DB) · 바이탈(활력징후) DB · BFC(보험료분위) · 담보대출 DB</div>
         <div class="demo-card-before-after">
-          <span class="before-tag">Before</span> DSR 초과 → 전 금융기관 거절
+          <span class="before-tag">Before</span> DSR(총부채상환비율) 초과 → 전 금융기관 거절
           <span class="after-tag">After</span> 건강 자산 담보 → 5,000만원 / 연 3.2% 승인
         </div>
       </div>
 
-      <div class="demo-card" onclick="demoSend(14)">
-        <div class="demo-card-num">시나리오 14</div>
+      <div class="demo-card" onclick="demoSend(12)">
+        <div class="demo-card-num">시나리오 12</div>
         <div class="demo-card-title">신(新) 건강담보대출 — 막힌 대출 해결</div>
-        <div class="demo-card-persona">나*출 · 52세 남성 · DSR 58%·LTV 82% 이중 초과 · 건강검진 3년 연속 정상</div>
-        <div class="demo-card-desc">G1E+바이탈+라이프로그 3종 결합(HAS) → 전 금융기관 대출 봉쇄 → 건강 자산 담보 신상품 승인</div>
-        <div class="demo-card-data">G1E · cdw_psmn_vtls · cdw_lflg(라이프로그) · BFC</div>
+        <div class="demo-card-persona">나*출 · 52세 남성 · DSR(총부채상환비율) 58%·LTV(담보인정비율) 82% 이중 초과 · 건강검진 3년 연속 정상</div>
+        <div class="demo-card-desc">G1E(건강검진)+바이탈(활력징후)+라이프로그 3종 결합 HAS(건강자산점수) → 건강 자산 담보 신상품 승인</div>
+        <div class="demo-card-data">G1E(건강검진 DB) · 바이탈(활력징후) DB · 라이프로그(건강활동 기록) · BFC(보험료분위)</div>
         <div class="demo-card-before-after">
           <span class="before-tag">Before</span> DSR·LTV 이중 초과 → 대출 완전 불가
-          <span class="after-tag">After</span> HAS 건강 자산 → 5,000만원 / 연 3.2% 신상품
+          <span class="after-tag">After</span> HAS(건강자산점수) → 5,000만원 / 연 3.2% 신상품
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 신용 역선택 방지 영역 -->
+    <div class="demo-section-title">신용 역선택 방지 — 신용+건강 교차 언더라이팅</div>
+    <div class="demo-grid">
+
+      <div class="demo-card" onclick="demoSend(13)">
+        <div class="demo-card-num">시나리오 13 <span class="db-new-badge">NEW</span></div>
+        <div class="demo-card-title">신용+건강 교차 역선택 탐지</div>
+        <div class="demo-card-persona">강*민 · 42세 남성 · 신용점수 6개월 -120점 · 고액 보험 동시 신청</div>
+        <div class="demo-card-desc">신용 급락 + 검진 기피 + 복수 보험사 동시 신청 → AASI(역선택방지지수) 산출 → 정밀 언더라이팅(인수심사)</div>
+        <div class="demo-card-data">CB(신용조회기관) 신용 DB · G1E(건강검진 이력) · 보험사 청구 DB</div>
+        <div class="demo-card-before-after">
+          <span class="before-tag">Before</span> 신용·건강 별도 관리 → 역선택 미탐지
+          <span class="after-tag">After</span> AASI(역선택방지지수) 교차 분석 → 고위험 즉시 탐지
+        </div>
+      </div>
+
+      <div class="demo-card" onclick="demoSend(14)">
+        <div class="demo-card-num">시나리오 14 <span class="db-new-badge">NEW</span></div>
+        <div class="demo-card-title">씬파일러 역선택 방지 & 포용 심사</div>
+        <div class="demo-card-persona">윤*아 · 28세 여성 · CB 이력 없음 · 건강검진 미수검 · 고액 첫 신청</div>
+        <div class="demo-card-desc">씬파일러(신용·건강 이력 없는 사람) + 검진 기피 + 고액 보험 첫 신청 → G1E(건강검진) 수검 요구 + 포용 경로 제시</div>
+        <div class="demo-card-data">G1E(건강검진 이력) · 바이탈(활력징후) DB · CB(신용조회기관) 신용 DB</div>
+        <div class="demo-card-before-after">
+          <span class="before-tag">Before</span> 씬파일러 일률 거절 or 무방비 승인
+          <span class="after-tag">After</span> 역선택 방지 + 포용금융 경로 동시 제시
         </div>
       </div>
 
@@ -2268,27 +2374,27 @@ HTML = r"""<!DOCTYPE html>
     <div class="demo-section-title">위험 관리 영역 — 사전 케어 &amp; 부실률 차단</div>
     <div class="demo-grid">
 
-      <div class="demo-card" onclick="demoSend(9)">
-        <div class="demo-card-num">시나리오 9</div>
+      <div class="demo-card" onclick="demoSend(15)">
+        <div class="demo-card-num">시나리오 15</div>
         <div class="demo-card-title">미시 징후 사전 케어 → 암 중증화 차단</div>
         <div class="demo-card-persona">박*호 · 52세 남성 · 위 미란 소견 · 2년 내 진행 위험 42%</div>
-        <div class="demo-card-desc">DICOM + T400 AI 조기 감지 → 내시경 절제술 → 고액 보험금 8,000만원 선제 차단</div>
-        <div class="demo-card-data">광주TP DICOM/JPG · T400 · 보험사 지급 DB</div>
+        <div class="demo-card-desc">DICOM(의료영상) + T400(소화기계 상병코드) AI 조기 감지 → 내시경 절제술 → 고액 보험금 8,000만원 선제 차단</div>
+        <div class="demo-card-data">DICOM(의료영상 포맷) · T400(소화기계 상병코드) · 보험사 지급 DB</div>
         <div class="demo-card-before-after">
           <span class="before-tag">Before</span> 방치 → 암 3기 진행 → 보험금 지급
           <span class="after-tag">After</span> 사전 시술 → 완치 → 8,000만원 절감
         </div>
       </div>
 
-      <div class="demo-card" onclick="demoSend(10)">
-        <div class="demo-card-num">시나리오 10</div>
+      <div class="demo-card" onclick="demoSend(16)">
+        <div class="demo-card-num">시나리오 16</div>
         <div class="demo-card-title">중증 질환 전환 예측 → 부실률 차단</div>
-        <div class="demo-card-persona">한*철 · 55세 남성 · 대출 2억 · SOFA 2.0 · 중증 위험 38%</div>
-        <div class="demo-card-desc">CDW SOFA + RGST → 상환 불능 위험 조기 식별 → 상환 보험 연계 → 부실 7,600만원 차단</div>
-        <div class="demo-card-data">cdw_bacm_sofa_isp(SOFA) · RGST · DEATH · 금융사 대출 DB</div>
+        <div class="demo-card-persona">한*철 · 55세 남성 · 대출 2억 · SOFA(장기부전 중증도 점수) 2.0 · 중증 위험 38%</div>
+        <div class="demo-card-desc">CDW(임상 데이터) SOFA(장기부전 점수) + RGST(암등록 DB) → 상환 불능 위험 조기 식별 → 상환 보험 연계 → 부실 차단</div>
+        <div class="demo-card-data">SOFA(장기부전 중증도 점수) DB · RGST(암등록 DB) · DEATH(사망 DB) · 금융사 대출 DB</div>
         <div class="demo-card-before-after">
           <span class="before-tag">Before</span> 건강 정보 없음 → 부실 리스크 미포착
-          <span class="after-tag">After</span> SOFA 예측 → 상환 보험 연계 → 부실 차단
+          <span class="after-tag">After</span> SOFA(장기부전 점수) 예측 → 상환 보험 연계 → 부실 차단
         </div>
       </div>
 
@@ -2612,6 +2718,18 @@ HTML = r"""<!DOCTYPE html>
   </div>
 </div>
 
+<div class="db-overlay" id="db-modal-travel" onclick="dbOverlayClose(event,'db-modal-travel')">
+  <div class="db-modal">
+    <div class="db-modal-hd">
+      <span class="db-modal-title">✈️ 맞춤 웰니스 여행 추천</span>
+      <button class="db-modal-close" onclick="dbCloseModal('db-modal-travel')">✕ 닫기</button>
+    </div>
+    <div class="db-modal-body">
+      <div id="db-travel-content"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 const SESSION_ID = crypto.randomUUID();
 let isLoading = false;
@@ -2697,15 +2815,17 @@ const TOOL_LABELS = {
   assess_pacs_no_extra:            '🩻 영상 소견 노-할증 분석 중... [시나리오 3]',
   assess_dynamic_discount:         '💚 동적 보험료 캐시백 계산 중... [시나리오 4]',
   assess_chronic_disease_rate:     '💊 맞춤형 유병자 요율 산출 중... [시나리오 5]',
-  assess_health_credit:            '💳 Health-Credit 신용평가 중... [시나리오 6]',
-  assess_sme_health_loan:          '🏪 소상공인 건강 대출 우대 분석 중... [시나리오 7]',
-  assess_rental_approval:          '🛒 렌탈/할부 금융 승인 분석 중... [시나리오 8]',
-  assess_early_care:               '🏥 사전 케어 중증화 차단 분석 중... [시나리오 9]',
-  assess_default_prevention:       '🛡️ 부실률 차단 위험 예측 중... [시나리오 10]',
-  assess_healthy_body_discount:    '🌿 건강체 특별약관 할인 산출 중... [시나리오 11]',
-  assess_healthy_body_loan:        '🏦 건강담보대출 심사 중... [시나리오 12]',
-  assess_polyp_removal_eligibility:'🔭 위 내시경 용종 절제 후 가입 가능 여부 분석 중... [시나리오 13]',
-  assess_health_secured_loan:      '💰 건강자산담보대출 PLUS 심사 중... [시나리오 14]',
+  assess_healthy_body_discount:        '🌿 건강체 특별약관 할인 산출 중... [시나리오 6]',
+  assess_polyp_removal_eligibility:    '🔭 위 내시경 용종 절제 후 가입 가능 여부 분석 중... [시나리오 7]',
+  assess_health_credit:                '💳 Health-Credit 신용평가 중... [시나리오 8]',
+  assess_sme_health_loan:              '🏪 소상공인 건강 대출 우대 분석 중... [시나리오 9]',
+  assess_rental_approval:              '🛒 렌탈/할부 금융 승인 분석 중... [시나리오 10]',
+  assess_healthy_body_loan:            '🏦 건강담보대출 심사 중... [시나리오 11]',
+  assess_health_secured_loan:          '💰 건강자산담보대출 PLUS 심사 중... [시나리오 12]',
+  assess_adverse_selection_score:      '🔎 신용+건강 교차 역선택 탐지 중... [시나리오 13]',
+  assess_thin_filer_adverse_selection: '🛡️ 씬파일러 역선택 방지 심사 중... [시나리오 14]',
+  assess_early_care:                   '🏥 사전 케어 중증화 차단 분석 중... [시나리오 15]',
+  assess_default_prevention:           '🛡️ 부실률 차단 위험 예측 중... [시나리오 16]',
 };
 
 function scrollToBottom() {
@@ -2897,6 +3017,14 @@ function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   event.currentTarget.classList.add('active');
+}
+function switchTabDirect(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById('tab-' + name);
+  if (panel) panel.classList.add('active');
+  const btn = document.querySelector(`.tab-btn[onclick*="'${name}'"]`);
+  if (btn) btn.classList.add('active');
 }
 
 function openUrl(url) { window.open(url, '_blank'); }
@@ -3311,6 +3439,10 @@ async function generatePortfolio() {
       if (loanArea) {
         loanArea.innerHTML = renderPolicyLoanCard(data.policy_loan_data);
       }
+      // 레이더 차트 + 보험료 납입이력 가점 + 신용점수 개선 시뮬레이터
+      renderCreditRadar(avgScore, data.composite_score_data);
+      renderPremiumHistCard(avgScore);
+      renderScoreSimulator(avgScore);
       bodyEl.innerHTML = addLinksToTables(marked.parse(preprocessMd(data.result || '결과가 없습니다.')));
     }
   } catch(e) {
@@ -3319,6 +3451,101 @@ async function generatePortfolio() {
     btn.disabled = false;
     btn.textContent = '💳 신용점수 반영 포트폴리오 생성';
   }
+}
+
+let _radarChartInst = null;
+
+function renderCreditRadar(avgScore, cs) {
+  const card = document.getElementById('radar-chart-card');
+  if (!card) return;
+  card.style.display = 'block';
+
+  const fin  = cs ? Math.min(100, Math.round((cs.composite_score || avgScore) / 10)) : Math.round(avgScore / 10);
+  const creditPct = Math.min(100, Math.round(avgScore / 10));
+  const healthPct = cs ? Math.min(100, Math.round((cs.has_score || 70))) : 70;
+  const jobPct    = cs ? Math.min(100, Math.round((cs.employment_score || 65))) : 65;
+  const homePct   = cs ? Math.min(100, Math.round((cs.housing_score   || 60))) : 60;
+  const finPct    = Math.min(100, fin);
+
+  const ctx = document.getElementById('credit-radar-canvas').getContext('2d');
+  if (_radarChartInst) { _radarChartInst.destroy(); }
+  _radarChartInst = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: ['신용', '건강', '재무', '직업', '거주'],
+      datasets: [{
+        label: '다차원 평가',
+        data: [creditPct, healthPct, finPct, jobPct, homePct],
+        backgroundColor: 'rgba(59,130,246,0.18)',
+        borderColor: '#3b82f6',
+        borderWidth: 2,
+        pointBackgroundColor: '#3b82f6',
+        pointRadius: 4,
+      }]
+    },
+    options: {
+      responsive: false,
+      scales: { r: { min: 0, max: 100, ticks: { display: false }, pointLabels: { font: { size: 11 } } } },
+      plugins: { legend: { display: false } },
+    }
+  });
+}
+
+function renderPremiumHistCard(avgScore) {
+  const card = document.getElementById('premium-hist-card');
+  const body = document.getElementById('premium-hist-body');
+  if (!card || !body) return;
+  const rows = [
+    { label: '보험료 6개월 정상납부',  pts: '+8점' },
+    { label: '보험료 12개월 정상납부', pts: '+15점' },
+    { label: '보험료 24개월 정상납부', pts: '+22점' },
+    { label: '통신·공과금 병행 납부',  pts: '추가 +12점' },
+  ];
+  body.innerHTML = rows.map(r =>
+    `<div class="premium-hist-row"><span>${r.label}</span><span class="premium-hist-pts">${r.pts}</span></div>`
+  ).join('');
+  card.style.display = 'block';
+}
+
+function renderScoreSimulator(avgScore) {
+  const area = document.getElementById('score-sim-area');
+  if (!area) return;
+
+  const tiers = [
+    { threshold: 600, grade: '보통(4~6등급)', benefits: ['실손·암·치아보험 표준 조건 가입'] },
+    { threshold: 750, grade: '우량(2~3등급)', benefits: ['종신보험 가입', '보험료 우대 할인', 'Health-Credit 금리 -1.3%p'] },
+    { threshold: 900, grade: '최우량(1등급)',  benefits: ['VIP 보험 조건', '변액유니버셜', 'Health-Credit 금리 -1.8%p'] },
+  ];
+  const factors = [
+    { action: '보험료 12개월 정상납부', pts: 15 },
+    { action: '통신비·공과금 12개월 납부', pts: 12 },
+    { action: '대출 12개월 정상상환', pts: 20 },
+    { action: '카드 연체 이력 소멸(2년)', pts: 25 },
+    { action: '건강검진 2년 연속 수검', pts: 10 },
+    { action: '소액 대출 상환 완료', pts: 18 },
+  ];
+
+  const pending = tiers.filter(t => t.threshold > avgScore);
+  if (!pending.length) {
+    area.innerHTML = `<div class="score-sim-card"><div class="score-sim-title">✅ 신용점수 개선 시뮬레이터</div><p style="font-size:12px;color:#16a34a">현재 점수(${avgScore}점)가 최우량 등급 이상입니다. 모든 혜택이 열려 있습니다!</p></div>`;
+    return;
+  }
+
+  let html = `<div class="score-sim-card"><div class="score-sim-title">📈 신용점수 개선 시뮬레이터 (현재 ${avgScore}점 → 목표 달성 경로)</div>`;
+  for (const tier of pending) {
+    const gap = tier.threshold - avgScore;
+    let acc = 0; const needed = [];
+    for (const f of factors) { if (acc >= gap) break; needed.push(f); acc += f.pts; }
+    const ok = acc >= gap;
+    html += `<div class="score-sim-scenario">
+      <div class="score-sim-target">${tier.grade} 달성 목표: ${tier.threshold}점 (+${gap}점 필요)</div>
+      <div class="score-sim-gap">아래 조건 달성 시 +${acc}점 획득 가능 ${ok ? '(달성 가능!)' : ''}</div>
+      <ul class="score-sim-steps">${needed.map(f => `<li>${f.action} <span style="color:#16a34a;font-weight:700">+${f.pts}점</span></li>`).join('')}</ul>
+      <div class="score-sim-benefits">${tier.benefits.map(b => `<span class="${ok ? 'score-sim-achieved' : 'score-sim-benefit'}">${b}</span>`).join('')}</div>
+    </div>`;
+  }
+  html += '</div>';
+  area.innerHTML = html;
 }
 
 // ── Health Risk 전역 상태 ──────────────────────────────────
@@ -3558,6 +3785,56 @@ function hrRenderResult(data) {
   } else {
     bfcCard.style.display = 'none';
   }
+
+  // Health-Credit 신용 가산점 자동 연산
+  renderHealthCreditBonus(data);
+}
+
+function renderHealthCreditBonus(data) {
+  const card = document.getElementById('hr-hc-bonus-card');
+  const body = document.getElementById('hr-hc-bonus-body');
+  if (!card || !body) return;
+
+  const ra  = data.risk_assessment || {};
+  const ins = data.input_summary   || {};
+  const bfc = data.bfc_info;
+
+  const riskBand   = ra.risk_band || '저위험';
+  const flags      = ins.flags || [];
+  const hasNormal  = flags.includes('특이소견 없음') || flags.length === 0;
+  const bfcTier    = bfc ? bfc.tier : null;
+
+  // 가산점 계산
+  let checkupPts = 0, vitalPts = 0, bfcPts = 0;
+  const checkupNote = (data.checkup_consecutive != null)
+    ? `연속 ${data.checkup_consecutive}회 수검` : '수검 이력 미확인';
+
+  // 검진 성실도: 위험 낮을수록 가산 (저위험=+20, 중간=+10, 고=+0)
+  if (riskBand === '저위험')      checkupPts = 20;
+  else if (riskBand === '중간위험') checkupPts = 10;
+
+  // 바이탈 안정도: 이상 소견 없으면 가산
+  if (hasNormal) vitalPts = 15;
+
+  // BFC 소득분위 가산
+  if (bfcTier) {
+    if (bfcTier >= 7)      bfcPts = 10;
+    else if (bfcTier >= 4) bfcPts = 5;
+  }
+
+  const total = checkupPts + vitalPts + bfcPts;
+  const creditEffect = total >= 40 ? '신용점수 +25~35점 추정' :
+                       total >= 25 ? '신용점수 +15~25점 추정' :
+                       total >= 10 ? '신용점수 +5~15점 추정' : '가산점 기준 미충족';
+
+  body.innerHTML = `
+    <div class="hr-hc-bonus-row"><span>건강검진 성실도 (G1E)</span><span style="font-weight:700;color:#1d4ed8">+${checkupPts}점</span></div>
+    <div class="hr-hc-bonus-row"><span>바이탈 안정도 (cdw_psmn_vtls)</span><span style="font-weight:700;color:#1d4ed8">+${vitalPts}점</span></div>
+    <div class="hr-hc-bonus-row"><span>BFC 소득분위 (${bfcTier ? bfcTier + '분위' : '미입력'})</span><span style="font-weight:700;color:#1d4ed8">+${bfcPts}점</span></div>
+    <div class="hr-hc-bonus-total"><span>Health-Credit HAS 합산</span><span>${total}점 / 100점</span></div>
+    <div class="hr-hc-bonus-note">신용 효과 추정: ${creditEffect} — 보험료 대출 우대·금리 인하 가능</div>
+  `;
+  card.style.display = 'block';
 }
 
 function hrToggleProducts(hdr) {
@@ -3768,7 +4045,7 @@ async function hrGetAiRec() {
   }
 }
 
-// ── Demo Tab: 시나리오 버튼 클릭 → 채팅으로 전송 ────────────
+// ── Demo Tab: 시나리오 버튼 클릭 → 직접 실행 ─────────────
 const DEMO_QUERIES = {
   1: `[대회 시나리오 1 — 암 완치자 인수 심사]
 
@@ -3909,21 +4186,199 @@ const DEMO_QUERIES = {
 ① assess_health_secured_loan 도구로 G1E + 바이탈 + 라이프로그 3종 결합 건강 자산 점수(HAS)를 산출하고 신(新) 건강담보대출 PLUS 승인 여부·한도·금리를 산출해 주세요. (연속검진 3년, 바이탈 상, 라이프로그 78점, BFC 5등급, DSR 58%, LTV 82%, 대출 5000만원)
 
 ② 나*출 씨에게 적합한 보험 상품도 search_insmarket_products로 조회하여 추천해 주세요. 50대 남성 기준 실손의료보험·암보험·간병보험 상위 상품을 보험사명·상품명·월 보험료로 비교표를 제시하고, 건강 자산 담보 대출과 보험 연계의 중요성도 함께 설명해 주세요.`,
+
+  15: `[대회 시나리오 15 — 신용+건강 교차 역선택 탐지 언더라이팅]
+
+강*민(42세 남성)은 최근 6개월간 신용점수가 780점 → 650점으로 급락(-130점)했으며, 3곳의 보험사에 동시에 사망보험금 1억원 규모 종신보험을 신청했습니다. 마지막 건강검진은 30개월 전이며, 기존 소액 보험에서 갑작스럽게 고액 보험으로 전환을 시도하고 있습니다.
+
+다음 두 단계로 분석해 주세요.
+
+① assess_adverse_selection_score 도구로 신용+건강 교차 AASI(역선택방지지수) 분석을 실행하고 역선택 위험 등급과 필요 조치를 산출해 주세요. (신용점수 650점, 6개월 -130점 급락, 보험금 10000만원, 검진 30개월 미수검, 복수 보험사 동시 신청, 고액 전환 true)
+
+② 역선택 분석 결과를 바탕으로 보험사 입장에서의 심사 권고사항과, 동시에 강*민 씨가 정상적인 방법으로 가입 가능한 보험 상품(실손의료보험 등)을 search_insmarket_products로 조회하여 안내해 주세요.`,
+
+  16: `[대회 시나리오 16 — 씬파일러 역선택 방지 & 포용 심사]
+
+윤*아(28세 여성)는 사회초년생으로 CB 금융 이력이 전무하고, 건강검진을 한 번도 받은 적이 없습니다. 갑자기 사망보험금 8,000만원 규모의 종신보험 가입을 신청했으며, 바이탈 데이터도 없습니다.
+
+다음 두 단계로 분석해 주세요.
+
+① assess_thin_filer_adverse_selection 도구로 씬파일러 역선택 위험 분석을 실행하고 가입 가능 여부, 포용 금융 경로, 건강 데이터 제출 요청 방안을 산출해 주세요. (CB 이력 없음, 건강검진 0회, 보험금 8000만원, 갑작스러운 첫 신청, 바이탈 없음)
+
+② 씬파일러이지만 역선택 위험이 없는 경우의 포용 보험 가입 경로를 안내하고, 윤*아 씨가 지금 당장 가입 가능한 보험 상품을 search_insmarket_products로 조회하여 20~30대 여성 기준 실손의료보험·암보험 상위 상품을 비교표로 제시해 주세요.`,
+};
+// DEMO_QUERIES는 현재 미사용 — 데모 시나리오는 /api/demo/run으로 직접 실행
+
+// 데모 시나리오별 보험 상담 자연어 쿼리 — 의료·금융 용어 한글 병기
+const DEMO_CHAT_QUERIES = {
+  1:  `박*준(45세 남성)은 위암 2기로 3년 전 완치(수술+항암 치료)했으며 최근 건강검진 결과는 정상입니다. RGST(국립암센터 암등록 데이터베이스) 기반으로 정밀 인수 심사를 해주시고, 조건부 승인 여부와 보험료를 분석해주세요. 가입 가능한 암보험과 실손의료보험도 각 상위 3개씩 추천해주세요.`,
+  2:  `이*현(38세 여성)은 5년 연속 건강검진 정상, BMI(체질량지수)·혈압·혈당 정상, 비흡연, DICOM(의료영상 디지털 포맷) 영상 정상인 저위험군입니다. AI 저위험군 보험료 할인율을 산출해주시고, 실손의료보험·암보험·치아보험 추천 상품을 할인 적용 후 보험료 기준으로 비교표로 제시해주세요.`,
+  3:  `김*영(52세 남성)은 폐CT에서 6mm 소결절(작은 폐 내 음영) 소견이 있으나 2년 경과 관찰 중 변화가 없습니다. DICOM(의료영상 디지털 포맷) AI 판독 기반으로 노-할증 인수 여부를 판단해주시고, 50대 남성 기준 실손의료보험·암보험 상위 3개 상품을 비교표와 주의사항과 함께 추천해주세요.`,
+  4:  `최*민(41세 여성)은 라이프로그(웨어러블·앱 기반 건강 활동 기록) 건강 점수가 1년간 25% 개선됐으며 현재 월 보험료는 8만원입니다. 동적 캐시백 금액을 산출해주시고, 40대 여성 기준 실손·암·치아보험 추천 상품을 캐시백 연동 실질 비용과 함께 비교표로 제시해주세요.`,
+  5:  `정*호(57세 남성)는 당뇨 진단을 받았지만 HbA1c(당화혈색소: 최근 2~3개월 평균 혈당 수치) 6.8%로 치료 반응이 우수합니다. G1E(국가일반건강검진 데이터) 기반 맞춤형 유병자 요율을 산출해주시고, 50대 남성 유병자 실손보험·당뇨합병증 특화 상품·간병보험 상위 3개를 비교표로 추천해주세요.`,
+  6:  `강*원(43세 남성)은 5년 연속 건강검진 정상, 비흡연, BMI(체질량지수) 21 정상, 혈압·혈당 정상이며 현재 표준체 기준 월 보험료 12만원입니다. 건강체 특별약관 등급과 보험료 할인율을 산출해주시고(연속검진 5년, 월보험료 12만원), 40대 남성 기준 건강체 특별약관 적용 가능한 종신·실손·암보험 추천 상품을 할인 전후 보험료 비교표로 제시해주세요.`,
+  7:  `홍*종(50세 남성)은 2년 전 위내시경에서 관상선종(저등급, 암 전 단계 가능 용종) 8mm를 EMR(내시경 점막 절제술: 내시경으로 점막 병변을 절제하는 시술)로 제거했으며, 병리 결과 양성(암세포 없음), 1년 추적 내시경 정상입니다. 현재 수술 이력으로 전 보험사에서 가입이 거절된 상황입니다. 재발 위험 분석 후 보험 가입 가능 여부를 판정해주시고, 가입 가능한 실손·암·간병보험 상위 3개를 주의사항과 함께 추천해주세요.`,
+  8:  `이*진(29세 여성)은 금융 거래 이력이 부족한 씬파일러(신용 이력 없는 사람)로 신용점수 680점이며, 4년 연속 건강검진 정상, 바이탈(혈압·맥박·체온 등 활력 징후) 안정도 상, BFC(건강보험료 분위: 소득 수준 지표) 6분위입니다. 전세자금 2억 대출을 희망합니다. G1E(건강검진 DB)·바이탈·BFC 기반 Health-Credit(건강 자산 기반 신용 평가) 가산점과 금리 인하 혜택을 분석해주시고(연속검진 4년, 바이탈 상, 신용 680, 전세 2억), 30대 여성 기준 실손·암보험도 추천해주세요.`,
+  9:  `오*석(48세 남성)은 8년째 소상공인을 운영 중이며 월 매출 800만원, 당뇨 치료 반응 우수입니다. 3,000만원 사업자 대출을 희망합니다. CDW(임상 데이터 웨어하우스: 병원 진료·검사 기록 통합 DB) 임상 수치 기반 건강 지속가능성 점수와 대출 한도 증액·금리 우대를 분석해주시고, 40대 남성 기준 실손·당뇨 유병자·간병보험 추천 상품을 대출 상환 보장 보험 포함하여 비교표로 제시해주세요.`,
+  10: `윤*숙(68세 여성)은 위암 1기 완치 5년 후 현재 이상이 없으며, 냉장고 500만원 36개월 렌탈을 신청했습니다. 건강 급변 위험 분석 후 렌탈 승인 여부를 판단해주시고(위암 1기 완치, 단기 위험 낮음), 60대 여성 기준 실손·간병·치매보험 추천 상품을 암 완치자 가입 가능 여부와 함께 비교표로 제시해주세요.`,
+  11: `서*원(46세 여성)은 건강검진 4년 연속 정상, 바이탈(활력 징후) 안정도 상, BFC(건강보험료 분위) 6등급이며 DSR(총부채원리금상환비율: 연소득 대비 전체 대출 상환액 비율) 52%로 은행 대출이 모두 거절됐습니다. 생활자금 5,000만원이 필요합니다. HAS(건강자산점수: 건강 데이터 기반 신용 보완 점수)를 산출하고 건강담보대출 승인·한도·금리를 분석해주시고(연속검진 4년, 바이탈 상, DSR 52%, 생활자금 5000만원), 40대 여성 기준 실손·암·치아보험도 추천해주세요.`,
+  12: `나*출(52세 남성)은 DSR(총부채원리금상환비율) 58%·LTV(주택담보인정비율: 주택가격 대비 대출 한도 비율) 82% 동시 초과로 전 금융기관 대출이 봉쇄됐습니다. 건강검진 3년 연속 정상, 바이탈(활력 징후) 안정도 상, 라이프로그 78점, BFC(보험료 분위) 5등급이며 생활자금 5,000만원이 필요합니다. G1E(건강검진 DB)·바이탈·라이프로그 결합 HAS(건강자산점수)를 산출하고 신(新) 건강담보대출 PLUS 승인·한도·금리를 분석해주시고, 50대 남성 실손·암·간병보험도 추천해주세요.`,
+  13: `강*민(42세 남성)은 최근 6개월간 신용점수가 780점에서 650점으로 급락(-130점)했으며, 3개 보험사에 동시에 사망보험금 1억원 종신보험을 신청했습니다. 마지막 검진은 30개월 전이고 소액에서 고액으로 갑작스럽게 전환 신청 중입니다. AASI(역선택방지지수: 보험 악용 가능성을 수치화한 지표) 기반 역선택 위험을 분석해주시고(신용 650점, 6개월 -130점, 보험금 1억, 검진 30개월 미수검, 복수사 동시 신청), 정상적으로 가입 가능한 보험 상품도 안내해주세요.`,
+  14: `윤*아(28세 여성)는 사회초년생으로 CB(신용조회기관, Credit Bureau) 금융 이력이 전무하고, 건강검진을 한 번도 받은 적이 없습니다. 갑자기 사망보험금 8,000만원 종신보험을 신청했으며 바이탈(활력 징후) 데이터도 없습니다. 씬파일러(신용·건강 이력 없는 사람) 역선택 위험을 분석하고 가입 가능 여부·포용 금융 경로·건강 데이터 제출 방안을 산출해주시고, 20~30대 여성 기준 포용 보험 가입 경로와 추천 상품도 안내해주세요.`,
+  15: `박*호(52세 남성)는 내시경에서 위 미란(위 점막 표면이 얕게 패인 염증 소견) 소견이 발견됐으며 2년 내 암 진행 위험 42%, 보험금 8,000만원 기준입니다. DICOM(의료영상 디지털 포맷)·T400(소화기계 상병 분류 코드) 기반 조기 개입 시 중증화 차단 효과와 보험사 절감 효과를 분석해주시고, 50대 남성 기준 암·실손·간병보험 지금 당장 가입해야 할 상품을 조기 가입 중요성과 함께 추천해주세요.`,
+  16: `한*철(55세 남성)은 대출 잔액 2억원, SOFA(장기부전 중증도 점수: 수치 높을수록 중증) 2.0, 2년 내 중증 질환 전환 위험 38%이며 대출 상환 보험이 미가입 상태입니다. CDW(임상 데이터 웨어하우스)·RGST(암등록 DB) 연계로 부실 예상 손실과 상환 보험 연계 권고를 분석해주시고, 50대 남성 기준 암·간병·실손보험 필수 가입 상품을 대출 상환 보장 보험 필요성과 함께 추천해주세요.`,
 };
 
 async function demoSend(num) {
-  const query = DEMO_QUERIES[num];
-  if (!query) return;
+  const chatQuery = DEMO_CHAT_QUERIES[num];
+  if (!chatQuery) return;
+  if (isLoading) return;
 
-  // 데모 탭에서 채팅 탭으로 전환
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-chat').classList.add('active');
-  document.querySelector('.tab-btn:first-child').classList.add('active');
+  // 보험 상담 탭으로 전환
+  switchTabDirect('chat');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // 채팅으로 전송
-  document.getElementById('input').value = query;
-  sendMessage();
+  addMessage('user', chatQuery);
+  isLoading = true;
+  document.getElementById('send').disabled = true;
+
+  const { bubble, toolStatus } = createStreamingBubble();
+  let fullText = '';
+  let cursor = null;
+  function startCursor() { if (!cursor) { cursor = document.createElement('span'); cursor.className = 'stream-cursor'; bubble.appendChild(cursor); } }
+  function removeCursor() { if (cursor) { cursor.remove(); cursor = null; } }
+
+  try {
+    const r = await fetch('/api/chat/stream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: chatQuery, session_id: SESSION_ID }),
+    });
+    if (!r.ok) {
+      bubble.innerHTML = '서버 오류가 발생했습니다.';
+    } else {
+      const reader = r.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop();
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          let event;
+          try { event = JSON.parse(line.slice(6)); } catch { continue; }
+          if (event.type === 'token') {
+            fullText += event.text;
+            bubble.innerHTML = marked.parse(preprocessMd(fullText));
+            startCursor();
+            scrollToBottom();
+          } else if (event.type === 'tool_start') {
+            toolStatus.textContent = TOOL_LABELS[event.tool] || '분석 중...';
+            toolStatus.style.display = 'block';
+          } else if (event.type === 'tool_done') {
+            toolStatus.style.display = 'none';
+          } else if (event.type === 'done') {
+            fullText = event.full_text || fullText;
+            bubble.innerHTML = addLinksToTables(marked.parse(preprocessMd(fullText)));
+            toolStatus.style.display = 'none';
+            removeCursor();
+            scrollToBottom();
+          } else if (event.type === 'error') {
+            bubble.innerHTML = '오류: ' + event.message;
+            toolStatus.style.display = 'none';
+            removeCursor();
+          }
+        }
+      }
+      removeCursor();
+    }
+  } catch (e) {
+    bubble.innerHTML = '서버 연결 오류가 발생했습니다.';
+  }
+  isLoading = false;
+  document.getElementById('send').disabled = false;
+}
+
+function renderDemoResult(r, num) {
+  if (!r) return '<p style="color:#dc2626">결과 없음</p>';
+
+  const badge = (txt, color) =>
+    `<span style="display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;background:${color[0]};color:${color[1]}">${txt}</span>`;
+
+  // Before / After
+  const beforeAfter = (r.before || r.after) ? `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0">
+      ${r.before ? `<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px;font-size:12px"><span style="font-weight:700;color:#dc2626">Before</span><div style="margin-top:4px;color:#334155">${r.before}</div></div>` : ''}
+      ${r.after  ? `<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px;font-size:12px"><span style="font-weight:700;color:#16a34a">After</span><div style="margin-top:4px;color:#334155">${r.after}</div></div>` : ''}
+    </div>` : '';
+
+  // 핵심 분석 데이터 (시나리오별 주요 필드 자동 추출)
+  const analysisKeys = [
+    'underwriting','risk_assessment','cashback','rate_analysis','pacs_analysis',
+    'credit_score_data','loan_details','approval_result','care_result','default_risk',
+    'discount_result','loan_result','eligibility_result','secured_loan_result',
+    'aasi_analysis','thin_filer_analysis','health_credit_data','sme_result',
+    'rental_result','has_result',
+  ];
+  let analysisHtml = '';
+  for (const key of analysisKeys) {
+    if (!r[key]) continue;
+    const obj = r[key];
+    const rows = Object.entries(obj)
+      .filter(([k, v]) => v !== null && v !== undefined && typeof v !== 'object')
+      .map(([k, v]) => {
+        const label = k.replace(/_/g, ' ');
+        const isGood = typeof v === 'boolean' ? v : String(v).includes('승인') || String(v).includes('정상') || String(v).includes('가능');
+        const isBad  = String(v).includes('거절') || String(v).includes('불가') || String(v).includes('고위험');
+        const valColor = isBad ? '#dc2626' : (isGood ? '#16a34a' : '#1e293b');
+        return `<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #f1f5f9;font-size:12px"><span style="color:#64748b">${label}</span><span style="font-weight:700;color:${valColor}">${v}</span></div>`;
+      }).join('');
+    if (rows) {
+      analysisHtml = `<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px;margin:8px 0">${rows}</div>`;
+      break;
+    }
+  }
+
+  // 이노베이션 존 데이터
+  const inno = r.innovation_zone_data;
+  const innoHtml = inno ? `
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px;margin:8px 0;font-size:11.5px">
+      <span style="font-weight:700;color:#1e40af">이노베이션 존 데이터</span>
+      <div style="margin-top:4px;color:#1d4ed8">${(inno.tables||[]).join(' · ')}</div>
+      ${inno.evidence ? `<div style="margin-top:4px;color:#3b82f6">${inno.evidence}</div>` : ''}
+    </div>` : '';
+
+  // Impact
+  const impact = r.impact;
+  const impactHtml = impact ? `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0">
+      ${Object.entries(impact).map(([k,v]) => `
+        <div style="background:#f8fafc;border-radius:8px;padding:8px;font-size:11.5px">
+          <div style="font-weight:700;color:#475569;margin-bottom:3px">${k}</div>
+          <div style="color:#334155">${v}</div>
+        </div>`).join('')}
+    </div>` : '';
+
+  // 포용 경로 (S16)
+  const pathHtml = r.inclusion_path ? `
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px;margin:8px 0;font-size:12px">
+      <div style="font-weight:700;color:#166534;margin-bottom:6px">포용 금융 경로</div>
+      ${r.inclusion_path.map(p => `<div style="color:#15803d;padding:2px 0">→ ${p}</div>`).join('')}
+    </div>` : '';
+
+  return `
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:18px;margin-top:12px">
+      <div style="font-size:13px;font-weight:800;color:#1e293b;margin-bottom:4px">${r.scenario || ('시나리오 ' + num)}</div>
+      <div style="font-size:12px;color:#64748b;margin-bottom:12px">${r.persona_summary || ''}</div>
+      ${beforeAfter}
+      ${analysisHtml}
+      ${innoHtml}
+      ${pathHtml}
+      ${impactHtml}
+    </div>`;
 }
 
 // 초기화
@@ -4142,12 +4597,12 @@ function dbShowResult() {
     <div class="db-sol-card" style="margin-bottom:20px"><div class="db-sol-card-h">✈️ 웰니스 여행</div><div class="db-sol-card-b">${d.travel}</div></div>
     <div class="db-ctas">
       <button class="db-btn-kakao" onclick="dbOpenKakao()">💬 카카오 상담하기</button>
-      <button class="db-btn-green" onclick="dbOpenKakao()">🌿 DIOBIO 구독 신청하기</button>
+      <button class="db-btn-green" onclick="dbOpenDiobioSite()">🌿 DIOBIO 구독 신청하기</button>
       <div class="db-btn-row">
         <button class="db-btn-out" onclick="dbOpenModal('db-modal-kit')">🔬 검사 키트 신청</button>
         <button class="db-btn-out" onclick="dbOpenFood(DB.currentType)">🛍️ 추천 식품 보기</button>
       </div>
-      <button class="db-btn-out" onclick="dbOpenKakao()">✈️ 웰니스 여행 보기</button>
+      <button class="db-btn-out" onclick="dbOpenTravel(DB.currentType)">✈️ 웰니스 여행 보기</button>
     </div>
     <div class="db-privacy" style="margin-top:20px">
       DIOBIO Balance Check 결과 안내와 상담을 위해 이름, 연락처, 설문 답변을 수집합니다.
@@ -4165,7 +4620,13 @@ function dbCloseModal(id) { document.getElementById(id).classList.remove('open')
 function dbOverlayClose(e, id) { if (e.target === e.currentTarget) dbCloseModal(id); }
 
 function dbOpenKakao() {
-  window.open('https://open.kakao.com/o/sDIOBIO', '_blank');
+  window.open('http://pf.kakao.com/_xcPnxnX/chat', '_blank');
+}
+function dbOpenKakaoChannel() {
+  window.open('http://pf.kakao.com/_xcPnxnX', '_blank');
+}
+function dbOpenDiobioSite() {
+  window.open('/diobio', '_blank');
 }
 
 function dbSubmitKit() {
@@ -4181,40 +4642,40 @@ function dbSubmitKit() {
 
 const DB_FOODS = {
   energy: [
-    { icon:'🫒', name:'엑스트라버진 올리브오일', desc:'에너지 대사에 필수인 건강 지방, 항산화 폴리페놀 풍부', tags:['에너지 대사','항산화','심혈관'] },
-    { icon:'🥜', name:'오메가3 견과류 믹스', desc:'호두·아몬드·캐슈넛 혼합, 활력 회복에 도움되는 불포화지방', tags:['피로 회복','뇌 건강','항염'] },
-    { icon:'🥚', name:'방목란 단백질 팩(12구)', desc:'완전 단백질·비타민B12·철분 함유, 에너지 생성 지원', tags:['단백질','철분','B12'] },
-    { icon:'🌾', name:'멀티그레인 오트밀', desc:'복합탄수화물로 혈당 안정, 지속적인 에너지 공급', tags:['저GI','식이섬유','포만감'] },
+    { icon:'🫒', name:'엑스트라버진 올리브오일', desc:'에너지 대사에 필수인 건강 지방, 항산화 폴리페놀 풍부', tags:['에너지 대사','항산화','심혈관'], url:'https://search.shopping.naver.com/search/all?query=엑스트라버진+올리브오일' },
+    { icon:'🥜', name:'오메가3 견과류 믹스', desc:'호두·아몬드·캐슈넛 혼합, 활력 회복에 도움되는 불포화지방', tags:['피로 회복','뇌 건강','항염'], url:'https://search.shopping.naver.com/search/all?query=오메가3+견과류+믹스' },
+    { icon:'🥚', name:'방목란 단백질 팩(12구)', desc:'완전 단백질·비타민B12·철분 함유, 에너지 생성 지원', tags:['단백질','철분','B12'], url:'https://search.shopping.naver.com/search/all?query=방목란+12구' },
+    { icon:'🌾', name:'멀티그레인 오트밀', desc:'복합탄수화물로 혈당 안정, 지속적인 에너지 공급', tags:['저GI','식이섬유','포만감'], url:'https://search.shopping.naver.com/search/all?query=멀티그레인+오트밀' },
   ],
   skin_gut: [
-    { icon:'🥗', name:'유기농 발효 건강식품 세트', desc:'김치·된장·청국장 발효 농축 분말, 장내 유익균 증식 도움', tags:['프로바이오틱스','장건강','면역'] },
-    { icon:'🫒', name:'엑스트라버진 올리브오일', desc:'폴리페놀 함유, 피부 항산화 및 장 점막 보호', tags:['피부','항산화','항염'] },
-    { icon:'🐟', name:'DIOFARM 오메가3 오일', desc:'정제 어유 오메가3, EPA+DHA 풍부, 피부 장벽 강화', tags:['피부 장벽','오메가3','항염'] },
-    { icon:'🍵', name:'콤부차 발효 음료 키트', desc:'홍차버섯 발효 DIY 키트, 장내 환경 개선', tags:['발효','프로바이오틱스','디톡스'] },
+    { icon:'🥗', name:'유기농 발효 건강식품 세트', desc:'김치·된장·청국장 발효 농축 분말, 장내 유익균 증식 도움', tags:['프로바이오틱스','장건강','면역'], url:'https://search.shopping.naver.com/search/all?query=유기농+발효+건강식품' },
+    { icon:'🫒', name:'엑스트라버진 올리브오일', desc:'폴리페놀 함유, 피부 항산화 및 장 점막 보호', tags:['피부','항산화','항염'], url:'https://search.shopping.naver.com/search/all?query=엑스트라버진+올리브오일' },
+    { icon:'🐟', name:'DIOFARM 오메가3 오일', desc:'정제 어유 오메가3, EPA+DHA 풍부, 피부 장벽 강화', tags:['피부 장벽','오메가3','항염'], url:'https://search.shopping.naver.com/search/all?query=오메가3+오일+EPA+DHA' },
+    { icon:'🍵', name:'콤부차 발효 음료 키트', desc:'홍차버섯 발효 DIY 키트, 장내 환경 개선', tags:['발효','프로바이오틱스','디톡스'], url:'https://search.shopping.naver.com/search/all?query=콤부차+발효+키트' },
   ],
   hair: [
-    { icon:'🖤', name:'검은콩·검은깨 파우더', desc:'안토시아닌·이소플라본 풍부, 모발 색소·강도 유지에 도움', tags:['모발 강화','안토시아닌','단백질'] },
-    { icon:'🥜', name:'아마씨·호두 믹스', desc:'오메가3·아연·비타민E 복합, 두피 혈류 개선', tags:['두피 건강','아연','오메가3'] },
-    { icon:'🌊', name:'해조류 믹스(미역·다시마·톳)', desc:'요오드·칼슘·철분 풍부, 갑상선 기능 및 모발 성장 지원', tags:['요오드','칼슘','모발 성장'] },
-    { icon:'🦪', name:'굴 농축 분말', desc:'아연 최고 함유 식품, 케라틴 합성 지원', tags:['아연','케라틴','단백질'] },
+    { icon:'🖤', name:'검은콩·검은깨 파우더', desc:'안토시아닌·이소플라본 풍부, 모발 색소·강도 유지에 도움', tags:['모발 강화','안토시아닌','단백질'], url:'https://search.shopping.naver.com/search/all?query=검은콩+검은깨+파우더' },
+    { icon:'🥜', name:'아마씨·호두 믹스', desc:'오메가3·아연·비타민E 복합, 두피 혈류 개선', tags:['두피 건강','아연','오메가3'], url:'https://search.shopping.naver.com/search/all?query=아마씨+호두+믹스' },
+    { icon:'🌊', name:'해조류 믹스(미역·다시마·톳)', desc:'요오드·칼슘·철분 풍부, 갑상선 기능 및 모발 성장 지원', tags:['요오드','칼슘','모발 성장'], url:'https://search.shopping.naver.com/search/all?query=해조류+미역+다시마+톳+건강식품' },
+    { icon:'🦪', name:'굴 농축 분말', desc:'아연 최고 함유 식품, 케라틴 합성 지원', tags:['아연','케라틴','단백질'], url:'https://search.shopping.naver.com/search/all?query=굴+농축+분말+아연' },
   ],
   sleep_stress: [
-    { icon:'🍌', name:'건바나나 & 체리 믹스', desc:'트립토판·멜라토닌 전구체 함유, 자연스러운 수면 유도', tags:['수면','멜라토닌','트립토판'] },
-    { icon:'🌸', name:'캐모마일·라벤더 허브티 세트', desc:'GABA 활성화 도움, 취침 전 긴장 완화', tags:['릴렉스','GABA','카페인프리'] },
-    { icon:'🍫', name:'다크초콜릿(85%+)', desc:'마그네슘 풍부, 세로토닌 전구체 함유, 항산화', tags:['마그네슘','세로토닌','항산화'] },
-    { icon:'🫘', name:'두부·템페 단백질 세트', desc:'완전 단백질 + 이소플라본, 스트레스 호르몬 완화 도움', tags:['단백질','이소플라본','호르몬'] },
+    { icon:'🍌', name:'건바나나 & 체리 믹스', desc:'트립토판·멜라토닌 전구체 함유, 자연스러운 수면 유도', tags:['수면','멜라토닌','트립토판'], url:'https://search.shopping.naver.com/search/all?query=건바나나+체리+수면+건강식품' },
+    { icon:'🌸', name:'캐모마일·라벤더 허브티 세트', desc:'GABA 활성화 도움, 취침 전 긴장 완화', tags:['릴렉스','GABA','카페인프리'], url:'https://search.shopping.naver.com/search/all?query=캐모마일+라벤더+허브티' },
+    { icon:'🍫', name:'다크초콜릿(85%+)', desc:'마그네슘 풍부, 세로토닌 전구체 함유, 항산화', tags:['마그네슘','세로토닌','항산화'], url:'https://search.shopping.naver.com/search/all?query=다크초콜릿+85프로+건강' },
+    { icon:'🫘', name:'두부·템페 단백질 세트', desc:'완전 단백질 + 이소플라본, 스트레스 호르몬 완화 도움', tags:['단백질','이소플라본','호르몬'], url:'https://search.shopping.naver.com/search/all?query=템페+두부+단백질+건강식품' },
   ],
   metabolic: [
-    { icon:'🫒', name:'엑스트라버진 올리브오일', desc:'인슐린 감수성 개선, GLP-1 분비 촉진에 도움되는 건강 지방', tags:['대사','인슐린','GLP-1'] },
-    { icon:'🌾', name:'차전자피(실리움허스크)', desc:'수용성 식이섬유, 혈당 스파이크 억제, 포만감 증가', tags:['혈당 조절','식이섬유','다이어트'] },
-    { icon:'🥦', name:'브로콜리·컬리플라워 분말', desc:'설포라판 함유, 대사 효소 활성화, 디톡스 지원', tags:['설포라판','디톡스','항산화'] },
-    { icon:'🫙', name:'애플사이다 비니거', desc:'혈당 조절, 인슐린 감수성, 지방 분해 효소 활성화', tags:['혈당','인슐린','지방 대사'] },
+    { icon:'🫒', name:'엑스트라버진 올리브오일', desc:'인슐린 감수성 개선, GLP-1 분비 촉진에 도움되는 건강 지방', tags:['대사','인슐린','GLP-1'], url:'https://search.shopping.naver.com/search/all?query=엑스트라버진+올리브오일+대사' },
+    { icon:'🌾', name:'차전자피(실리움허스크)', desc:'수용성 식이섬유, 혈당 스파이크 억제, 포만감 증가', tags:['혈당 조절','식이섬유','다이어트'], url:'https://search.shopping.naver.com/search/all?query=차전자피+실리움허스크' },
+    { icon:'🥦', name:'브로콜리·컬리플라워 분말', desc:'설포라판 함유, 대사 효소 활성화, 디톡스 지원', tags:['설포라판','디톡스','항산화'], url:'https://search.shopping.naver.com/search/all?query=브로콜리+컬리플라워+분말+설포라판' },
+    { icon:'🫙', name:'애플사이다 비니거', desc:'혈당 조절, 인슐린 감수성, 지방 분해 효소 활성화', tags:['혈당','인슐린','지방 대사'], url:'https://search.shopping.naver.com/search/all?query=애플사이다+비니거+건강' },
   ],
   total: [
-    { icon:'🎁', name:'DIOBIO 웰니스 스타터 패키지', desc:'올리브오일+견과류+발효식품+허브티 4종 구성, 균형 잡힌 시작', tags:['균형','입문','패키지'] },
-    { icon:'🥜', name:'오메가3 견과류 믹스', desc:'뇌 건강·심혈관·항염 복합 효과, 매일 한 줌 시작', tags:['뇌 건강','항염','일상'] },
-    { icon:'🌾', name:'통곡물 오트밀 프리미엄', desc:'하루를 시작하는 기초 영양, 식이섬유+단백질+복합탄수화물', tags:['기초 영양','아침','식이섬유'] },
-    { icon:'🫙', name:'유기농 발효 건강식품 세트', desc:'전반적인 장내 환경 개선, 면역·소화·피부 복합 지원', tags:['면역','소화','피부'] },
+    { icon:'🎁', name:'DIOBIO 웰니스 스타터 패키지', desc:'올리브오일+견과류+발효식품+허브티 4종 구성, 균형 잡힌 시작', tags:['균형','입문','패키지'], url:'https://search.shopping.naver.com/search/all?query=웰니스+건강식품+스타터+패키지' },
+    { icon:'🥜', name:'오메가3 견과류 믹스', desc:'뇌 건강·심혈관·항염 복합 효과, 매일 한 줌 시작', tags:['뇌 건강','항염','일상'], url:'https://search.shopping.naver.com/search/all?query=오메가3+견과류+믹스' },
+    { icon:'🌾', name:'통곡물 오트밀 프리미엄', desc:'하루를 시작하는 기초 영양, 식이섬유+단백질+복합탄수화물', tags:['기초 영양','아침','식이섬유'], url:'https://search.shopping.naver.com/search/all?query=통곡물+오트밀+프리미엄' },
+    { icon:'🫙', name:'유기농 발효 건강식품 세트', desc:'전반적인 장내 환경 개선, 면역·소화·피부 복합 지원', tags:['면역','소화','피부'], url:'https://search.shopping.naver.com/search/all?query=유기농+발효+건강식품' },
   ],
 };
 
@@ -4226,10 +4687,63 @@ function dbOpenFood(type) {
       <div class="db-food-card-name">${f.name}</div>
       <div class="db-food-card-desc">${f.desc}</div>
       <div class="db-food-tags">${f.tags.map(t => '<span class="db-food-tag">' + t + '</span>').join('')}</div>
-      <button class="db-food-add" onclick="alert('장바구니에 담겼습니다! 카카오 상담을 통해 주문해 주세요.')">🛒 장바구니 담기</button>
+      ${f.url ? `<a href="${f.url}" target="_blank" rel="noopener noreferrer" class="db-food-link">상품 보기 →</a>` : ''}
     </div>`).join('');
   document.getElementById('db-food-content').innerHTML = '<div class="db-food-grid">' + cards + '</div>';
   dbOpenModal('db-modal-food');
+}
+
+const DB_TRAVELS = {
+  energy: [
+    { icon: '🌲', name: '강원도 평창 산림치유원', desc: '피톤치드 가득한 치유의 숲 속에서 피로를 풀고 생체 리듬을 회복하는 1박2일 산림 리트릿 프로그램.', tags: ['산림치유', '피로회복', '1박2일'], url: 'https://search.naver.com/search.naver?query=평창+산림치유원+웰니스' },
+    { icon: '♨️', name: '충남 아산 온천 리조트', desc: '천연 온천수로 근육 피로를 풀고 혈액 순환을 개선하는 온천 힐링 패키지. 아로마 마사지 포함.', tags: ['온천', '마사지', '힐링'], url: 'https://search.naver.com/search.naver?query=아산+스파비스+온천+힐링' },
+    { icon: '🎋', name: '전남 담양 대나무숲 리트릿', desc: '청정 대나무숲 속 산책과 명상으로 지친 심신을 회복하는 당일·1박 프로그램.', tags: ['명상', '산책', '피톤치드'], url: 'https://search.naver.com/search.naver?query=담양+대나무숲+힐링+여행' },
+    { icon: '🏯', name: '경북 경주 한방 스파', desc: '전통 한방 처방 기반 스파와 족욕으로 에너지를 보충하는 웰니스 패키지. 보약 보양식 포함.', tags: ['한방', '족욕', '보양식'], url: 'https://search.naver.com/search.naver?query=경주+한방스파+웰니스' },
+  ],
+  skin_gut: [
+    { icon: '🌊', name: '전남 완도 해양치유파크', desc: '청정 해조류·해수 기반 해양치유 프로그램. 피부 재생과 장 건강에 도움을 주는 전문 트리트먼트 제공.', tags: ['해양치유', '피부', '장건강'], url: 'https://search.naver.com/search.naver?query=완도+해양치유파크' },
+    { icon: '🏝️', name: '제주 해안 힐링 리트릿', desc: '제주 청정 바다 공기와 해조류 기반 식단, 해수 스파를 결합한 피부·장 케어 2박3일 패키지.', tags: ['제주', '해수스파', '건강식단'], url: 'https://search.naver.com/search.naver?query=제주+웰니스+해양+리트릿' },
+    { icon: '♨️', name: '강원 고성 해수 온천', desc: '동해 해수를 활용한 해수 온천과 미네랄 입욕으로 피부 트러블을 완화하는 힐링 여행.', tags: ['해수온천', '미네랄', '피부케어'], url: 'https://search.naver.com/search.naver?query=고성+해수온천+힐링' },
+    { icon: '🌿', name: '경남 남해 발효 건강 리트릿', desc: '남해 청정 자연 속에서 발효 식품 체험과 장 건강 개선 식단 프로그램을 즐기는 힐링 여행.', tags: ['발효식품', '장건강', '자연'], url: 'https://search.naver.com/search.naver?query=남해+건강+웰니스+리트릿' },
+  ],
+  hair: [
+    { icon: '🌄', name: '전북 무주 덕유산 청정 리트릿', desc: '오염 없는 청정 산공기와 항산화 식단으로 두피 혈류를 개선하고 모발 영양을 보충하는 프로그램.', tags: ['청정공기', '두피케어', '항산화'], url: 'https://search.naver.com/search.naver?query=무주+덕유산+힐링+웰니스' },
+    { icon: '🌿', name: '경남 하동 녹차 디톡스', desc: '하동 야생 녹차의 항산화 성분을 활용한 두피 디톡스 트리트먼트와 건강식 체험 패키지.', tags: ['녹차디톡스', '두피', '항산화'], url: 'https://search.naver.com/search.naver?query=하동+녹차+웰니스+힐링' },
+    { icon: '🧘', name: '강원 양양 서피비치 스트레스 해소', desc: '파도 소리를 들으며 요가·명상으로 스트레스를 해소하고 탈모 유발 코르티솔 수치를 낮추는 여행.', tags: ['요가', '명상', '스트레스해소'], url: 'https://search.naver.com/search.naver?query=양양+서피비치+요가+웰니스' },
+    { icon: '🏡', name: '충북 단양 자연 힐링 스테이', desc: '단양 청정 자연과 건강 식단으로 내부부터 영양을 채우는 모발·영양 집중 관리 리트릿.', tags: ['자연힐링', '영양식단', '청정'], url: 'https://search.naver.com/search.naver?query=단양+자연+힐링+웰니스' },
+  ],
+  sleep_stress: [
+    { icon: '🌲', name: '강원 인제 자작나무숲 명상', desc: '하얀 자작나무숲 속 산림 명상과 디지털 디톡스로 수면 호르몬 멜라토닌 리듬을 회복하는 리트릿.', tags: ['명상', '디지털디톡스', '수면'], url: 'https://search.naver.com/search.naver?query=인제+자작나무숲+명상+힐링' },
+    { icon: '⛩️', name: '충북 영동 천태산 템플스테이', desc: '사찰 생활로 마음을 비우고 숙면·명상·다도로 스트레스를 근본적으로 해소하는 1박2일 프로그램.', tags: ['템플스테이', '명상', '다도'], url: 'https://search.naver.com/search.naver?query=영동+천태산+템플스테이' },
+    { icon: '🏔️', name: '경기 가평 산속 명상 리트릿', desc: '서울 근교 가평의 한적한 산속에서 마음챙김 명상, 호흡 훈련, 수면 코칭을 받는 주말 리트릿.', tags: ['명상', '수면코칭', '주말힐링'], url: 'https://search.naver.com/search.naver?query=가평+명상+리트릿+힐링' },
+    { icon: '🌙', name: '전북 진안 마이산 힐링', desc: '마이산의 영기 어린 자연 속에서 스트레스 해소 프로그램과 한방 수면 개선 식단을 즐기는 여행.', tags: ['자연치유', '한방', '스트레스'], url: 'https://search.naver.com/search.naver?query=진안+마이산+힐링+웰니스' },
+  ],
+  metabolic: [
+    { icon: '🌿', name: '경남 남해 지중해식 리트릿', desc: '지중해식 저당·고섬유 건강식과 활동적 야외 프로그램을 결합한 대사 개선 2박3일 패키지.', tags: ['지중해식단', '대사개선', '활동형'], url: 'https://search.naver.com/search.naver?query=남해+건강식+다이어트+리트릿' },
+    { icon: '🍵', name: '전남 보성 녹차밭 웰니스', desc: '보성 녹차의 카테킨 성분이 지방 대사를 돕는 디톡스 프로그램. 걷기·체조 포함 건강 패키지.', tags: ['디톡스', '대사촉진', '걷기'], url: 'https://search.naver.com/search.naver?query=보성+녹차밭+웰니스+힐링' },
+    { icon: '🚴', name: '강원 평창 바이오 헬스 투어', desc: '청정 고원 지대에서 자전거·트레킹·올림픽 스포츠 체험으로 대사량을 높이는 액티브 웰니스 여행.', tags: ['트레킹', '자전거', '액티브'], url: 'https://search.naver.com/search.naver?query=평창+웰니스+액티브+여행' },
+    { icon: '🌱', name: '제주 팜스테이 건강 프로그램', desc: '제주 유기농 농장에서 직접 수확한 저칼로리 건강식을 먹고 야외 활동으로 에너지를 소모하는 힐링 체험.', tags: ['팜스테이', '유기농', '건강식'], url: 'https://search.naver.com/search.naver?query=제주+팜스테이+건강+웰니스' },
+  ],
+  total: [
+    { icon: '🌈', name: '강원 원주 종합 웰니스 패키지', desc: '에너지·수면·대사·피부를 종합 관리하는 프리미엄 웰니스 리조트 2박3일 패키지. 전문 상담 포함.', tags: ['종합웰니스', '프리미엄', '2박3일'], url: 'https://search.naver.com/search.naver?query=원주+웰니스+리조트+힐링' },
+    { icon: '🏞️', name: '충남 태안 국립공원 자연 치유', desc: '국립공원의 청정 자연 속에서 산책·해변 명상·건강식으로 몸과 마음 전반을 회복하는 힐링 여행.', tags: ['자연치유', '국립공원', '명상'], url: 'https://search.naver.com/search.naver?query=태안+웰니스+국립공원+힐링' },
+    { icon: '🏛️', name: '전북 전주 한옥 힐링 스테이', desc: '전통 한옥에서 한방 보양식·다도·명상을 즐기는 웰니스 스테이. 번아웃 회복에 최적화된 루틴 제공.', tags: ['한옥', '한방', '번아웃회복'], url: 'https://search.naver.com/search.naver?query=전주+한옥+웰니스+힐링스테이' },
+    { icon: '🌄', name: '경북 안동 자연 회복 리트릿', desc: '안동 청정 자연과 유네스코 세계유산 속에서 디지털 디톡스와 전통 건강관리법을 체험하는 리트릿.', tags: ['디지털디톡스', '전통', '자연'], url: 'https://search.naver.com/search.naver?query=안동+웰니스+자연+힐링' },
+  ],
+};
+
+function dbOpenTravel(type) {
+  const travels = DB_TRAVELS[type] || DB_TRAVELS.total;
+  const cards = travels.map(t => `
+    <div class="db-travel-card">
+      <div style="font-size:30px;text-align:center;margin-bottom:8px">${t.icon}</div>
+      <div class="db-travel-card-name">${t.name}</div>
+      <div class="db-travel-card-desc">${t.desc}</div>
+      <div class="db-travel-tags">${t.tags.map(g => '<span class="db-travel-tag">' + g + '</span>').join('')}</div>
+      <a href="${t.url}" target="_blank" rel="noopener noreferrer" class="db-travel-link">여행 알아보기 →</a>
+    </div>`).join('');
+  document.getElementById('db-travel-content').innerHTML = '<div class="db-travel-grid">' + cards + '</div>';
+  dbOpenModal('db-modal-travel');
 }
 // ─────────────────────────────────────────────────────────────
 
@@ -4406,6 +4920,7 @@ def credit_portfolio():
                 f"추천에 어떻게 반영됐는지 반드시 포함해줘."
             )
             result = bot.chat(msg)
+            result = result.replace('(?)', '').replace('(?) ', '')
             from data.credit_model import parse_recommended_products, calculate_policy_loans
             loan_data = calculate_policy_loans(parse_recommended_products(result))
             return jsonify({'result': result, 'avg_score': avg_score, 'composite_score_data': cs, 'policy_loan_data': loan_data})
@@ -4895,6 +5410,103 @@ def api_health_risk_ai():
         return jsonify({'result': mock})
 
 
+@app.route('/api/demo/run', methods=['POST'])
+def demo_run():
+    """데모 시나리오 도구를 직접 실행하여 결과 반환 (GPT-4o 없이)."""
+    from tools.cancer_survivor_tool import (
+        assess_cancer_survivor, assess_low_risk_discount, assess_pacs_no_extra,
+        assess_dynamic_discount, assess_chronic_disease_rate,
+        assess_healthy_body_discount, assess_polyp_removal_eligibility,
+    )
+    from tools.health_credit_tool import (
+        assess_health_credit, assess_sme_health_loan, assess_rental_approval,
+        assess_early_care, assess_default_prevention,
+        assess_healthy_body_loan, assess_health_secured_loan,
+        assess_adverse_selection_score, assess_thin_filer_adverse_selection,
+    )
+
+    scenario = request.json.get('scenario')
+
+    # 시나리오별 페르소나 파라미터 — 그룹 순서: 보험(1-7) 금융(8-12) 역선택(13-14) 위험관리(15-16)
+    DEMO_CALLS = {
+        # 보험 영역 (1~7)
+        1:  lambda: assess_cancer_survivor(
+                age=45, gender="남", cancer_type="위암", cancer_stage="2기",
+                years_since_cure=3, treatment_method="수술+항암", recent_checkup_normal=True),
+        2:  lambda: assess_low_risk_discount(
+                age=38, gender="여", consecutive_checkups=5,
+                bmi_normal=True, bp_normal=True, blood_sugar_normal=True,
+                non_smoker=True, pacs_finding="이상없음"),
+        3:  lambda: assess_pacs_no_extra(
+                age=52, gender="남", finding_type="폐 미세결절",
+                finding_size_mm=6, follow_up_years=2),
+        4:  lambda: assess_dynamic_discount(
+                age=41, gender="여", score_improvement_pct=25,
+                monthly_premium=80000, management_years=1),
+        5:  lambda: assess_chronic_disease_rate(
+                age=57, gender="남", disease="당뇨",
+                treatment_response="우수", hba1c_or_key_metric=6.5),
+        6:  lambda: assess_healthy_body_discount(
+                age=43, gender="남", consecutive_checkups=5,
+                bmi_normal=True, bp_normal=True, blood_sugar_normal=True,
+                non_smoker=True, base_premium_10k=12),
+        7:  lambda: assess_polyp_removal_eligibility(
+                age=50, gender="남", polyp_type="관상선종(저등급)",
+                years_since_removal=2.0, pathology_benign=True,
+                followup_endoscopy_normal=True, polyp_size_mm=8),
+        # 금융 영역 (8~12)
+        8:  lambda: assess_health_credit(
+                age=32, gender="남", consecutive_checkups=4,
+                vital_stability="상", bfc_tier=5,
+                current_credit_score=680, loan_purpose="전세자금", loan_amount_10k=20000),
+        9:  lambda: assess_sme_health_loan(
+                age=48, gender="남", business_years=8,
+                chronic_disease="없음", treatment_response="우수",
+                monthly_revenue_10k=800, loan_amount_10k=3000),
+        10: lambda: assess_rental_approval(
+                age=62, gender="남", disease_history="위암 1기 완치",
+                short_term_risk="낮음", rental_amount_10k=500, rental_period_months=36),
+        11: lambda: assess_healthy_body_loan(
+                age=46, gender="여", consecutive_checkups=4,
+                vital_stability="상", bfc_tier=6,
+                dsr_ratio_pct=52.0, loan_purpose="생활자금", loan_amount_10k=5000),
+        12: lambda: assess_health_secured_loan(
+                age=52, gender="남", consecutive_checkups=3,
+                vital_stability="상", lifelog_score=78,
+                bfc_tier=5, dsr_ratio_pct=58.0, ltv_ratio_pct=82.0,
+                loan_amount_10k=5000),
+        # 신용 역선택 방지 (13~14)
+        13: lambda: assess_adverse_selection_score(
+                age=42, gender="남", credit_score=650, credit_drop_6m=130,
+                insurance_amount_10k=10000, recent_checkup_months=30,
+                multi_insurer=True, sudden_large_policy=True),
+        14: lambda: assess_thin_filer_adverse_selection(
+                age=28, gender="여", has_credit_history=False,
+                consecutive_checkups=0, insurance_amount_10k=8000,
+                sudden_application=True, vital_data_available=False),
+        # 위험 관리 (15~16)
+        15: lambda: assess_early_care(
+                age=52, gender="남", finding="위 미란 소견",
+                progression_risk_pct=42.0, early_intervention=True,
+                insurance_coverage_10k=8000),
+        16: lambda: assess_default_prevention(
+                age=55, gender="남", loan_amount_10k=20000,
+                sofa_score=2.0, severe_disease_risk_pct=38.0,
+                has_repayment_insurance=False),
+    }
+
+    fn = DEMO_CALLS.get(scenario)
+    if not fn:
+        return jsonify({'error': f'시나리오 {scenario}를 찾을 수 없습니다.'}), 400
+
+    try:
+        raw = fn()
+        result = json.loads(raw) if isinstance(raw, str) else raw
+        return jsonify({'ok': True, 'scenario': scenario, 'result': result})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 @app.route('/api/chat', methods=['POST'])
 def chat():
     data = request.json
@@ -4992,6 +5604,503 @@ def reset():
     if sid in sessions:
         sessions[sid] = {'context': MockContext(), 'chatbot': None}
     return jsonify({'status': 'ok'})
+
+
+# ── DIOBIO 카카오 채널 설정 ────────────────────────────────────
+KAKAO_CHANNEL_URL  = 'http://pf.kakao.com/_xcPnxnX'
+KAKAO_CHAT_URL     = 'http://pf.kakao.com/_xcPnxnX/chat'
+
+# ── 카카오 i 오픈빌더 스킬 서버 ────────────────────────────────
+# 카카오 비즈니스 > 챗봇 연결 > 스킬 서버 URL: http://<공인IP>:5000/kakao/skill
+# (외부 접근 불가 시 ngrok 등으로 터널링 필요)
+
+_kakao_sessions: dict = {}  # 카카오 유저별 대화 세션
+
+import re as _re
+
+def _strip_md(text: str) -> str:
+    """마크다운을 카카오 텍스트용 평문으로 변환"""
+    text = _re.sub(r'\*\*(.+?)\*\*', r'\1', text)       # bold
+    text = _re.sub(r'\*(.+?)\*', r'\1', text)            # italic
+    text = _re.sub(r'#{1,6}\s+', '', text)               # heading
+    text = _re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', text) # link → text만
+    text = _re.sub(r'`{1,3}[^`]*`{1,3}', '', text)      # code
+    text = _re.sub(r'^\s*[-*]\s+', '• ', text, flags=_re.M)  # bullet
+    text = _re.sub(r'^\s*\|.*\|.*$', '', text, flags=_re.M)  # table row 제거
+    text = _re.sub(r'\n{3,}', '\n\n', text)             # 빈줄 정리
+    return text.strip()
+
+def _kakao_resp(outputs: list, quick_replies: list | None = None) -> dict:
+    resp: dict = {"version": "2.0", "template": {"outputs": outputs}}
+    if quick_replies:
+        resp["template"]["quickReplies"] = quick_replies
+    return resp
+
+def _kakao_text(text: str, quick_replies: list | None = None):
+    return jsonify(_kakao_resp([{"simpleText": {"text": text}}], quick_replies))
+
+def _kakao_card(title: str, desc: str, buttons: list | None = None):
+    card: dict = {"title": title, "description": desc}
+    if buttons:
+        card["buttons"] = buttons
+    return {"basicCard": card}
+
+_KAKAO_QUICK = [
+    {"label": "보험 추천", "action": "message", "messageText": "내 상황에 맞는 보험 추천해줘"},
+    {"label": "실손보험", "action": "message", "messageText": "실손보험 최신 상품 추천해줘"},
+    {"label": "암보험",   "action": "message", "messageText": "암보험 추천해줘"},
+    {"label": "웰니스 분석", "action": "message", "messageText": "DIOBIO 웰니스 분석 받고 싶어"},
+]
+
+@app.route('/kakao/skill', methods=['POST'])
+def kakao_skill():
+    """카카오 i 오픈빌더 스킬 서버 엔드포인트 (DIOBIO_BOT 연동)"""
+    try:
+        body         = request.json or {}
+        user_req     = body.get('userRequest', {})
+        utterance    = user_req.get('utterance', '').strip()
+        user_id      = user_req.get('user', {}).get('id', 'kakao_anon')
+        session_key  = f"kakao_{user_id}"
+
+        # 웰컴/fallback 메시지
+        if not utterance or utterance in ('안녕', '안녕하세요', '시작', '처음'):
+            return _kakao_text(
+                "안녕하세요! DIOBIO AI 보험·웰니스 상담 챗봇입니다.\n\n"
+                "보험 추천, 실손보험, 암보험, 건강 유형 분석 등 궁금하신 내용을 말씀해 주세요.",
+                _KAKAO_QUICK
+            )
+
+        # AI 응답 생성 (동기 호출)
+        api_live = _check_api_live()
+        effective = _get_effective_mode(api_live)
+
+        if effective == 'live':
+            try:
+                from agents.orchestrator import InsuranceChatbot
+                # 유저별 세션 재사용
+                if session_key not in _kakao_sessions:
+                    _kakao_sessions[session_key] = InsuranceChatbot()
+                bot = _kakao_sessions[session_key]
+                raw = bot.chat(utterance)
+                text = _strip_md(raw)
+                # 카카오 단일 버블 최대 1000자 → 초과 시 분할
+                if len(text) <= 900:
+                    return _kakao_text(text, _KAKAO_QUICK)
+                # 1000자 초과: 앞 900자 + 안내 카드
+                part1 = text[:900] + "..."
+                card  = _kakao_card(
+                    "더 자세한 상담 안내",
+                    "전체 상담 내용은 DIOBIO 웹 상담을 이용해 주세요.",
+                    [{"label": "웹 상담 열기", "action": "webLink",
+                      "webLinkUrl": "http://localhost:5000"}]
+                )
+                return jsonify(_kakao_resp(
+                    [{"simpleText": {"text": part1}}, card],
+                    _KAKAO_QUICK
+                ))
+            except Exception as e:
+                app.logger.error(f"kakao_skill AI error: {e}")
+                return _kakao_text(
+                    "잠시 AI 처리 중 오류가 발생했습니다.\n다시 질문하시거나 웹 상담을 이용해 주세요.",
+                    _KAKAO_QUICK
+                )
+        else:
+            # Mock 모드 안내
+            return _kakao_text(
+                f"[{utterance}]에 대한 상담입니다.\n\n"
+                "현재 AI 서버 연결 준비 중입니다.\n"
+                "더 정확한 상담은 웹 채팅을 이용해 주세요.",
+                _KAKAO_QUICK
+            )
+    except Exception as e:
+        app.logger.error(f"kakao_skill error: {e}")
+        return _kakao_text("서비스 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.")
+
+
+@app.route('/kakao/skill', methods=['GET'])
+def kakao_skill_health():
+    """스킬 서버 헬스체크 (카카오 연결 테스트용)"""
+    return jsonify({"status": "ok", "service": "DIOBIO_BOT", "version": "1.0"})
+
+@app.route('/diobio')
+def diobio_homepage():
+    return '''<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DIOBIO — AI 웰니스 건강 파트너</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:#1e293b;line-height:1.6}
+a{text-decoration:none;color:inherit}
+
+/* 네비 */
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);
+  border-bottom:1px solid #e2e8f0;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px}
+.nav-logo{font-size:22px;font-weight:900;background:linear-gradient(135deg,#10b981,#0284c7);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:28px;font-size:14px;font-weight:500;color:#475569}
+.nav-links a:hover{color:#10b981}
+.nav-cta{background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;
+  padding:8px 20px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer}
+.nav-cta:hover{opacity:.9}
+
+/* 히어로 */
+.hero{background:linear-gradient(135deg,#f0fdf4 0%,#e0f2fe 50%,#f0fdf4 100%);
+  padding:80px 24px 60px;text-align:center}
+.hero-badge{display:inline-block;background:#dcfce7;color:#166534;font-size:12px;font-weight:700;
+  padding:6px 16px;border-radius:20px;margin-bottom:20px}
+.hero h1{font-size:clamp(28px,5vw,52px);font-weight:900;line-height:1.2;margin-bottom:16px}
+.hero h1 span{background:linear-gradient(135deg,#10b981,#0284c7);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:clamp(14px,2vw,18px);color:#475569;max-width:560px;margin:0 auto 32px}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-primary{background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;
+  padding:14px 32px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+.btn-kakao{background:#FEE500;color:#191600;border:none;
+  padding:14px 32px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer}
+.btn-kakao:hover{opacity:.9;transform:translateY(-1px)}
+.hero-stats{display:flex;gap:32px;justify-content:center;margin-top:48px;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-num{font-size:28px;font-weight:900;color:#10b981}
+.stat-label{font-size:12px;color:#64748b;margin-top:2px}
+
+/* 섹션 공통 */
+section{padding:72px 24px}
+.section-title{text-align:center;font-size:clamp(22px,3vw,32px);font-weight:800;margin-bottom:8px}
+.section-sub{text-align:center;color:#64748b;font-size:15px;margin-bottom:48px}
+.container{max-width:1100px;margin:0 auto}
+
+/* 서비스 카드 */
+.services{background:#fff}
+.service-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px}
+.service-card{background:#f8fafc;border-radius:20px;padding:28px;border:1.5px solid #e2e8f0;
+  transition:transform .2s,box-shadow .2s}
+.service-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(16,185,129,.12)}
+.service-icon{font-size:40px;margin-bottom:16px}
+.service-name{font-size:16px;font-weight:700;margin-bottom:8px}
+.service-desc{font-size:13px;color:#64748b;line-height:1.6}
+
+/* 작동 방식 */
+.how{background:linear-gradient(135deg,#f0fdf4,#e0f2fe)}
+.steps{display:flex;gap:0;justify-content:center;flex-wrap:wrap;position:relative}
+.step{text-align:center;max-width:260px;padding:24px 16px;position:relative}
+.step-num{width:48px;height:48px;background:linear-gradient(135deg,#10b981,#059669);
+  color:#fff;border-radius:50%;font-size:18px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.step-title{font-size:15px;font-weight:700;margin-bottom:8px}
+.step-desc{font-size:13px;color:#475569;line-height:1.6}
+.step-arrow{font-size:24px;color:#10b981;align-self:flex-start;margin-top:36px;padding:0 4px}
+
+/* 요금제 */
+.pricing{background:#fff}
+.plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.plan-card{border-radius:20px;padding:32px;border:2px solid #e2e8f0;position:relative;
+  transition:transform .2s,box-shadow .2s}
+.plan-card:hover{transform:translateY(-4px)}
+.plan-card.popular{border-color:#10b981;background:#f0fdf4}
+.plan-popular-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,#10b981,#059669);color:#fff;
+  font-size:12px;font-weight:700;padding:5px 16px;border-radius:20px;white-space:nowrap}
+.plan-name{font-size:18px;font-weight:800;margin-bottom:4px}
+.plan-price{font-size:32px;font-weight:900;color:#10b981;margin-bottom:4px}
+.plan-price span{font-size:14px;font-weight:500;color:#64748b}
+.plan-desc{font-size:13px;color:#64748b;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid #e2e8f0}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.plan-features li{font-size:13px;color:#374151;display:flex;gap:8px;align-items:flex-start}
+.plan-features li::before{content:"✓";color:#10b981;font-weight:700;flex-shrink:0}
+.plan-btn{width:100%;padding:12px;border-radius:10px;font-size:14px;font-weight:700;
+  cursor:pointer;border:none;background:linear-gradient(135deg,#10b981,#059669);color:#fff}
+.plan-card.popular .plan-btn{background:linear-gradient(135deg,#059669,#047857)}
+
+/* 후기 */
+.reviews{background:#f8fafc}
+.review-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.review-card{background:#fff;border-radius:16px;padding:24px;border:1px solid #e2e8f0}
+.review-stars{color:#f59e0b;font-size:14px;margin-bottom:10px}
+.review-text{font-size:13px;color:#374151;line-height:1.7;margin-bottom:14px}
+.review-author{font-size:12px;color:#94a3b8;font-weight:600}
+
+/* CTA 섹션 */
+.cta-section{background:linear-gradient(135deg,#064e3b,#065f46);color:#fff;text-align:center;padding:72px 24px}
+.cta-section h2{font-size:clamp(24px,4vw,40px);font-weight:900;margin-bottom:12px}
+.cta-section p{font-size:16px;opacity:.85;margin-bottom:36px;max-width:500px;margin-left:auto;margin-right:auto}
+.cta-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.cta-btn-kakao{background:#FEE500;color:#191600;padding:16px 36px;border-radius:14px;
+  font-size:15px;font-weight:700;cursor:pointer;border:none}
+.cta-btn-consult{background:rgba(255,255,255,.15);color:#fff;border:2px solid rgba(255,255,255,.4);
+  padding:16px 36px;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer}
+.cta-btn-consult:hover{background:rgba(255,255,255,.25)}
+
+/* 푸터 */
+footer{background:#0f172a;color:#94a3b8;padding:48px 24px 32px}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;gap:48px;flex-wrap:wrap;justify-content:space-between}
+.footer-brand .logo{font-size:24px;font-weight:900;color:#10b981;margin-bottom:10px}
+.footer-brand p{font-size:13px;line-height:1.8}
+.footer-links h4{font-size:14px;font-weight:700;color:#e2e8f0;margin-bottom:12px}
+.footer-links ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.footer-links li{font-size:13px;cursor:pointer}
+.footer-links li:hover{color:#10b981}
+.footer-bottom{max-width:1100px;margin:32px auto 0;padding-top:24px;
+  border-top:1px solid #1e293b;display:flex;justify-content:space-between;
+  flex-wrap:wrap;gap:8px;font-size:12px}
+.kakao-float{position:fixed;bottom:24px;right:24px;background:#FEE500;
+  border-radius:50%;width:56px;height:56px;display:flex;align-items:center;justify-content:center;
+  font-size:26px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:999}
+.kakao-float:hover{transform:scale(1.1)}
+
+@media(max-width:640px){
+  .nav-links{display:none}
+  .steps{flex-direction:column;align-items:center}
+  .step-arrow{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">DIOBIO</div>
+  <div class="nav-links">
+    <a href="#services">서비스</a>
+    <a href="#how">이용방법</a>
+    <a href="#pricing">요금제</a>
+    <a href="#reviews">후기</a>
+  </div>
+  <button class="nav-cta" onclick="openKakaoChannel()">무료 상담 받기</button>
+</nav>
+
+<!-- 히어로 -->
+<section class="hero">
+  <div class="hero-badge">AI 기반 개인 맞춤 웰니스 플랫폼</div>
+  <h1>당신의 건강을<br><span>AI가 분석</span>하고 케어합니다</h1>
+  <p>DIOBIO Balance Check로 나만의 건강 유형을 파악하고, 맞춤 식품·운동·영양제·여행까지 한 번에 관리하세요.</p>
+  <div class="hero-btns">
+    <button class="btn-primary" onclick="location.href='/'">Balance Check 시작하기 →</button>
+    <button class="btn-kakao" onclick="openKakaoChannel()">💬 카카오 상담하기</button>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">6가지</div><div class="stat-label">건강 유형 분석</div></div>
+    <div class="stat"><div class="stat-num">24종</div><div class="stat-label">맞춤 식품 추천</div></div>
+    <div class="stat"><div class="stat-num">24곳</div><div class="stat-label">웰니스 여행지</div></div>
+    <div class="stat"><div class="stat-num">AI</div><div class="stat-label">개인 맞춤 케어</div></div>
+  </div>
+</section>
+
+<!-- 서비스 -->
+<section class="services" id="services">
+  <div class="container">
+    <div class="section-title">DIOBIO 핵심 서비스</div>
+    <div class="section-sub">건강의 모든 영역을 AI가 통합 관리합니다</div>
+    <div class="service-grid">
+      <div class="service-card">
+        <div class="service-icon">🩺</div>
+        <div class="service-name">AI Balance Check</div>
+        <div class="service-desc">6가지 건강 유형 정밀 분석. 에너지·피부·모발·수면·대사·복합 유형별 맞춤 솔루션을 즉시 제공합니다.</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🥗</div>
+        <div class="service-name">DIOFARM 맞춤 식품</div>
+        <div class="service-desc">건강 유형에 맞는 기능성 식품 24종 추천. 네이버 쇼핑 연동으로 바로 구매까지 가능합니다.</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">✈️</div>
+        <div class="service-name">웰니스 여행</div>
+        <div class="service-desc">건강 유형별 국내 웰니스 여행지 24곳 추천. 산림치유·해양치유·디톡스 리트릿·템플스테이 등.</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">💊</div>
+        <div class="service-name">영양제 솔루션</div>
+        <div class="service-desc">유형별 맞춤 영양제 조합 제안. 과잉 섭취 없이 꼭 필요한 영양소만 정확하게 안내합니다.</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">💉</div>
+        <div class="service-name">GLP-1 원격 상담</div>
+        <div class="service-desc">대사·비만 유형 전용. GLP-1(혈당 조절 장호르몬 기반 비만·당뇨 치료제) 원격 의료 상담 연계 서비스.</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🛡️</div>
+        <div class="service-name">건강 보험 연계</div>
+        <div class="service-desc">AI 보험 상담과 연동하여 건강 유형에 맞는 보험 상품을 추천하고, 건강체 할인 혜택도 안내합니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 이용 방법 -->
+<section class="how" id="how">
+  <div class="container">
+    <div class="section-title">이용 방법</div>
+    <div class="section-sub">3단계로 나만의 웰니스 플랜을 완성하세요</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Balance Check</div>
+        <div class="step-desc">7가지 간단한 질문으로 나의 건강 유형을 AI가 정밀 분석합니다.</div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">맞춤 솔루션 확인</div>
+        <div class="step-desc">식품·운동·영양제·병원·여행 솔루션을 유형별로 즉시 제공받습니다.</div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">전문가 상담 & 구독</div>
+        <div class="step-desc">카카오 채널로 전문가 1:1 상담 후 DIOBIO 구독으로 지속 관리합니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 요금제 -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="section-title">구독 요금제</div>
+    <div class="section-sub">건강 관리 목표에 맞는 플랜을 선택하세요</div>
+    <div class="plan-grid">
+
+      <div class="plan-card">
+        <div class="plan-name">Basic</div>
+        <div class="plan-price">무료<span> / 월</span></div>
+        <div class="plan-desc">처음 시작하는 분들을 위한 기본 플랜</div>
+        <ul class="plan-features">
+          <li>AI Balance Check (월 1회)</li>
+          <li>건강 유형 분석 결과</li>
+          <li>맞춤 식품 추천 (4종)</li>
+          <li>웰니스 여행 추천 (4곳)</li>
+          <li>보험 상담 AI 연동</li>
+        </ul>
+        <button class="plan-btn" onclick="location.href='/'">무료 시작하기</button>
+      </div>
+
+      <div class="plan-card popular">
+        <div class="plan-popular-badge">가장 인기 있는 플랜</div>
+        <div class="plan-name">Premium</div>
+        <div class="plan-price">29,900<span>원 / 월</span></div>
+        <div class="plan-desc">건강 관리를 체계적으로 시작하는 분들을 위한 플랜</div>
+        <ul class="plan-features">
+          <li>AI Balance Check (무제한)</li>
+          <li>맞춤 식품 추천 전체 (24종)</li>
+          <li>웰니스 여행 전체 (24곳)</li>
+          <li>영양제 1:1 맞춤 처방</li>
+          <li>카카오 전문가 상담 (월 2회)</li>
+          <li>GLP-1 원격 상담 우선 연결</li>
+          <li>건강체 보험료 할인 분석</li>
+        </ul>
+        <button class="plan-btn" onclick="openKakaoChannel()">구독 신청하기</button>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-name">VIP</div>
+        <div class="plan-price">89,000<span>원 / 월</span></div>
+        <div class="plan-desc">최상의 건강 케어를 원하는 분들을 위한 프리미엄 플랜</div>
+        <ul class="plan-features">
+          <li>Premium 모든 혜택 포함</li>
+          <li>카카오 전문가 상담 (무제한)</li>
+          <li>GLP-1 처방 원격 진료 연계</li>
+          <li>DIOFARM 식품 월정액 배송</li>
+          <li>웰니스 여행 패키지 할인 20%</li>
+          <li>검사 키트 분기별 무료 제공</li>
+          <li>건강 포트폴리오 전담 관리</li>
+        </ul>
+        <button class="plan-btn" onclick="openKakaoChannel()">VIP 상담 신청</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- 후기 -->
+<section class="reviews" id="reviews">
+  <div class="container">
+    <div class="section-title">이용 후기</div>
+    <div class="section-sub">DIOBIO와 함께 건강을 되찾은 분들의 이야기</div>
+    <div class="review-grid">
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"Balance Check를 통해 제가 수면·스트레스 유형인 걸 처음 알았어요. 추천해준 마그네슘과 L-테아닌을 복용하고 수면의 질이 정말 달라졌습니다."</div>
+        <div class="review-author">김*영 · 38세 직장인 · Premium 구독</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"대사 유형으로 나왔는데, 추천해준 제주 팜스테이 다녀오고 나서 체중이 3kg 빠졌어요. 웰니스 여행 추천이 이렇게 실질적인 효과가 있을 줄 몰랐습니다."</div>
+        <div class="review-author">이*준 · 45세 자영업자 · VIP 구독</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★☆</div>
+        <div class="review-text">"카카오 상담 연결이 정말 빠르고 친절해요. GLP-1 원격 진료도 연계해줘서 오프라인 병원 방문 없이 처방받을 수 있어 편리했습니다."</div>
+        <div class="review-author">박*숙 · 52세 주부 · Premium 구독</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>지금 바로 시작하세요</h2>
+  <p>AI Balance Check는 무료입니다. 지금 바로 나의 건강 유형을 확인하고 맞춤 케어를 받아보세요.</p>
+  <div class="cta-btns">
+    <button class="cta-btn-kakao" onclick="openKakaoChannel()">💬 카카오 상담하기</button>
+    <button class="cta-btn-consult" onclick="location.href='/'">무료 Balance Check →</button>
+  </div>
+</section>
+
+<!-- 푸터 -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo">DIOBIO</div>
+      <p>AI 기반 개인 맞춤 웰니스 플랫폼<br>
+      대한민국 헬스케어의 미래를 만들어갑니다.<br><br>
+      이노베이션 존 데이터 기반 정밀 건강 분석<br>
+      보험·금융·웰니스 통합 AI 서비스</p>
+    </div>
+    <div class="footer-links">
+      <h4>서비스</h4>
+      <ul>
+        <li onclick="location.href='/'">Balance Check</li>
+        <li>DIOFARM 식품</li>
+        <li>웰니스 여행</li>
+        <li>GLP-1 원격 상담</li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>고객 지원</h4>
+      <ul>
+        <li onclick="openKakaoChannel()">카카오 상담</li>
+        <li>이용약관</li>
+        <li>개인정보처리방침</li>
+        <li>공지사항</li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>상담 채널</h4>
+      <ul>
+        <li onclick="openKakaoChannel()">💬 카카오톡 채널</li>
+        <li>운영시간: 평일 09:00~18:00</li>
+        <li>주말·공휴일 AI 자동 응대</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 DIOBIO. All rights reserved.</span>
+    <span>본 서비스는 건강 정보 제공 목적이며, 의료 진단을 대체하지 않습니다.</span>
+  </div>
+</footer>
+
+<!-- 카카오 플로팅 버튼 -->
+<div class="kakao-float" onclick="openKakaoChannel()" title="카카오 상담하기">💬</div>
+
+<script>
+function openKakaoChannel() {
+  window.open('http://pf.kakao.com/_xcPnxnX/chat', '_blank');
+}
+</script>
+</body>
+</html>'''
 
 
 if __name__ == '__main__':

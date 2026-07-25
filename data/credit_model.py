@@ -515,3 +515,148 @@ def calculate_policy_loans(products: list[dict]) -> dict:
         "totals":     {str(y): totals[y] for y in _LOAN_YEARS},
         "has_eligible": len(eligible) > 0,
     }
+
+
+def _score_to_grade(score: int) -> str:
+    if score >= 900: return "최우량 (1등급)"
+    if score >= 750: return "우량 (2~3등급)"
+    if score >= 600: return "보통 (4~6등급)"
+    if score >= 450: return "주의 (7~8등급)"
+    return "불량 (9~10등급)"
+
+
+def assess_adverse_selection_risk(
+    credit_score: int = 700,
+    credit_drop_6m: int = 0,
+    insurance_amount_10k: int = 5000,
+    recent_checkup_months: int = 12,
+    multi_insurer: bool = False,
+    sudden_large_policy: bool = False,
+) -> dict:
+    """
+    보험 역선택(Adverse Selection) 위험 지수(AASI) 산출.
+    신용점수 급락 + 건강검진 기피 + 고액 보험 동시 신청 패턴으로 역선택 탐지.
+
+    ※ 윤리: 행동 패턴 기반 탐지이며, 질환 자체를 역선택 근거로 사용하지 않음.
+    """
+    aasi = 0
+    flags = []
+
+    if credit_drop_6m >= 100:
+        aasi += 40
+        flags.append(f"신용점수 6개월 내 {credit_drop_6m}점 급락")
+    elif credit_drop_6m >= 50:
+        aasi += 20
+        flags.append(f"신용점수 6개월 내 {credit_drop_6m}점 하락")
+
+    if recent_checkup_months > 36 and insurance_amount_10k > 5000:
+        aasi += 40
+        flags.append(f"건강검진 {recent_checkup_months}개월 미수검 + 고액 보험 신청")
+    elif recent_checkup_months > 24 and insurance_amount_10k > 3000:
+        aasi += 25
+        flags.append(f"건강검진 {recent_checkup_months}개월 미수검")
+
+    if multi_insurer:
+        aasi += 20
+        flags.append("복수 보험사 동시 신청")
+
+    if sudden_large_policy:
+        aasi += 15
+        flags.append("소액->고액 급격한 보험 전환")
+
+    if credit_score < 600 and insurance_amount_10k > 5000:
+        aasi += 10
+        flags.append("낮은 신용점수 + 고액 보험 조합")
+
+    if aasi >= 60:
+        band, recommendation, color = "고위험", "정밀 심사 필요 — 의료 소견서 추가 제출 요청, 언더라이터 검토", "danger"
+    elif aasi >= 35:
+        band, recommendation, color = "중위험", "주의 관찰 — 건강검진 수검 이력 확인, 추가 서류 요청 가능", "warning"
+    elif aasi >= 15:
+        band, recommendation, color = "경계", "모니터링 — 계약 후 청구 패턴 관찰 권고", "caution"
+    else:
+        band, recommendation, color = "정상", "일반 심사 진행", "normal"
+
+    actions_map = {
+        "고위험": ["추가 건강진단서 제출 요청", "의사 소견서 필수", "보험금 초기 지급 모니터링"],
+        "중위험": ["건강검진 이력 확인", "기존 보험 계약 조회", "전문 언더라이터 검토"],
+        "경계":   ["청구 패턴 사후 모니터링", "6개월 후 재평가"],
+        "정상":   ["표준 심사 진행"],
+    }
+
+    return {
+        "aasi_score": aasi,
+        "risk_band": band,
+        "risk_color": color,
+        "flags": flags if flags else ["이상 신호 없음"],
+        "recommendation": recommendation,
+        "preventive_actions": actions_map[band],
+        "score_context": {
+            "credit_score": credit_score,
+            "credit_drop_6m": credit_drop_6m,
+            "checkup_gap_months": recent_checkup_months,
+            "insurance_amount_10k": insurance_amount_10k,
+        },
+        "ethics_note": "행동 패턴 기반 탐지이며 질환 자체를 역선택 근거로 사용하지 않습니다.",
+    }
+
+
+def simulate_credit_score_improvement(current_score: int) -> dict:
+    """
+    신용점수 개선 시뮬레이션.
+    어떤 조건이 달성되면 어떤 보험·금융 혜택이 열리는지 계산.
+    """
+    improvement_factors = [
+        {"action": "보험료 12개월 정상납부",         "score_gain": 15},
+        {"action": "통신비·공과금 12개월 정상납부",  "score_gain": 12},
+        {"action": "대출 12개월 정상상환",            "score_gain": 20},
+        {"action": "카드 연체 이력 소멸(2년 경과)",  "score_gain": 25},
+        {"action": "건강검진 2년 연속 수검",          "score_gain": 10},
+        {"action": "소액 대출 상환 완료",             "score_gain": 18},
+    ]
+
+    tiers = [
+        {
+            "threshold": 600,
+            "grade": "보통 (4~6등급)",
+            "benefits": ["실손의료보험 표준 조건 가입", "암보험 표준 조건 가입", "치아보험 표준 조건 가입"],
+        },
+        {
+            "threshold": 750,
+            "grade": "우량 (2~3등급)",
+            "benefits": ["비갱신형 종신보험 가입 가능", "변액보험 가입 가능", "보험료 우대 할인 적용", "Health-Credit 금리 인하 1.3%p 효과"],
+        },
+        {
+            "threshold": 900,
+            "grade": "최우량 (1등급)",
+            "benefits": ["프리미엄 종신보험 최우대 조건", "저축성·변액유니버셜 보험 가입", "보험사 VIP 우대 서비스", "Health-Credit 금리 인하 1.8%p 효과"],
+        },
+    ]
+
+    scenarios = []
+    for tier in tiers:
+        if tier["threshold"] <= current_score:
+            continue
+        gap = tier["threshold"] - current_score
+        accumulated = 0
+        needed = []
+        for f in improvement_factors:
+            if accumulated >= gap:
+                break
+            needed.append(f)
+            accumulated += f["score_gain"]
+        scenarios.append({
+            "target_score": tier["threshold"],
+            "target_grade": tier["grade"],
+            "gap": gap,
+            "improvements_needed": needed,
+            "total_achievable": accumulated,
+            "achievable": accumulated >= gap,
+            "benefits": tier["benefits"],
+        })
+
+    return {
+        "current_score": current_score,
+        "current_grade": _score_to_grade(current_score),
+        "scenarios": scenarios,
+    }

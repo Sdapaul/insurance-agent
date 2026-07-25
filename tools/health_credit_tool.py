@@ -581,3 +581,152 @@ def assess_health_secured_loan(
             "social": "건강 관리 인센티브 강화 — 대출 금리 혜택이 건강 생활 동기 부여",
         },
     }, ensure_ascii=False, indent=2)
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 시나리오 15: 신용+건강 교차 역선택 탐지 언더라이팅
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+def assess_adverse_selection_score(
+    age: int,
+    gender: str,
+    credit_score: int = 650,
+    credit_drop_6m: int = 120,
+    insurance_amount_10k: int = 10000,
+    recent_checkup_months: int = 30,
+    multi_insurer: bool = True,
+    sudden_large_policy: bool = True,
+) -> str:
+    """
+    시나리오 15 — 신용+건강 교차 역선택 탐지 언더라이팅.
+    신용점수 급락 + 건강검진 기피 + 고액 보험 동시 신청 패턴으로
+    역선택 위험을 정밀 탐지하여 보험사 손실을 사전 차단.
+    """
+    import sys, os
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from data.credit_model import assess_adverse_selection_risk
+
+    aas = assess_adverse_selection_risk(
+        credit_score=credit_score,
+        credit_drop_6m=credit_drop_6m,
+        insurance_amount_10k=insurance_amount_10k,
+        recent_checkup_months=recent_checkup_months,
+        multi_insurer=multi_insurer,
+        sudden_large_policy=sudden_large_policy,
+    )
+
+    return json.dumps({
+        "scenario": "시나리오 15 — 신용+건강 교차 역선택 탐지 언더라이팅",
+        "persona_summary": (
+            f"{age}세 {gender}성 / 신용점수 {credit_score}점(6개월 -{credit_drop_6m}점) / "
+            f"보험금 {insurance_amount_10k:,}만원 신청"
+        ),
+        "before": "기존 심사: 신용·건강 정보 별도 관리 → 역선택 패턴 미탐지",
+        "after": (
+            f"교차 분석 AASI {aas['aasi_score']}점 → {aas['risk_band']} 판정 → {aas['recommendation']}"
+        ),
+        "aasi_analysis": {
+            "aasi_score": aas["aasi_score"],
+            "risk_band": aas["risk_band"],
+            "flags": aas["flags"],
+            "recommendation": aas["recommendation"],
+            "preventive_actions": aas["preventive_actions"],
+        },
+        "innovation_zone_data": {
+            "tables": ["CB사 신용DB(신용점수 추이)", "G1E(건강검진 수검 이력)", "보험사 청구DB"],
+            "evidence": "신용 급락 + 검진 기피 + 고액 동시 신청 패턴: 역선택 사례의 73% 해당",
+        },
+        "impact": {
+            "insurer": "역선택 조기 탐지로 부당 보험금 지급 예방 (연간 추정 절감 수천만원)",
+            "consumer": "정상 가입자는 영향 없음 — 선의의 피해자 보호",
+            "ethics": aas["ethics_note"],
+        },
+    }, ensure_ascii=False, indent=2)
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# 시나리오 16: 씬파일러 역선택 방지 / 건강 데이터 기반 공정 심사
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+def assess_thin_filer_adverse_selection(
+    age: int,
+    gender: str,
+    has_credit_history: bool = False,
+    consecutive_checkups: int = 0,
+    insurance_amount_10k: int = 8000,
+    sudden_application: bool = True,
+    vital_data_available: bool = False,
+) -> str:
+    """
+    시나리오 16 — 씬파일러 역선택 방지 & 건강 데이터 기반 공정 심사.
+    금융 이력 없는 씬파일러가 건강검진 기피 후 고액 보험 신청 시
+    G1E 수검 이력을 요구하여 역선택 방지 + 포용 금융 경로 제시.
+    """
+    thin_aasi = 0
+    flags = []
+
+    if not has_credit_history:
+        thin_aasi += 15
+        flags.append("CB 금융 이력 없음 (씬파일러)")
+
+    if consecutive_checkups == 0:
+        thin_aasi += 35
+        flags.append("건강검진 수검 이력 전무")
+    elif consecutive_checkups < 2:
+        thin_aasi += 20
+        flags.append(f"건강검진 {consecutive_checkups}회 수검 (연속성 부족)")
+
+    if sudden_application and insurance_amount_10k > 5000:
+        thin_aasi += 25
+        flags.append("갑작스러운 고액 보험 첫 신청")
+
+    if not vital_data_available:
+        thin_aasi += 10
+        flags.append("바이탈 데이터 없음")
+
+    if thin_aasi >= 50:
+        verdict = "역선택 고위험 — G1E 수검 이력 제출 후 재심사"
+        action = "건강검진 1회 수검 + G1E 데이터 제출 후 6개월 내 표준 심사 가능"
+        can_approve = False
+    elif thin_aasi >= 30:
+        verdict = "역선택 중위험 — 간편심사 + 건강검진 이력 요청"
+        action = "간편심사형 상품 가입 가능 (1년 후 표준형 전환 심사)"
+        can_approve = True
+    else:
+        verdict = "역선택 위험 낮음 — 표준 심사 진행 가능"
+        action = "씬파일러이나 행동 패턴 정상 — 표준 심사 진행"
+        can_approve = True
+
+    inclusion_path = []
+    if consecutive_checkups == 0:
+        inclusion_path.append("1단계: 건강검진 1회 수검 (지역 보건소 무료)")
+    if not vital_data_available:
+        inclusion_path.append("2단계: 광주TP CDW 또는 건강앱 바이탈 데이터 연동")
+    inclusion_path.append(f"3단계: 간편심사형 상품 가입 → {1+consecutive_checkups}년 후 표준형 전환")
+
+    return json.dumps({
+        "scenario": "시나리오 16 — 씬파일러 역선택 방지 & 포용 심사",
+        "persona_summary": (
+            f"{age}세 {gender}성 / CB 이력 {'없음' if not has_credit_history else '있음'} / "
+            f"건강검진 {consecutive_checkups}회 수검 / 보험금 {insurance_amount_10k:,}만원 신청"
+        ),
+        "before": "기존: 씬파일러 = 정보 없음 → 일률 거절 또는 역선택 무방비 승인",
+        "after": f"G1E 수검 이력 연계 → AASI {thin_aasi}점 → {verdict}",
+        "thin_filer_analysis": {
+            "thin_aasi_score": thin_aasi,
+            "verdict": verdict,
+            "flags": flags if flags else ["이상 신호 없음"],
+            "can_approve": can_approve,
+            "required_action": action,
+        },
+        "inclusion_path": inclusion_path,
+        "innovation_zone_data": {
+            "tables": ["G1E(건강검진 수검 이력)", "cdw_psmn_vtls(바이탈)", "CB사 신용DB"],
+            "evidence": "씬파일러 중 G1E 수검 이력 없는 고액 보험 첫 신청자: 역선택 비율 일반 대비 2.8배",
+        },
+        "impact": {
+            "insurer": "역선택 위험 사전 차단 + 정상 씬파일러 포용 가능",
+            "consumer": "건강 데이터 제출로 보험 가입 경로 개방 — 금융 소외 해소",
+            "social": "역선택 방지와 포용금융의 양립 실현",
+        },
+    }, ensure_ascii=False, indent=2)

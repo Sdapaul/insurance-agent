@@ -47,6 +47,8 @@ from tools.health_credit_tool import (
     assess_default_prevention,
     assess_healthy_body_loan,
     assess_health_secured_loan,
+    assess_adverse_selection_score,
+    assess_thin_filer_adverse_selection,
 )
 
 # ───────────────────────────────────────────
@@ -671,6 +673,56 @@ TOOLS = [
             },
         },
     },
+    # ── 대회 시나리오 15~16: 신용 역선택 방지 ──────────────────────────
+    {
+        "type": "function",
+        "function": {
+            "name": "assess_adverse_selection_score",
+            "description": (
+                "[대회 시나리오 15] 신용+건강 교차 역선택 탐지 언더라이팅. "
+                "신용점수 급락 + 건강검진 기피 + 고액 보험 동시 신청 패턴으로 "
+                "AASI(역선택방지지수)를 산출하여 역선택 위험 등급과 필요 조치를 제시합니다."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "age": {"type": "integer"},
+                    "gender": {"type": "string", "enum": ["남", "여"]},
+                    "credit_score": {"type": "integer", "description": "현재 신용점수(300~1000)"},
+                    "credit_drop_6m": {"type": "integer", "description": "6개월 내 신용점수 하락폭"},
+                    "insurance_amount_10k": {"type": "integer", "description": "희망 보험금액(만원)"},
+                    "recent_checkup_months": {"type": "integer", "description": "마지막 건강검진 경과 개월수"},
+                    "multi_insurer": {"type": "boolean", "description": "복수 보험사 동시 신청 여부"},
+                    "sudden_large_policy": {"type": "boolean", "description": "소액→고액 급격 전환 여부"},
+                },
+                "required": ["age", "gender"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "assess_thin_filer_adverse_selection",
+            "description": (
+                "[대회 시나리오 16] 씬파일러 역선택 방지 및 건강 데이터 기반 공정 심사. "
+                "금융 이력 없는 씬파일러의 건강검진 기피 + 고액 보험 첫 신청 패턴을 탐지하고 "
+                "역선택 방지와 함께 포용금융 경로(간편심사형→표준형 전환)를 제시합니다."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "age": {"type": "integer"},
+                    "gender": {"type": "string", "enum": ["남", "여"]},
+                    "has_credit_history": {"type": "boolean", "description": "CB 금융 이력 보유 여부"},
+                    "consecutive_checkups": {"type": "integer", "description": "건강검진 수검 횟수"},
+                    "insurance_amount_10k": {"type": "integer", "description": "희망 보험금액(만원)"},
+                    "sudden_application": {"type": "boolean", "description": "갑작스러운 첫 신청 여부"},
+                    "vital_data_available": {"type": "boolean", "description": "바이탈 데이터 보유 여부"},
+                },
+                "required": ["age", "gender"],
+            },
+        },
+    },
     # ── 대회 시나리오 9~10: 위험 관리 ────────────────────────────────
     {
         "type": "function",
@@ -874,6 +926,12 @@ def execute_tool(tool_name: str, tool_input: dict, client: openai.OpenAI) -> str
 
     elif tool_name == "assess_default_prevention":
         return assess_default_prevention(**tool_input)
+
+    elif tool_name == "assess_adverse_selection_score":
+        return assess_adverse_selection_score(**tool_input)
+
+    elif tool_name == "assess_thin_filer_adverse_selection":
+        return assess_thin_filer_adverse_selection(**tool_input)
 
     else:
         return json.dumps({"error": f"알 수 없는 도구: {tool_name}"}, ensure_ascii=False)
@@ -1311,6 +1369,33 @@ SYSTEM_PROMPT = """당신은 친절하고 전문적인 보험 상담 AI 어시�
 - 웹 검색·도구 없이 GPT 지식만 사용한 경우 → "AI 학습 데이터 기반" ★★☆☆☆
 - `get_credit_score` → "NICE/KCB 신용점수 실시간 조회" ★★★★★
 신뢰도: ★★★★★ 공식 공시 | ★★★★☆ 검증 DB | ★★★☆☆ 웹 검색 | ★★☆☆☆ AI 추론
+
+## 의료·금융 전문 용어 한글 병기 규칙 (필수)
+영어 약어·의료 전문 용어가 처음 등장할 때 반드시 괄호 안에 한글 설명을 병기하세요.
+같은 대화에서 이미 설명한 용어는 반복하지 않아도 됩니다.
+
+| 용어 | 병기 예시 |
+|------|----------|
+| HbA1c | HbA1c(당화혈색소: 2~3개월 평균 혈당 수치) |
+| BMI | BMI(체질량지수: 체중kg ÷ 신장m²) |
+| DICOM | DICOM(의료영상 디지털 표준 포맷) |
+| SOFA | SOFA(장기부전 중증도 점수: 높을수록 위험) |
+| EMR | EMR(내시경 점막 절제술) |
+| DSR | DSR(총부채원리금상환비율: 연소득 대비 전체 대출 상환액 비율) |
+| LTV | LTV(주택담보인정비율: 주택가격 대비 대출 한도 비율) |
+| G1E | G1E(국가일반건강검진 데이터) |
+| RGST | RGST(국립암센터 암등록 데이터베이스) |
+| CDW | CDW(광주TP 임상데이터 웨어하우스) |
+| BFC | BFC(건강보험료 분위: 소득 수준 지표) |
+| HAS | HAS(건강자산점수: 건강 데이터 기반 신용 보완 점수) |
+| AASI | AASI(역선택방지지수: 보험 악용 위험 측정 지표) |
+| CB | CB(신용조회기관, Credit Bureau) |
+| GLP-1 | GLP-1(혈당 조절 장호르몬 기반 비만·당뇨 치료제) |
+| T400 등 상병코드 | T400(소화기계 질병 분류 코드) |
+| T200~T530 | T200~T530(내분비·대사 질환 상병코드) |
+| PACS | PACS(의료영상 저장·전송 시스템) |
+| ECG/EKG | ECG/EKG(심전도: 심장 전기 신호 측정) |
+| eGFR | eGFR(추정 사구체 여과율: 신장 기능 지표) |
 
 ## 응답 스타일
 - 한국어로 친절하게 답변

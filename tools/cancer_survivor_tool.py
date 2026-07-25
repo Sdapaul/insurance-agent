@@ -336,23 +336,25 @@ def assess_chronic_disease_rate(
 
     saving_pct = typical_surcharge - standard_surcharge
 
+    saving_pct = typical_surcharge - standard_surcharge
+
     return json.dumps({
         "scenario": "시나리오 5 — 만성질환자 맞춤형 유병자 요율",
         "persona_summary": f"{age}세 {gender}성 / {disease} / 치료 반응 {treatment_response} / 핵심지표 {hba1c_or_key_metric}",
-        "before": f"일반 유병자 보험 가입 (표준 대비 +{typical_surcharge}% 할증) 또는 거절",
-        "after": f"T300/T400 치료 반응 분석 → 정밀 요율 +{standard_surcharge}% 적용",
+        "before": f"일반 유병자 보험: 표준 대비 +{typical_surcharge}% 할증 또는 가입 거절",
+        "after": f"정밀 요율 적용으로 보험료 부담 {saving_pct}%p 절감 (정밀 요율 +{standard_surcharge}% / 일반 +{typical_surcharge}% 대비)",
         "rate_analysis": {
-            "typical_surcharge_pct": typical_surcharge,
-            "precision_surcharge_pct": standard_surcharge,
-            "saving_pct": saving_pct,
-            "treatment_response": treatment_response,
+            "일반_유병자_요율": f"+{typical_surcharge}% 할증",
+            "정밀_맞춤_요율": f"+{standard_surcharge}% (일반 대비 {saving_pct}%p 절감)",
+            "절감_효과": f"{saving_pct}%p 절감 — 보험료 부담 대폭 완화",
+            "치료_반응": treatment_response,
         },
         "innovation_zone_data": {
             "tables": ["T300(진료내역)", "T400(상병내역)", "광주TP cdw_bacm_psp_cure(치료반응)"],
             "evidence": "개인 치료 반응 수치 + 동일 질환 코호트 손해율 분석",
         },
         "impact": {
-            "consumer": f"기존 +{typical_surcharge}% 대비 +{standard_surcharge}%로 {saving_pct}%p 부담 경감",
+            "consumer": f"보험료 부담 {saving_pct}%p 절감 — 치료 잘 받는 만성질환자에게 합리적 요율 적용",
             "insurer":  "선별 인수로 우량 만성질환자 시장 확보 · 손해율 관리 가능",
         },
     }, ensure_ascii=False, indent=2)
