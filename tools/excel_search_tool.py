@@ -115,6 +115,16 @@ def search_insmarket_products(
 
     filtered.sort(key=_sort_key)
 
+    # 동일 상품명 중복 제거 (여러 연령대 파일에 같은 상품 존재)
+    seen_names: set = set()
+    deduped = []
+    for p in filtered:
+        key = (p.get("company", ""), p.get("product_name", ""))
+        if key not in seen_names:
+            seen_names.add(key)
+            deduped.append(p)
+    filtered = deduped
+
     # 결과 포맷
     results = []
     for p in filtered[:top_n]:

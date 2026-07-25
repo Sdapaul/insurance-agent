@@ -820,7 +820,10 @@ def execute_tool(tool_name: str, tool_input: dict, client: openai.OpenAI) -> str
         )
 
     elif tool_name == "assess_health_risk":
-        return assess_health_risk(**tool_input)
+        _VALID = {"age","gender","height","weight","waist","sbp","dbp",
+                  "total_cholesterol","triglyceride","hdl","ldl",
+                  "ast","alt","ggt","smoke","drink","bfc_tier","include_products"}
+        return assess_health_risk(**{k: v for k, v in tool_input.items() if k in _VALID})
 
     elif tool_name == "get_personalized_recommendation":
         return _run_recommendation_subagent(tool_input, client)
